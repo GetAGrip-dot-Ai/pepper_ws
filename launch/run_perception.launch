@@ -1,0 +1,8 @@
+<launch>
+    <node name="pp_camera_node" pkg="pepper_ws" type="camera.py" output="screen"/>
+    <node name="pp_perception_main" pkg="pepper_ws" type="main.py" output="screen"/>
+
+    <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+    </include>
+
+</launch>
