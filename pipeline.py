@@ -73,7 +73,7 @@ class Perception:
         #   locations: all the locations of the pepper boxes [conf, x, y] (N, 3)
         #################################################################
         self.one_frame = OneFrame(path)
-        self.one_frame.run()
+        self.one_frame.run_realtime()
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
@@ -101,14 +101,17 @@ class Perception:
             
     def detect_peppers_realtime(self):
         while True:
-            user_input = input("1: start\n2: end")
+            user_input = input("1: start\n2: end\n")
             if user_input == "1":
+                time.sleep(2)
+                print("taking pic!")
                 img = get_image_from_webcam()
                 img_name=str(time.time()).split('.')[0]
-                plt.imsave(img, '/realtime/'+img_name+'.png')
-                self.detect_peppers_one_frame('/realtime/'+img_name+'.png')
+                cv2.imwrite(os.getcwd()+'/realtime/'+img_name+'.png', img)
+                print("saved to :", os.getcwd()+'/realtime/'+img_name+'.png')
+                self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
             elif user_input == "2":
-                break
+                return False
             else:
                 print("invalid option!")
 
