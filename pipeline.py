@@ -181,8 +181,9 @@ class Perception:
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
-            self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+            # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             rate.sleep()
 
     #####################################################################

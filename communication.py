@@ -1,6 +1,7 @@
 import rospy
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, Point
 from shape_msgs.msg import SolidPrimitive
+from visualization_msgs.msg import Marker
 from pepper_ws.msg import Obstacle
 
 class Communication:
@@ -8,6 +9,7 @@ class Communication:
         rospy.init_node('perception', anonymous=True)
         self.poi_pub = rospy.Publisher('/perception/peduncle/poi', Pose, queue_size=10)
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
+        self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
         
     def poi_pub_fn(self, poi, orientation):
         peduncle_pose = Pose()
@@ -34,3 +36,19 @@ class Communication:
             
         rospy.loginfo(obstacle_msg)
         self.obstacle_pub.publish(obstacle_msg)
+
+    def poi_rviz_pub_fn(self, peppers):
+        marker = Marker()
+
+        for pepper in peppers:
+            poi = pepper.pepper_peduncle.poi
+            
+            point = Point()
+            point.x = poi[0]
+            point.y = poi[1]
+            point.z = poi[2]
+            marker.points.append(point)
+
+        # rospy.loginfo(marker)
+        self.poi_rviz_pub.publish(marker)
+
