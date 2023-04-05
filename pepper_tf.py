@@ -12,18 +12,24 @@ import numpy as np
 from std_msgs.msg import Float32, Int64MultiArray
 
 depth_img = np.ones((480, 640)) * -1
-
+x, y = -1, -1 
 def getDepthCallback(msg):
     global depth_img
     depth_img = np.reshape(msg.data, (480,640))
     # print(depth_img[0, 0])
+
+def xy_callback(msg):
+    global x, y
+    if x < 0:
+        # print(msg.data)
+        x, y = np.array(msg.data)
 
 def tfCallback(msg):
     br = tf.TransformBroadcaster()
     
     # for t in msg.transforms:
     if depth_img[0,0] != -1:
-        x, y = 240, 320
+        # x, y = 240, 320
         pepper_tf = geometry_msgs.msg.TransformStamped()
         pepper_tf.transform.translation.z = (x-320)/1000
         pepper_tf.transform.translation.y = (y-240)/1000
@@ -50,7 +56,7 @@ def tf_listener():
     rospy.init_node('pepper_tf_node')
     rospy.Subscriber("/camera/pp/depth", Int64MultiArray, getDepthCallback)
     rospy.Subscriber("/tf", TFMessage, tfCallback)
-    
+    rospy.Subscriber("/pp/poi_test", Int64MultiArray, xy_callback)
     rospy.spin()
 
 if __name__ == '__main__':
