@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 import ultralytics
@@ -28,16 +29,19 @@ class PepperFruitDetector:
 
     def run_detection(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
         self._imgs_path = get_all_image_path_in_folder(self._path)
+        print("paths:", self._imgs_path)
         return self.predict_pepper(img_path, show_result, print_result, thresh=thresh)
     
-    def run_detection_realtime(self, show_result: bool = False, print_result: bool = False, thresh=0.25):
-        return self.predict_pepper_realtime(show_result, print_result, thresh=thresh)
+    def run_detection_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
+        self._imgs_path = img_path
+        print("pepper path:", img_path)
+        return self.predict_pepper_realtime(img_path, show_result, print_result, thresh=thresh)
 
     def predict_pepper(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
         pepper_list = dict()
         # print("Detecting image: ", img_path)
-
         img = read_image(img_path)
+        print("img", img)
         # img = red_to_green_2(img).astype('float32')
         results = self._model(img, conf=thresh)
         pepper_count = 0
@@ -62,10 +66,12 @@ class PepperFruitDetector:
         # if print_result:
         #     print_result_boxes(detected_frame)
         return pepper_list
-    def predict_pepper_realtime(self, show_result: bool = False, print_result: bool = False, thresh=0.25):
+    def predict_pepper_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
         pepper_list = dict()
-
-        results = self._model(self._img, conf=thresh)
+        # time.sleep(15)
+        img = read_image(img_path)
+        # print("img", img)
+        results = self._model(img, conf=thresh)
         pepper_count = 0
 
         for result in results:

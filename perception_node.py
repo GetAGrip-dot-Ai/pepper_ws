@@ -17,7 +17,7 @@ if not hasattr(rs2, 'intrinsics'):
 
 
 class PerceptionNode:
-    def __init__(self, image_topic, aligned_topic, depth_pub_topic) :
+    def __init__(self, image_topic, aligned_topic, depth_pub_topic):
         self.bridge = CvBridge()
         self.camera_sub = rospy.Subscriber(image_topic, msg_Image, self.cameraCallback)
         self.aligned_sub = rospy.Subscriber(aligned_topic, msg_Image, self.alignedTopicCallback)
