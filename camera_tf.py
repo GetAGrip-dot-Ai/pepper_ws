@@ -5,6 +5,7 @@ import geometry_msgs.msg
 from geometry_msgs.msg import Quaternion
 from tf2_msgs.msg import TFMessage
 import tf
+import tf2_ros
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
 
@@ -28,9 +29,10 @@ def tf_callback(msg):
 
             rot = t.transform.rotation
             rpy = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
-            r = rpy[0] - math.pi/2
-            p = rpy[1]
-            y = rpy[2] + math.pi/2
+            r = rpy[0] + math.pi
+            p = rpy[1] + math.pi/4 + math.pi/2
+            # p = rpy[1] + math.pi/2
+            y = rpy[2] 
             quat = quaternion_from_euler(r, p, y)
             quat_msg = Quaternion(quat[0], quat[1], quat[2], quat[3])
             camera_tf.transform.rotation = quat_msg
@@ -65,10 +67,17 @@ def tf_callback(msg):
             # print(camera_tf)
             # br.sendTransform(camera_tf)
             br2.sendTransform((camera_tf_base.transform.translation.x, camera_tf_base.transform.translation.y, camera_tf_base.transform.translation.z),(camera_tf_base.transform.rotation.x, camera_tf_base.transform.rotation.y, camera_tf_base.transform.rotation.z, camera_tf_base.transform.rotation.w), time=camera_tf_base.header.stamp , child = "rs_base", parent="world")
+        
+        if (t.header.frame_id=="camera_depth_optical_frame"): # should be the world frame
+            print(" this is a thing ")
+        if (t.header.frame_id=="camera_depth_frame"): # should be the world frame
+            print(" this is a thing 11")
 
 def listener():
     rospy.init_node('tf_node')
     rospy.Subscriber("/tf", TFMessage, tf_callback)
+    rospy.Subscriber("/camera/pp/depth", Int64MultiArray, get_depth_callback)
+    # print("k", k)
     rospy.spin()
 
 if __name__ == '__main__':
