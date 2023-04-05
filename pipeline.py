@@ -77,6 +77,8 @@ class Perception:
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
+        print(self.pepper_peduncles)
+        print(self.pepper_peduncles[0].poi)
         return self.pepper_peduncles[0].poi
     def detect_peppers_realtime_frame(self, img, thresh=0.5):
         #################################################################

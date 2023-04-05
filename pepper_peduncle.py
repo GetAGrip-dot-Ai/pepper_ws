@@ -61,6 +61,8 @@ class PepperPeduncle:
     @orientation.setter
     def orientation(self, value):
         self._orientation = value
+    def __str__(self):
+        return self._poi
 
     def set_point_of_interaction(self, img_shape, pepper_fruit_xywh):
         # plt.imshow(self._mask)
