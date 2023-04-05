@@ -6,7 +6,7 @@ from pepper_ws.msg import Obstacle
 
 class Communication:
     def __init__(self):
-        rospy.init_node('perception', anonymous=True)
+        rospy.init_node('pp_p_communication_node', anonymous=True)
         self.poi_pub = rospy.Publisher('/perception/peduncle/poi', Pose, queue_size=10)
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)

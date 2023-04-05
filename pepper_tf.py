@@ -53,7 +53,7 @@ def tfCallback(msg):
     else:
         print("waiting for image to be a thing")
 def tf_listener():
-    rospy.init_node('pepper_tf_node')
+    rospy.init_node('pp_p_pepper_tf_node')
     rospy.Subscriber("/camera/pp/depth", Int64MultiArray, getDepthCallback)
     rospy.Subscriber("/tf", TFMessage, tfCallback)
     rospy.Subscriber("/pp/poi_test", Int64MultiArray, xy_callback)

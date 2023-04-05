@@ -10,7 +10,7 @@ import os
 
 
 class RealtimeFrame:
-    def __init__(self, img):
+    def __init__(self, img, img_path=''):
         self.img = img  # should be a path to one image file
 
         self._img_shape: Tuple[int] = img.shape
@@ -28,7 +28,7 @@ class RealtimeFrame:
         self._pepper_detections: Dict[int, Pepper] = dict()
 
         # print("weights path: ", os.getcwd())
-        self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,img =self.img
+        self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,img =self.img,
                                                                                yolo_weight_path='weights/pepper_fruit_best_2.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
                                                                                         yolo_weight_path='weights/pepper_peduncle_best.pt')

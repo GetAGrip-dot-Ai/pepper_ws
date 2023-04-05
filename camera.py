@@ -13,17 +13,16 @@ import matplotlib.pyplot as plt
 if not hasattr(rs2, 'intrinsics'):
     import pyrealsense2.pyrealsense2 as rs2
 
-
 class ImageListener:
     def __init__(self, image_topic, aligned_topic, depth_pub_topic) :
         self.bridge = CvBridge()
-        self.camera_sub = rospy.Subscriber(image_topic, msg_Image, self.cameraCallback)
-        self.aligned_sub = rospy.Subscriber(aligned_topic, msg_Image, self.alignedTopicCallback)
+        self.camera_sub = rospy.Subscriber(image_topic, msg_Image, self.camera_callback)
+        self.aligned_sub = rospy.Subscriber(aligned_topic, msg_Image, self.aligned_topic_callback)
         self.depth_img = None
         self.rgb_img = None
         self.depth_pub = rospy.Publisher(depth_pub_topic, Int64MultiArray, queue_size=10)
 
-    def alignedTopicCallback(self, data):
+    def aligned_topic_callback(self, data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, data.encoding)
             self.depth_img = cv_image
@@ -35,7 +34,7 @@ class ImageListener:
             print(e)
             return    
 
-    def cameraCallback(self, data):
+    def camera_callback(self, data):
         try:
             self.rgb_img = self.bridge.imgmsg_to_cv2(data, data.encoding)
             
@@ -54,6 +53,5 @@ def main():
     rospy.spin()
 
 if __name__ == '__main__':
-    # node_name = os.path.basename(sys.argv[0]).split('.')[0]
-    rospy.init_node("camera_node")
+    rospy.init_node("pp_p_depth_image_node")
     main()
