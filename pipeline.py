@@ -77,6 +77,7 @@ class Perception:
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
+        return self.pepper_peduncles[0].poi
     def detect_peppers_realtime_frame(self, img, thresh=0.5):
         #################################################################
         # use yolov8_scripts and get the pepper locations
@@ -109,7 +110,8 @@ class Perception:
                 img_name=str(time.time()).split('.')[0]
                 cv2.imwrite(os.getcwd()+'/realtime/'+img_name+'.png', img)
                 print("saved to :", os.getcwd()+'/realtime/'+img_name+'.png')
-                self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
+                (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
+                return (poi_x, poi_y)
             elif user_input == "2":
                 return False
             else:
@@ -181,9 +183,8 @@ class Perception:
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
-            # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+            self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
-            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             rate.sleep()
 
     #####################################################################

@@ -9,8 +9,9 @@ if __name__ == '__main__':
     print("current working dir: ",os.getcwd())
     test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)
-    pipeline.detect_peppers_realtime()
-    pipeline.send_to_manipulator()
+    (x, y) = pipeline.detect_peppers_realtime()
+
+    # pipeline.send_to_manipulator()
 
 '''
 input an image
