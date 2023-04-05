@@ -1,0 +1,14 @@
+<launch>
+    <include file="$(find gen3_move_it_config)/launch/demo.launch">
+    </include>
+
+    <node name="cammera_tf_node" pkg="pepper_ws" type="camera_tf.py" output="screen"/>
+
+    <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+    </include>
+
+    <node name="camera_node" pkg="pepper_ws" type="camera.py" output="screen"/>
+
+    <node name="camera_tf_node" pkg="pepper_ws" type="pepper_tf.py" output="screen"/>
+
+</launch>
