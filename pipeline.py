@@ -2,7 +2,9 @@
 import os
 import time
 
+import matplotlib.pyplot as plt
 import rospy
+import time
 
 print(os.getcwd())
 
@@ -84,7 +86,7 @@ class Perception:
         # output:
         #   locations: all the locations of the pepper boxes [conf, x, y] (N, 3)
         #################################################################
-        self.one_frame = RealTimeFrame(img)
+        # self.one_frame = RealTimeFrame(img)
         self.one_frame.run()
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
@@ -96,9 +98,19 @@ class Perception:
         print("wt:", files)
         for path in files:
             self.detect_peppers_one_frame(path)
+            
     def detect_peppers_realtime(self):
         while True:
-            self.detect_peppers_realtime_frame(get_image_from_webcam())
+            user_input = input("1: start\n2: end")
+            if user_input == "1":
+                img = get_image_from_webcam()
+                img_name=str(time.time()).split('.')[0]
+                plt.imsave(img, '/realtime/'+img_name+'.png')
+                self.detect_peppers_one_frame('/realtime/'+img_name+'.png')
+            elif user_input == "2":
+                break
+            else:
+                print("invalid option!")
 
     def detect_peppers_time_frame(self, frames, thresh=0.5):
         #################################################################
@@ -166,7 +178,8 @@ class Perception:
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
-            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+            # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
             rate.sleep()
 
     #####################################################################

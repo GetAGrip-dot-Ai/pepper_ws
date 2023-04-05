@@ -7,8 +7,7 @@ if __name__ == '__main__':
     # os.chdir(os.getcwd()+'/pepper_ws/')
     os.chdir('/'.join(__file__.split('/')[:-1]))
     print("current working dir: ",os.getcwd())
-    # img_path = '../dataset/testbed_video_to_img'
-    test_img_path = '/test'
+    test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)
     pipeline.detect_peppers_realtime()
     pipeline.send_to_manipulator()

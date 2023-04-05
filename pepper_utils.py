@@ -36,18 +36,19 @@ def put_title(detected_frame):
         color="black")
 
 def get_image_from_webcam():
-    camera = cv2.VideoCapture(6)
+    # camera = cv2.VideoCapture(6)
+    camera = cv2.VideoCapture(0)
     # 4: dotted camera
     # 6: rgb camera
-    while True:
-        return_value, image = camera.read()
+    # while True:
+    return_value, image = camera.read()
         # gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        image = cv2.flip(image, 1)  # <class 'numpy.ndarray'>
-        cv2.imshow('image', image)
-
-        if cv2.waitKey(1) & 0xFF == ord('s'):
-            cv2.imwrite('test.jpg', image)
-            break
+    image = cv2.flip(image, 1)  # <class 'numpy.ndarray'>
+        # cv2.imshow('image', image)
+        #
+        # if cv2.waitKey(1) & 0xFF == ord('s'):
+        #     cv2.imwrite('test.jpg', image)
+        #     break
     camera.release()
     cv2.destroyAllWindows()
     return image
