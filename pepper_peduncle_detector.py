@@ -44,10 +44,10 @@ class PepperPeduncleDetector:
         # self.predict_peduncles(show_result, print_result)
         return self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
     
-    def run_detection_realtime(self, show_result: bool = False, print_result: bool = False, thresh=0.5):
-        self._imgs_path = get_all_image_path_in_folder(self._path)
+    def run_detection_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
+        self._imgs_path = img_path
         # self.predict_peduncles(show_result, print_result)
-        return self.predict_peduncle_realtime(show_result, print_result, thresh=thresh)
+        return self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
 
     def predict_peduncle(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
         peduncle_list = dict()

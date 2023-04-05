@@ -36,19 +36,22 @@ def put_title(detected_frame):
         color="black")
 
 def get_image_from_webcam():
-    # camera = cv2.VideoCapture(6)
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(7)
+    # camera = cv2.VideoCapture(0)
     # 4: dotted camera
     # 6: rgb camera
-    # while True:
-    return_value, image = camera.read()
-        # gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    image = cv2.flip(image, 1)  # <class 'numpy.ndarray'>
-        # cv2.imshow('image', image)
-        #
-        # if cv2.waitKey(1) & 0xFF == ord('s'):
-        #     cv2.imwrite('test.jpg', image)
-        #     break
+    while True:
+        return_value, image = camera.read()
+            # gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        image = cv2.flip(image, 1)  # <class 'numpy.ndarray'>
+        cv2.imshow('image', image)
+        k = cv2.waitKey(0)
+        if k==27:
+            print("hey")
+            camera.release()
+            cv2.destroyAllWindows()
+            return image
+            # break
     camera.release()
     cv2.destroyAllWindows()
     return image
@@ -99,4 +102,7 @@ def red_to_green_2(img):
     return retrack_original
 
 if __name__=="__main__":
-    get_image_from_webcam()
+    img = get_image_from_webcam()
+    cv2.imwrite('he.png', img)
+     # plt.imshow(img)
+    # plt.imsave(img, "hi.png")
