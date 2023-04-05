@@ -54,6 +54,6 @@ def main():
     rospy.spin()
 
 if __name__ == '__main__':
-    node_name = os.path.basename(sys.argv[0]).split('.')[0]
-    rospy.init_node(node_name)
+    # node_name = os.path.basename(sys.argv[0]).split('.')[0]
+    rospy.init_node("camera_node")
     main()

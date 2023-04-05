@@ -8,7 +8,7 @@ import tf
 import tf2_ros
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
-
+from std_msgs.msg import Float32, Int64MultiArray
 
 def tf_callback(msg):
     # print("===========")
@@ -30,7 +30,7 @@ def tf_callback(msg):
             rot = t.transform.rotation
             rpy = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
             r = rpy[0] + math.pi
-            p = rpy[1] + math.pi/4 + math.pi/2
+            p = rpy[1] + math.pi/2
             # p = rpy[1] + math.pi/2
             y = rpy[2] 
             quat = quaternion_from_euler(r, p, y)
@@ -74,9 +74,8 @@ def tf_callback(msg):
             print(" this is a thing 11")
 
 def listener():
-    rospy.init_node('tf_node')
+    rospy.init_node('camera_tf_node')
     rospy.Subscriber("/tf", TFMessage, tf_callback)
-    rospy.Subscriber("/camera/pp/depth", Int64MultiArray, get_depth_callback)
     # print("k", k)
     rospy.spin()
 
