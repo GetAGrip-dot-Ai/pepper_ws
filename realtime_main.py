@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-import rospy 
+# import rospy 
 from pipeline import Perception
 import os
-from std_msgs.msg import Float32, Int64MultiArray
+# from std_msgs.msg import Float32, Int64MultiArray
 
 if __name__ == '__main__':
     # os.chdir(os.getcwd()+'/pepper_ws/')
-    os.chdir('/'.join(__file__.split('/')[:-1]))
+    # os.chdir('/'.join(__file__.split('/')[:-1]))
     print("current working dir: ",os.getcwd())
     test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)

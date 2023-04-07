@@ -1,6 +1,6 @@
 from pepper_peduncle_utils import *
 import os
-import pyrealsense2 as rs
+from realsense_utils import *
 
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
@@ -64,6 +64,7 @@ class PepperPeduncle:
         self._orientation = value
     def __str__(self):
         return self._poi
+    
 
     def set_point_of_interaction(self, img_shape, pepper_fruit_xywh):
         # plt.imshow(self._mask)
@@ -72,14 +73,15 @@ class PepperPeduncle:
         total_curve_length = self._curve.full_curve_length()
 
         poi_x, poi_y = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_z = 0.4 #self.get_depth(img, poi_x, poi_y)
+        poi_z = get_depth(poi_x, poi_y)
+        print(f"POI: {poi_x}, {poi_y}, {poi_z}")
 
         poi_3d = rs.deproject_pixel_to_point(np.array([100*poi_y, 100*poi_x]), poi_z)
         self._poi = poi_3d
 
     def set_peduncle_orientation(self, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)
-        point_z = self.get_depth(img, point_x, point_y)
+        point_z = get_depth(point_x, point_y)
         self._orientation = [point_x - self._poi[0], point_y - self._poi[1], point_z - self._poi[2]]
 
     def __str__(self):
