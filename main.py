@@ -8,7 +8,7 @@ if __name__ == '__main__':
     os.chdir('/'.join(__file__.split('/')[:-1]))
     print("current working dir: ",os.getcwd())
     # img_path = '../dataset/testbed_video_to_img'
-    test_img_path = '/test'
+    test_img_path = '/test_single'
     pipeline = Perception(test_img_path, 0)
     pipeline.detect_peppers_in_folder()
     pipeline.send_to_manipulator()

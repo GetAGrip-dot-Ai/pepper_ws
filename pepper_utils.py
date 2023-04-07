@@ -36,7 +36,7 @@ def put_title(detected_frame):
         color="black")
 
 def get_image_from_webcam():
-    camera = cv2.VideoCapture(6)
+    camera = cv2.VideoCapture(0)
     # camera = cv2.VideoCapture(0)
     # 4: dotted camera
     # 6: rgb camera

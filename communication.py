@@ -39,6 +39,12 @@ class Communication:
 
     def poi_rviz_pub_fn(self, peppers):
         marker = Marker()
+        marker.type = 8
+        marker.header.frame_id = "map"
+        marker.color.a = 1.0
+        marker.color.r = 1.0
+        marker.scale.x = 0.2
+        marker.scale.y = 0.2
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
@@ -48,6 +54,8 @@ class Communication:
             point.y = poi[1]
             point.z = poi[2]
             marker.points.append(point)
+        
+        print(marker.points)
 
         # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
