@@ -40,7 +40,7 @@ class Communication:
     def poi_rviz_pub_fn(self, peppers):
         marker = Marker()
         marker.type = 8
-        marker.header.frame_id = "map"
+        marker.header.frame_id = "rs_ee"
         marker.color.a = 1.0
         marker.color.r = 1.0
         marker.scale.x = 0.2

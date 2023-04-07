@@ -39,7 +39,13 @@ def tf_callback(msg):
             y = 0
             quat_2 = quaternion_from_euler(r, p, y)
 
+            r = math.pi
+            p = 0
+            y = 0
+            quat_3 = quaternion_from_euler(r, p, y)
+
             quat = quaternion_multiply( quat_1, quat_2)
+            quat = quaternion_multiply( quat, quat_3)
             # quat_msg = Quaternion(0, 0, 0, 1)
             quat_msg = Quaternion(quat[0], quat[1], quat[2], quat[3])
             camera_tf.transform.rotation = quat_msg
