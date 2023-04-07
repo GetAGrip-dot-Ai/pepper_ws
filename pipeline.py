@@ -11,6 +11,7 @@ print(os.getcwd())
 from one_frame import OneFrame
 from communication import Communication
 from pepper_fruit_utils import *
+from realsense_utils import *
 
 
 # input: image
@@ -108,7 +109,7 @@ class Perception:
             if user_input == "1":
                 time.sleep(2)
                 print("taking pic!")
-                img = get_image_from_webcam()
+                img = get_image()
                 img_name=str(time.time()).split('.')[0]
                 cv2.imwrite(os.getcwd()+'/realtime/'+img_name+'.png', img)
                 print("saved to :", os.getcwd()+'/realtime/'+img_name+'.png')
