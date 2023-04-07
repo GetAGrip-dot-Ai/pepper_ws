@@ -94,13 +94,11 @@ def fit_curve_to_mask(mask, img_shape, pepper_fruit_xywh, pepper_peduncle_xywh):
 
 
 def determine_poi(curve, percentage, total_curve_length):
-    print("YAYAY")
     for idx in range(len(curve.curve_y)):
         curve_length = curve.curve_length(idx)
         if abs(curve_length - percentage * total_curve_length) < 2:
-            print("YAYAYAYAYAYAAYAYAYAYAYAAY")
             return curve.curve_x[idx]/100, curve.curve_y[idx]/100
-    print("ZAZAZAZ")
+    
     return curve.curve_x[len(curve.curve_y) // 2]/100, curve.curve_y[len(curve.curve_y) // 2]/100
 
 
