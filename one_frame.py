@@ -28,10 +28,10 @@ class OneFrame:
         self._pepper_detections: Dict[int, Pepper] = dict()
 
         # print("weights path: ", os.getcwd())
-        self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
-                                                                               yolo_weight_path='weights/pepper_fruit_best_2.pt')
-        self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
-                                                                                        yolo_weight_path='weights/pepper_peduncle_best.pt')
+        # self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
+        #                                                                        yolo_weight_path='weights/pepper_fruit_best_2.pt')
+        # self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
+        #                                                                                 yolo_weight_path='weights/pepper_peduncle_best.pt')
 
     @property
     def img_shape(self):
@@ -154,4 +154,4 @@ class OneFrame:
 
         self.determine_peduncle_poi()
         # self.plot_poi()
-        self.plot_all()
+        # self.plot_all()

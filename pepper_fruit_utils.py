@@ -272,8 +272,12 @@ def calculate_iou(box_1, box_2):
     # plt.clf()
     # plt.cla()
 
-    iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area
+    if poly_1.intersects(poly_2): 
+        iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area
+    else:
+        iou = 0
 
+    # print(f"iou: {iou}")
     return iou
 
 
