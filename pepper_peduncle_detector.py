@@ -40,15 +40,11 @@ class PepperPeduncleDetector:
         return print_pepperdetection(self)
 
     def run_detection(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
-        self._imgs_path = get_all_image_path_in_folder(self._path)
-        # self.predict_peduncles(show_result, print_result)
-        return self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
-    
-    def run_detection_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
+        # self._imgs_path = get_all_image_path_in_folder(self._path)
         self._imgs_path = img_path
         # self.predict_peduncles(show_result, print_result)
         return self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
-
+    
     def predict_peduncle(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
         peduncle_list = dict()
         # print("Detecting image: ", img_path)
@@ -64,30 +60,15 @@ class PepperPeduncleDetector:
                 box = result.boxes  # Boxes object for bbox outputs
 
                 peduncle = PepperPeduncle(peduncle_count)
-                # print("11111111111111111111111111111111")
-                # print(result.masks)
 
                 peduncle.mask = torch.Tensor(mask.segments[i])
-                # print("mask_from_detector", peduncle.mask)
-                # print(peduncle.mask.size())
-                # # peduncle.segment = mask.data.reshape((mask.shape[1], mask.shape[2]))
-                # peduncle.segment = np.zeros((img.shape[0], img.shape[1]))
-                # print(peduncle.segment.shape)
-                # for i in range(peduncle.mask.size()[0]):
-                #     print('i,', i)
-                #     x, y = peduncle.mask[i, :]
-                #     print(x, y)
-                #     peduncle.segment[int(peduncle.mask[i, 0]), int(peduncle.mask[i, 1])] = 1
-                # print("==========", peduncle.mask.shape)
-                # peduncle.segment = mask.data.T
-                # plt.imshow(peduncle.segment)
-                # plt.savefig("please.png")
+
                 peduncle.conf = box.conf[i]
                 peduncle.xywh = box.xywh[i].cpu().numpy()
 
                 peduncle_list[i] = peduncle
                 peduncle_count += 1
-        # detected_frame.mask = result.masks.masks
+
         if show_result:
             for result in results:
                 res_plotted = result[0].plot()
@@ -95,30 +76,6 @@ class PepperPeduncleDetector:
 
         # if print_result:
         #     print_result_masks(detected_frame)
-
-        return peduncle_list
-    def predict_peduncle_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
-        peduncle_list = dict()
-        # print("Detecting image: ", img_path)
-
-        img = self._img
-        results = self._model(img, conf=thresh)
-        peduncle_count = 0
-
-        result = results[0]
-        if result.boxes.boxes.size(0) != 0:
-            for i in range(result.masks.shape[0]):
-                mask = result.masks
-                box = result.boxes  # Boxes object for bbox outputs
-
-                peduncle = PepperPeduncle(peduncle_count)
-
-                peduncle.mask = torch.Tensor(mask.segments[i])
-                peduncle.conf = box.conf[i]
-                peduncle.xywh = box.xywh[i].cpu().numpy()
-
-                peduncle_list[i] = peduncle
-                peduncle_count += 1
 
         return peduncle_list
 

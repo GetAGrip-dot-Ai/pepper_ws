@@ -1,11 +1,10 @@
-import time
 from typing import List
 
 import ultralytics
 from ultralytics import YOLO
 
 from pepper_fruit import PepperFruit
-from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image
+from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image, print_result_boxes
 
 
 class PepperFruitDetector:
@@ -29,20 +28,11 @@ class PepperFruitDetector:
 
     def run_detection(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
         self._imgs_path = get_all_image_path_in_folder(self._path)
-        print("paths:", self._imgs_path)
         return self.predict_pepper(img_path, show_result, print_result, thresh=thresh)
     
-    def run_detection_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
-        self._imgs_path = img_path
-        print("pepper path:", img_path)
-        return self.predict_pepper_realtime(img_path, show_result, print_result, thresh=thresh)
-
     def predict_pepper(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
         pepper_list = dict()
-        # print("Detecting image: ", img_path)
         img = read_image(img_path)
-        print("img", img)
-        # img = red_to_green_2(img).astype('float32')
         results = self._model(img, conf=thresh)
         pepper_count = 0
 
@@ -63,28 +53,8 @@ class PepperFruitDetector:
             for result in results:
                 res_plotted = result.plot()
                 # cv2.imshow("result", res_plotted)
-        # if print_result:
-        #     print_result_boxes(detected_frame)
-        return pepper_list
-    def predict_pepper_realtime(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.25):
-        pepper_list = dict()
-        # time.sleep(15)
-        img = read_image(img_path)
-        # print("img", img)
-        results = self._model(img, conf=thresh)
-        pepper_count = 0
-
-        for result in results:
-            boxes = result.boxes  # Boxes object for bbox outputs
-            for box in boxes:
-                one_box = box[0]
-                pepper = PepperFruit(pepper_count)
-                xywh = one_box.xywh
-                conf = one_box.conf  # Class probabilities for classification outputs
-                pepper.xywh = xywh[0].cpu().numpy()
-                pepper.conf = conf
-                pepper_list[pepper_count] = pepper
-                pepper_count += 1
+        if print_result:
+            print_result_boxes(pepper_list)
         return pepper_list
     
     def predict_peppers(self, show_result: bool = False, print_result: bool = False):

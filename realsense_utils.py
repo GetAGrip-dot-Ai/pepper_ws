@@ -1,7 +1,10 @@
+import matplotlib.pyplot as plt
 import pyrealsense2 as rs
 import numpy as np
 import cv2
 import math
+import os
+import time
 
 def show_img_depth():
     # Configure depth and color streams
@@ -36,16 +39,22 @@ def show_img_depth():
     align = rs.align(align_to)
 
     try:
+        folder_name = str(int(time.time()))
+        path = os.getcwd()+'/justsomelog/'+folder_name
+        if not os.path.exists(path):
+            os.makedirs(path)
         while True:
             frames = pipeline.wait_for_frames()
-            aligned_frames =  align.process(frames)
+            aligned_frames = align.process(frames)
             depth_frame = aligned_frames.get_depth_frame()
             color_frame = aligned_frames.get_color_frame()
+            # depth_frame = frames.get_depth_frame()
+            # color_frame = frames.get_color_frame()
             if not depth_frame or not color_frame:
                 continue
 
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
-            x, y = 320, 180
+            x, y = 280, 250
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
@@ -67,14 +76,19 @@ def show_img_depth():
             cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
             cv2.imshow('RealSense', images)
             cv2.waitKey(1)
+            print(f"depth_image: {depth_image.shape}, color_image: {color_image.shape}")
+            plt.plot(x, y, marker='o', markersize=3, color="red")
+            plt.plot(x+640, y, marker='o', markersize=3, color="pink")
+
+            plt.imshow(images)
+            plt.savefig(os.getcwd()+'/justsomelog/'+folder_name+'/'+str(int(time.time()))+'_realsense.png', )
 
     finally:
         # Stop streaming
         pipeline.stop()
 
-
-
 def get_depth(x=320, y=240):
+    print(f"x: {x}, y:{y}")
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
@@ -108,24 +122,46 @@ def get_depth(x=320, y=240):
 
     try:
         distance = 0
-        while distance==0:
+        folder_name = str(int(time.time()))
+        path = os.getcwd() + '/depthlog/' + folder_name
+        if not os.path.exists(path):
+            os.makedirs(path)
+        count = 0
+
+        while distance==0 or count <5:
+            count +=1
             frames = pipeline.wait_for_frames()
-            aligned_frames =  align.process(frames)
+            aligned_frames = align.process(frames)
             depth_frame = aligned_frames.get_depth_frame()
             color_frame = aligned_frames.get_color_frame()
             if not depth_frame or not color_frame:
                 continue
 
+            # Convert images to numpy arrays
+            depth_image = np.asanyarray(depth_frame.get_data())
+            color_image = np.asanyarray(color_frame.get_data())
+
+            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
-            # print("Distance from camera to pixel:", distance)
-            # print("Z-depth from camera surface to pixel surface:", depth)
+
+            # Stack both images horizontally
+            images = np.hstack((color_image, depth_colormap))
+
+            plt.imshow(images)
+
+            plt.plot(x, y, marker='o', markersize=3, color="red")
+            plt.plot(x+640, y, marker='o', markersize=3, color="blue")
+
+            plt.savefig(os.getcwd() + '/depthlog/' + folder_name + '/' + str(int(time.time())) + '_realsense.png', )
 
         pipeline.stop()
-        return distance, depth
-    
+        return distance*100 # returns the distance in cm
+
     except:
         pipeline.stop()
         return -1, -1
@@ -162,7 +198,6 @@ def get_image():
 
     try:
         while True:
-
             # Wait for a coherent pair of frames: depth and color
             frames = pipeline.wait_for_frames()
             depth_frame = frames.get_depth_frame()
@@ -192,21 +227,19 @@ def get_image():
             cv2.imshow('RealSense', images)
             
             k = cv2.waitKey(0)
+
             if k==27:
                 print("hey")
                 cv2.destroyAllWindows()
                 print("images", images.shape)
                 return images[:, :640, :]
-                # break
-
     finally:
-
         # Stop streaming
         pipeline.stop()
 
-    return resized_color_image
 if __name__=="__main__":
 
     # show_img_depth()
     # print(get_depth(320, 240))
-    get_image()
+    # get_image()
+    show_img_depth()

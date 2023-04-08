@@ -16,9 +16,9 @@ from pepper_peduncle import PepperPeduncle
 from pepper_utils import *
 
 
-def print_result_boxes(detected_img):
-    print(f"detected {detected_img.pepper_fruit_count} peppers!")
-    for pepper in detected_img.pepper_fruit_detections:
+def print_result_boxes(pepper_list):
+    print(f"detected {len(pepper_list)} peppers!")
+    for k, pepper in pepper_list.items():
         print(pepper)
         # draw_bounding_box(result.orig_img, box.cls, box.conf, x, y, x + w, y - h)
 
@@ -103,7 +103,7 @@ def draw_pepper(one_frame):
 
         mask = pepper_peduncle.mask
         draw_bounding_polygon(pepper_peduncle.conf, mask, one_frame.img_shape, color=color)
-    plt.axis('off')
+    # plt.axis('off')
     plt.savefig(
         f"{os.getcwd()}/result/{img_name}_pepper_result.png", 
         bbox_inches='tight', pad_inches=1)
@@ -118,8 +118,6 @@ def draw_pepper_fruits(one_frame):
 
     put_title(one_frame)
     for pepper in one_frame.pepper_fruit_detections.values():
-        # print('drawing one pepper')
-
         xywh = pepper.xywh
         x = int(xywh[0])
         y = int(xywh[1])

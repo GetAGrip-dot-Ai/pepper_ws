@@ -27,11 +27,10 @@ class OneFrame:
         self._pepper_peduncle_detections: Dict[int.PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
 
-        # print("weights path: ", os.getcwd())
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
-                                                                               yolo_weight_path='weights/pepper_fruit_best_3.pt')
+                                 yolo_weight_path='weights/pepper_fruit_best_3.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
-                                                                                        yolo_weight_path='weights/pepper_peduncle_best_2.pt')
+                                 yolo_weight_path='weights/pepper_peduncle_best_2.pt')
 
     @property
     def img_shape(self):
@@ -67,14 +66,6 @@ class OneFrame:
 
     def __str__(self):
         return f"DetectedFrame(frame={self.frame}, detections={self.detections})"
-
-    def add_detected_pepper_fruit(self, pepper):
-        self._pepper_fruit_detections[pepper.number] = pepper
-        self._pepper_fruit_count += 1
-
-    def add_detected_pepper_peduncle(self, peduncle):
-        self._pepper_peduncle_detections[peduncle.number] = peduncle
-        self._pepper_peduncle_count += 1
 
     def match_peppers(self):
         pepper_fruit_peduncle_match = match_pepper_fruit_peduncle(self._pepper_fruit_detections,
@@ -112,24 +103,9 @@ class OneFrame:
             pepper.order = order
             order += 1
 
-    def plot_pepper_fruit(self):
-        draw_pepper_fruits(self)
-
-    def plot_pepper_peduncle(self):
-        draw_pepper_peduncles(self)
-
-    def plot_pepper(self):
-        draw_pepper(self)
-
-    def plot_poi(self):
-        draw_poi(self)
-    def plot_all(self):
-        draw_all(self)
-
     def run(self):
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                                                   show_result=False)
-        # print("what ever", self._pepper_fruit_detections )
         # self.plot_pepper_fruit()
         self._pepper_peduncle_detections = self._pepper_peduncle_detector.run_detection(self.img_path, thresh=0.3,
                                                                                         show_result=False)
@@ -139,19 +115,4 @@ class OneFrame:
         
         self.determine_peduncle_poi()
         # self.plot_poi()
-        self.plot_all()
-
-    def run_realtime(self):
-        self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection_realtime(self.img_path, thresh=0.3,
-                                                                                  show_result=False)
-        # print("what ever", self._pepper_fruit_detections )
-        # self.plot_pepper_fruit()
-        self._pepper_peduncle_detections = self._pepper_peduncle_detector.run_detection_realtime(self.img_path, thresh=0.3,
-                                                                                        show_result=False)
-        # self.plot_pepper_peduncle()
-        self.match_peppers()
-        # self.plot_pepper()
-
-        self.determine_peduncle_poi()
-        # self.plot_poi()
-        self.plot_all()
+        draw_all(self)

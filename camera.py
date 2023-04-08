@@ -47,8 +47,7 @@ def main():
     image_topic = '/camera/color/image_raw'
     aligned_topic = '/camera/aligned_depth_to_color/image_raw'
     depth_pub_topic = '/camera/pp/depth'
-    
-    
+
     listener = ImageListener(image_topic, aligned_topic,depth_pub_topic)
     rospy.spin()
 
