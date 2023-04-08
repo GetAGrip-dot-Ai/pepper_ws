@@ -180,10 +180,13 @@ def draw_all(one_frame):
 
         mask = pepper_peduncle.mask
         pepper_fruit_utils.draw_bounding_polygon(pepper_peduncle.conf, mask, one_frame.img_shape, color=color)
+        poi = pepper.pepper_peduncle.poi
+        plt.plot(poi[1]*100, poi[0]*100, 'ro', markersize=2)
+        
+    # plt.axis('off')
 
-    plt.axis('off')
     plt.savefig(
         f"{os.getcwd()}/result/{img_name}_pepper_poi_result.png",
-        bbox_inches='tight', pad_inches=1)
+        bbox_inches='tight', pad_inches=0)
     plt.clf()
     plt.cla()

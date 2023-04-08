@@ -4,8 +4,6 @@ from sensor_msgs.msg import Image as msg_Image
 from sensor_msgs.msg import CameraInfo, PointCloud2
 from cv_bridge import CvBridge, CvBridgeError
 from std_msgs.msg import Float32, Int64MultiArray
-import sys
-import os
 import numpy as np
 import pyrealsense2 as rs2
 import matplotlib.pyplot as plt
@@ -18,8 +16,6 @@ class ImageListener:
         self.bridge = CvBridge()
         self.camera_sub = rospy.Subscriber(image_topic, msg_Image, self.camera_callback)
         self.aligned_sub = rospy.Subscriber(aligned_topic, msg_Image, self.aligned_topic_callback)
-        self.depth_img = None
-        self.rgb_img = None
         self.depth_pub = rospy.Publisher(depth_pub_topic, Int64MultiArray, queue_size=10)
 
     def aligned_topic_callback(self, data):
@@ -46,7 +42,7 @@ class ImageListener:
 def main():
     image_topic = '/camera/color/image_raw'
     aligned_topic = '/camera/aligned_depth_to_color/image_raw'
-    depth_pub_topic = '/camera/pp/depth'
+    depth_pub_topic = '/pp/depth_img'
 
     listener = ImageListener(image_topic, aligned_topic,depth_pub_topic)
     rospy.spin()
