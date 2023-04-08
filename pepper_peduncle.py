@@ -11,6 +11,7 @@ class PepperPeduncle:
         self._xywh = None
         self._curve = Curve()
         self._poi = None
+        self._poi_px = None
         self._orientation = [1, 0, 0]
     
     @property
@@ -58,6 +59,10 @@ class PepperPeduncle:
     @property
     def orientation(self):
         return self._orientation
+    
+    @property
+    def poi_px(self):
+        return self._poi_px
 
     @orientation.setter
     def orientation(self, value):
@@ -70,12 +75,14 @@ class PepperPeduncle:
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
 
-        poi_x, poi_y = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_x, poi_y, poi_z = get_depth(int(poi_y*100), int(poi_x*100))
+        poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
+        poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
 
         self._poi = (poi_z, -poi_x, -poi_y)
-        print("POI:", self._poi)
-
+        self._poi_px = (poi_x_px, poi_y_px)
+        print("POI in world frame:", poi_x, poi_y, poi_z)
+        print("POI in pixel frame:", self._poi_px)
+              
     def set_peduncle_orientation(self, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)
         point_z = get_depth(point_x, point_y)

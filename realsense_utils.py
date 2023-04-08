@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 import math
 import os
+import time
+import matplotlib.pyplot as plt
 
 def show_img_depth():
     # Configure depth and color streams
@@ -77,6 +79,7 @@ def show_img_depth():
 
 def get_depth(x=320, y=240):
     print(f"x: {x}, y:{y}")
+    x, y = y, x
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
@@ -105,14 +108,24 @@ def get_depth(x=320, y=240):
 
     # Start streaming
     pipeline.start(config)
-    align_to = rs.stream.depth
+    # align_to = rs.stream.depth
+    align_to = rs.stream.color
     align = rs.align(align_to)
 
     try:
         distance = 0
-        while distance==0:
+        count = 0
+        file_name = str(time.time()).split('.')[0]
+        path = os.getcwd() + '/depthlog/'+file_name+'/'
+        isExist = os.path.exists(path)
+        if not isExist:
+            os.makedirs(path)
+
+        while distance==0 and count <10:
+            count += 1
             frames = pipeline.wait_for_frames()
             aligned_frames =  align.process(frames)
+            color_frame_not_aligned = frames.get_color_frame()
             depth_frame = aligned_frames.get_depth_frame()
             color_frame = aligned_frames.get_color_frame()
             if not depth_frame or not color_frame:
@@ -122,19 +135,34 @@ def get_depth(x=320, y=240):
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             color_image = np.asanyarray(color_frame.get_data())
-            color_image = cv2.circle(color_image, (x, y), 5, (0, 0, 255), 1)
-            cv2.imwrite(os.getcwd()+'/RealSense.png', color_image)
-            print("saved to : ", os.getcwd()+'RealSense.png')
-            cv2.waitKey(1)
+            color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
+
+            img = np.hstack((color_image, color_frame_not_aligned))
+            # color_image = cv2.circle(color_image, (x, y), 5, (0, 0, 255), 1)
+            # cv2.imwrite(path+file_name+'.png', color_image)\
+            plt.imshow(img)
+            plt.axis('on')
+            print("--------", x, y)
+            plt.plot(x, y,  'r*', markersize=5)
+            plt.plot(x+640, y, 'b*', markersize=5)
+            plt.plot(0, 0, 'g*', markersize=50)
+            plt.savefig(path+file_name+str(count)+'.png')
+            plt.cla()
+            plt.clf()
+            print("=========saved to : ", path+file_name+str(count)+'.png')
+            # cv2.waitKey(1)
             
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
+            print("========", dx ,dy, dz, "depth", depth)
             # print("Distance from camera to pixel:", distance)
             # print("Z-depth from camera surface to pixel surface:", depth)
 
         pipeline.stop()
         return dx ,dy, dz
     
-    except:
+    except Exception as e:
+        print("CANNOT DO STUFF")
+        print(e)
         pipeline.stop()
         return -1, -1, -1
     

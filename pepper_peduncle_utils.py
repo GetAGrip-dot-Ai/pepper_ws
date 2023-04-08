@@ -97,9 +97,9 @@ def determine_poi(curve, percentage, total_curve_length):
     for idx in range(len(curve.curve_y)):
         curve_length = curve.curve_length(idx)
         if abs(curve_length - percentage * total_curve_length) < 2:
-            return curve.curve_x[idx]/100, curve.curve_y[idx]/100
+            return curve.curve_x[idx], curve.curve_y[idx]
     
-    return curve.curve_x[len(curve.curve_y) // 2]/100, curve.curve_y[len(curve.curve_y) // 2]/100
+    return curve.curve_x[len(curve.curve_y) // 2], curve.curve_y[len(curve.curve_y) // 2]
 
 
 def determine_next_point(curve, poi, pepper_fruit_xywh, pepper_peduncle_xywh):
@@ -146,10 +146,6 @@ def draw_all(one_frame):
     img = np.asarray(Image.open(one_frame.img_path))
     plt.imshow(img)
     img_name = one_frame.img_path.split('/')[-1].split('.')[0]
-
-    for pepper in one_frame.pepper_detections.values():
-        poi = pepper.pepper_peduncle.poi
-        plt.plot(poi[1]*100, poi[0]*100, 'ro', markersize=3)
     pepper_utils.put_title(one_frame)
 
     for peduncle in one_frame.pepper_peduncle_detections.values():
@@ -180,8 +176,8 @@ def draw_all(one_frame):
 
         mask = pepper_peduncle.mask
         pepper_fruit_utils.draw_bounding_polygon(pepper_peduncle.conf, mask, one_frame.img_shape, color=color)
-        poi = pepper.pepper_peduncle.poi
-        plt.plot(poi[1]*100, poi[0]*100, 'ro', markersize=2)
+        poi_px = pepper.pepper_peduncle.poi_px
+        plt.plot(poi_px[1], poi_px[0], 'bo', markersize=2)
         
     # plt.axis('off')
 

@@ -43,8 +43,8 @@ class Communication:
         marker.header.frame_id = "rs_ee"
         marker.color.a = 1.0
         marker.color.r = 1.0
-        marker.scale.x = 0.2
-        marker.scale.y = 0.2
+        marker.scale.x = 0.03
+        marker.scale.y = 0.03
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
