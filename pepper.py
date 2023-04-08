@@ -1,7 +1,6 @@
 from pepper_fruit import PepperFruit
 from pepper_peduncle import PepperPeduncle
 
-
 class Pepper:
     def __init__(self, number: int, pf_number: int, pp_number: int):
         self._number = number

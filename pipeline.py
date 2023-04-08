@@ -53,13 +53,6 @@ class Perception:
         #################################################################
         pass
 
-    def process_image(self):
-        #################################################################
-        # DO_NOT_DO
-        # process the image to match the dim for yolo (prob don't need this)
-        #################################################################
-        pass
-
     #####################################################################
     # When base goes to one location, use the long range images and retreive
     # all the locations of peppers
@@ -74,27 +67,11 @@ class Perception:
         #   locations: all the locations of the pepper boxes [conf, x, y] (N, 3)
         #################################################################
         self.one_frame = OneFrame(path)
-        self.one_frame.run_realtime()
-        self.pepper_fruits = self.one_frame.pepper_fruit_detections
-        self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
-        self.peppers = self.one_frame.pepper_detections
-        print(self.pepper_peduncles)
-        print(self.pepper_peduncles[0].poi)
-        return self.pepper_peduncles[0].poi
-    def detect_peppers_realtime_frame(self, img, thresh=0.5):
-        #################################################################
-        # use yolov8_scripts and get the pepper locations
-        # input:
-        #   path: image path
-        #   thresh: disgard detection lower than threshold
-        # output:
-        #   locations: all the locations of the pepper boxes [conf, x, y] (N, 3)
-        #################################################################
-        # self.one_frame = RealTimeFrame(img)
         self.one_frame.run()
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
+        return self.pepper_peduncles[0].poi
 
     def detect_peppers_in_folder(self):
         files = get_all_image_path_in_folder(self.source)
@@ -107,7 +84,6 @@ class Perception:
         while True:
             user_input = input("1: start\n2: end\n")
             if user_input == "1":
-                time.sleep(2)
                 print("taking pic!")
                 img = get_image()
                 img_name=str(time.time()).split('.')[0]
@@ -189,7 +165,8 @@ class Perception:
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
-            rate.sleep()
+            # rate.sleep()
+            # print("publishing", list(self.peppers.values()))
 
     #####################################################################
     # VISUALIZATION related

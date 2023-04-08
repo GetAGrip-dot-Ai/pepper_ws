@@ -2,6 +2,7 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 import math
+import os
 
 def show_img_depth():
     # Configure depth and color streams
@@ -75,6 +76,7 @@ def show_img_depth():
 
 
 def get_depth(x=320, y=240):
+    print(f"x: {x}, y:{y}")
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
@@ -119,16 +121,22 @@ def get_depth(x=320, y=240):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
+            color_image = np.asanyarray(color_frame.get_data())
+            color_image = cv2.circle(color_image, (x, y), 5, (0, 0, 255), 1)
+            cv2.imwrite(os.getcwd()+'/RealSense.png', color_image)
+            print("saved to : ", os.getcwd()+'RealSense.png')
+            cv2.waitKey(1)
+            
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
             # print("Distance from camera to pixel:", distance)
             # print("Z-depth from camera surface to pixel surface:", depth)
 
         pipeline.stop()
-        return distance, depth
+        return dx ,dy, dz
     
     except:
         pipeline.stop()
-        return -1, -1
+        return -1, -1, -1
     
 def get_image():
     # Configure depth and color streams
