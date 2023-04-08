@@ -9,18 +9,20 @@ if __name__ == '__main__':
     f2 = OneFrame("")
     f3 = OneFrame("")
 
-    f1.add_detected_pepper_fruit(PepperFruit(0, [20,20,10,10], 0.8))
-    f1.add_detected_pepper_fruit(PepperFruit(1, [50,50,10,10], 0.8))
+    f1.pepper_fruit_detections[0] = PepperFruit(0, [20,20,10,10], 0.8)
+    f1.pepper_fruit_detections[1] = PepperFruit(1, [50,50,10,10], 0.8)
 
-    f2.add_detected_pepper_fruit(PepperFruit(2, [22,22,10,10], 0.8))
-    # f2.add_detected_pepper_fruit(PepperFruit(3, [47,47,10,10], 0.8))
+    f2.pepper_fruit_detections[0] = PepperFruit(2, [22,22,10,10], 0.8)
+    f2.pepper_fruit_detections[1] = PepperFruit(3, [47,47,10,10], 0.8)
 
-    f3.add_detected_pepper_fruit(PepperFruit(4, [21,24,10,10], 0.8))
+    f3.pepper_fruit_detections[0] = PepperFruit(4, [21,24,10,10], 0.8)
 
     obj.add_one_frame(f1)
     obj.add_one_frame(f2)
     obj.add_one_frame(f3)
 
+    obj.assign_frame_numbers()
+
     # obj.populate_frames()
 
-    obj.find_fruit_true_positives()
+    obj.find_fruits()

@@ -11,6 +11,8 @@ import os
 
 class OneFrame:
     def __init__(self, img_path):
+        self._frame_number: int = 0
+    
         self.img_path = img_path  # should be a path to one image file
 
         self._img_shape: Tuple[int] = pepper_fruit_utils.get_img_size(img_path)
@@ -24,7 +26,7 @@ class OneFrame:
         self._pepper_peduncle_count: int = 0
 
         self._pepper_fruit_detections: Dict[int, PepperFruit] = dict()
-        self._pepper_peduncle_detections: Dict[int.PepperPeduncle] = dict()
+        self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
 
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
@@ -32,6 +34,14 @@ class OneFrame:
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
                                  yolo_weight_path='weights/pepper_peduncle_best_2.pt')
 
+    @property
+    def frame_number(self):
+        return self._frame_number
+    
+    @frame_number.setter
+    def frame_number(self, frame_number):
+        self._frame_number = frame_number
+    
     @property
     def img_shape(self):
         return self._img_shape
