@@ -71,10 +71,10 @@ class PepperPeduncle:
         total_curve_length = self._curve.full_curve_length()
 
         poi_x, poi_y = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_z = get_depth(int(poi_y*100), int(poi_x*100))
-        print(f"POI: {poi_x}, {poi_y}, {poi_z}")
+        poi_x, poi_y, poi_z = get_depth(int(poi_y*100), int(poi_x*100))
 
-        self._poi = (poi_x, poi_y, poi_z)
+        self._poi = (poi_z, -poi_x, -poi_y)
+        print("POI:", self._poi)
 
     def set_peduncle_orientation(self, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)

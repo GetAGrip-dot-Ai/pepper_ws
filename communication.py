@@ -52,10 +52,10 @@ class Communication:
             point = Point()
             point.x = poi[0]
             point.y = poi[1]
-            point.z = poi[2]
+            point.z = poi[2] # convert to meter
             marker.points.append(point)
         
-        print(marker.points)
+        # print(marker.points)
 
         # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
