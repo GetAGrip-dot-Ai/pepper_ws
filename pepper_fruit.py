@@ -9,6 +9,7 @@ class PepperFruit:
         self._conf: float = conf
         self._true_positive: bool = False
         self._occurences: int = 1
+        self._associated_peppers: List[(int, PepperFruit)] = list()
 
     @property
     def number(self):
@@ -45,6 +46,13 @@ class PepperFruit:
     @occurences.setter
     def occurences(self, occurences):
         self._occurences = occurences
+
+    @property
+    def associated_peppers(self):
+        return self._associated_peppers
+    
+    def add_associated_pepper(self, frame_number, pepper):
+        self._associated_peppers.append((frame_number, pepper))
 
     def __str__(self):
         return f"Pepper(number={self.number}, xywh={self.xywh}, conf={self._conf})"

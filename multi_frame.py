@@ -12,7 +12,7 @@ class MultiFrame:
     def __init__(self, max_frames=5):
         self._max_frames = max_frames
         self._one_frames = deque()
-        self._positive_peppers: Dict[int, List(Pepper)] = dict()
+        self._positive_peppers: Dict[int, List[Pepper]] = dict()
 
     def add_one_frame(self, one_frame: OneFrame):
         if len(self._one_frames) == self._max_frames:
@@ -34,15 +34,15 @@ class MultiFrame:
         combinations = list(itertools.combinations(self._one_frames, 2))
 
         for frame1, frame2 in combinations:
-            update_fruit_occurences(frame1.pepper_fruit_detections.values(), frame2.pepper_fruit_detections.values())                    
+            update_fruit_occurences(frame1.pepper_fruit_detections.values(), frame2.pepper_fruit_detections.values(), frame1.frame_number, frame2.frame_number)                    
 
         for frame in self._one_frames:
             update_true_positives(frame.pepper_fruit_detections.values(), len(self._one_frames))
 
         for frame in self._one_frames:
-            self._positive_peppers[frame.frame_number] = get_fruits(frame.frame_number, self._one_frames[-1].frame_number, frame.pepper_fruit_detections.values(), self._one_frames[-1].pepper_fruit_detections.values())
+            self._positive_peppers = get_all_fruits(self._one_frames)
 
         for key, value in self._positive_peppers.items():
             print(f"Frame {key}")
-            for fruit in value:
-                print(f"fruit: {fruit.number}")
+            for v in value:
+                print(f"Fruit {v.number}")
