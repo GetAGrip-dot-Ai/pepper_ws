@@ -1,6 +1,7 @@
-from pepper_peduncle_utils import *
 import os
+from typing import List
 from realsense_utils import *
+from pepper_peduncle_utils import *
 
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
@@ -13,6 +14,10 @@ class PepperPeduncle:
         self._poi = None
         self._poi_px = None
         self._orientation = [1, 0, 0]
+        self._true_positive: bool = False
+        self._occurences: int = 1
+        self._associated_peduncles: List[(int, PepperPeduncle)] = list()
+        self._parent_pepper: int = None
     
     @property
     def mask(self):
@@ -67,6 +72,38 @@ class PepperPeduncle:
     @orientation.setter
     def orientation(self, value):
         self._orientation = value
+
+    @property
+    def true_positive(self):
+        return self._true_positive
+    
+    @true_positive.setter
+    def true_positive(self, true_positive):
+        self._true_positive = true_positive
+
+    @property
+    def occurences(self):
+        return self._occurences
+    
+    @occurences.setter
+    def occurences(self, occurences):
+        self._occurences = occurences
+
+    @property
+    def parent_pepper(self):
+        return self._parent_pepper
+    
+    @parent_pepper.setter
+    def parent_pepper(self, parent_pepper):
+        self._parent_pepper = parent_pepper
+
+    @property
+    def associated_peduncles(self):
+        return self._associated_peduncles
+    
+    def add_associated_peduncle(self, frame_number, peduncle):
+        self._associated_peduncles.append((frame_number, peduncle))
+
     def __str__(self):
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
@@ -76,11 +113,11 @@ class PepperPeduncle:
         total_curve_length = self._curve.full_curve_length()
 
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
+        # poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
 
-        self._poi = (poi_z, -poi_x, -poi_y)
+        # self._poi = (poi_z, -poi_x, -poi_y)
         self._poi_px = (poi_x_px, poi_y_px)
-        print("POI in world frame:", poi_x, poi_y, poi_z)
+        # print("POI in world frame:", poi_x, poi_y, poi_z)
         print("POI in pixel frame:", self._poi_px)
               
     def set_peduncle_orientation(self, pepper_fruit_xywh):

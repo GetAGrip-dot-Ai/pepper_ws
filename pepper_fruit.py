@@ -10,6 +10,7 @@ class PepperFruit:
         self._true_positive: bool = False
         self._occurences: int = 1
         self._associated_peppers: List[(int, PepperFruit)] = list()
+        self._parent_pepper: int = None
 
     @property
     def number(self):
@@ -46,6 +47,14 @@ class PepperFruit:
     @occurences.setter
     def occurences(self, occurences):
         self._occurences = occurences
+
+    @property
+    def parent_pepper(self):
+        return self._parent_pepper
+    
+    @parent_pepper.setter
+    def parent_pepper(self, parent_pepper):
+        self._parent_pepper = parent_pepper
 
     @property
     def associated_peppers(self):

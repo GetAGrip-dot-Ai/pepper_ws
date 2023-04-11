@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from shapely import Polygon
 from scipy.optimize import curve_fit
-# from skimage.morphology import medial_axis
+from skimage.morphology import medial_axis
 import pepper_utils 
 import pepper_fruit_utils
 
@@ -126,6 +126,14 @@ def determine_next_point(curve, poi, pepper_fruit_xywh, pepper_peduncle_xywh):
     return point_x, point_y
 
 
+def calculate_peduncle_iou(mask1, mask2):
+    poly_1 = Polygon(mask1)
+    poly_2 = Polygon(mask2)
+
+    iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area if poly_1.intersects(poly_2) else 0
+    return iou
+
+
 def draw_poi(one_frame):
     img = cv2.imread(one_frame.img_path, 0)
     img_name = one_frame.img_path.split('/')[-1].split('.')[0]
@@ -182,7 +190,7 @@ def draw_all(one_frame):
     # plt.axis('off')
 
     plt.savefig(
-        f"{os.getcwd()}/result/{img_name}_pepper_poi_result.png",
+        f"{os.getcwd()}/test_multi_frame/log/{img_name}_pepper_poi_result.png",
         bbox_inches='tight', pad_inches=0)
     plt.clf()
     plt.cla()

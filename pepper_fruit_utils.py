@@ -63,8 +63,8 @@ def draw_bounding_polygon(confidence, mask, img_shape, color="blue", fill=True):
     y_scaled = [i * img_shape[0] for i in y]
     if fill:
         plt.fill(x_scaled, y_scaled, color=color, alpha=0.7)
-    else:
-        plt.fill(x_scaled, y_scaled, color=color, alpha=1)
+    elsemask = torch.transpose(mask, 0, 1)
+    polygon = Polygon(mask.T)
     plt.plot(*polygon.exterior.xy)
     # p = gpd.GeoSeries(polygon)
 
