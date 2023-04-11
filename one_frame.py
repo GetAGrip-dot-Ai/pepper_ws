@@ -119,7 +119,7 @@ class OneFrame:
 
     def run(self):
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
-                                                                                  show_result=False)
+                                                show_result=False)
         # self.plot_pepper_fruit()
         self._pepper_peduncle_detections = self._pepper_peduncle_detector.run_detection(self.img_path, thresh=0.3,
                                                                                         show_result=False)

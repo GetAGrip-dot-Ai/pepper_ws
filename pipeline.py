@@ -28,6 +28,7 @@ class Perception:
         self.peppers = dict()
         self.one_frame = None
         self.communication = Communication()
+        self.poi_in_rviz = None
 
     def get_image(self):
         #################################################################
@@ -81,7 +82,8 @@ class Perception:
             self.detect_peppers_one_frame(path)
             
     def detect_peppers_realtime(self):
-        while True:
+        complete = False
+        while not complete:
             user_input = input("1: start\n2: end\n")
             if user_input == "1":
                 print("taking pic!")
@@ -89,8 +91,13 @@ class Perception:
                 img_name=str(time.time()).split('.')[0]
                 cv2.imwrite(os.getcwd()+'/realtime/'+img_name+'.png', img)
                 print("saved to :", os.getcwd()+'/realtime/'+img_name+'.png')
-                (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
-                return (poi_x, poi_y)
+                try:
+                    (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
+                    self.poi_in_rviz = (poi_x, poi_y, poi_z)
+                    complete = True
+                    return (poi_x, poi_y)
+                except:
+                    print("no pepper detected")
             elif user_input == "2":
                 return False
             else:
@@ -170,6 +177,7 @@ class Perception:
             print("No peppers left!")
 
         rate = rospy.Rate(10)
+<<<<<<< Updated upstream
 
         while not rospy.is_shutdown():
             if pepper != None:
@@ -181,6 +189,16 @@ class Perception:
                 # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
                 rate.sleep()
                 # print("publishing", list(self.peppers.values()))
+=======
+        start_time = time.time()
+        while not rospy.is_shutdown() and time.time()- start_time<20:
+            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
+            # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+            self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
+            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            rate.sleep()
+            # print("publishing", list(self.peppers.values()))
+>>>>>>> Stashed changes
 
     #####################################################################
     # VISUALIZATION related
