@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from shapely import Polygon
 from scipy.optimize import curve_fit
-# from skimage.morphology import medial_axis
+from skimage.morphology import medial_axis
 import pepper_utils 
 import pepper_fruit_utils
 
@@ -143,6 +143,7 @@ def draw_poi(one_frame):
     plt.cla()
 
 def draw_all(one_frame):
+    print("in drawww")
     img = np.asarray(Image.open(one_frame.img_path))
     plt.imshow(img)
     img_name = one_frame.img_path.split('/')[-1].split('.')[0]
@@ -186,3 +187,4 @@ def draw_all(one_frame):
         bbox_inches='tight', pad_inches=0)
     plt.clf()
     plt.cla()
+    print("well I don't like this")

@@ -99,8 +99,13 @@ class OneFrame:
             single_pepper.pepper_fruit.xyz = xyz
 
     def determine_peduncle_poi(self):
+        print("determine_peduncle_poi")
         for key, single_pepper in self._pepper_detections.items():
+            print("key:", key)
+            print("single_pepper:", single_pepper)
+            # import pdb; pdb.set_trace()
             single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh)
+
 
     def determine_peduncle_orientation(self):
         for key, single_pepper in self._pepper_detections.items():
@@ -132,9 +137,10 @@ class OneFrame:
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
-        # self.plot_pepper()
         
-        self.determine_pepper_xyz()
+        # self.plot_pepper()
+        # self.determine_pepper_xyz()
+        # print("555")
 
         self.determine_peduncle_poi()
         # self.plot_poi()

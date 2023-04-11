@@ -72,6 +72,7 @@ class Perception:
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
+        print("pipeline", self.pepper_peduncles[0])
         return self.pepper_peduncles[0].poi
 
     def detect_peppers_in_folder(self):
@@ -161,44 +162,27 @@ class Perception:
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
-        print(self.peppers)
-        print(self.pepper_fruits)
-        print(self.pepper_peduncles)
 
-        if self.peppers:
-            pepper = self.peppers.pop(0)
-            del self.pepper_fruits[pepper.pepper_fruit.number]
-            del self.pepper_peduncles[pepper.pepper_peduncle.number]
-            print(self.peppers)
-            print(self.pepper_fruits)
-            print(self.pepper_peduncles)
-        else: 
-            pepper = None
-            print("No peppers left!")
+        # if self.peppers:
+        #     pepper = self.peppers.pop(0)
+        #     del self.pepper_fruits[pepper.pepper_fruit.number]
+        #     del self.pepper_peduncles[pepper.pepper_peduncle.number]
+        #     print(self.peppers)
+        #     print(self.pepper_fruits)
+        #     print(self.pepper_peduncles)
+        # else: 
+        #     pepper = None
+        #     print("No peppers left!")
 
         rate = rospy.Rate(10)
-<<<<<<< Updated upstream
-
-        while not rospy.is_shutdown():
-            if pepper != None:
-                poi = pepper.pepper_peduncle.poi
-                print(poi)
-                # self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
-                # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
-                # self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
-                # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
-                rate.sleep()
-                # print("publishing", list(self.peppers.values()))
-=======
         start_time = time.time()
         while not rospy.is_shutdown() and time.time()- start_time<20:
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
-            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
             rate.sleep()
             # print("publishing", list(self.peppers.values()))
->>>>>>> Stashed changes
 
     #####################################################################
     # VISUALIZATION related

@@ -81,7 +81,7 @@ class Communication:
         marker.color.r = 1.0
         marker.scale.x = 0.03
         marker.scale.y = 0.03
-
+        poi = None
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
             
@@ -95,8 +95,8 @@ class Communication:
 
         # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
-        poi_str = f"{poi[0]},{poi[1]},{poi[2]}"
-        if not rospy.has_param('poi'):
+        if not rospy.has_param('poi') and poi:
+            poi_str = f"{poi[0]},{poi[1]},{poi[2]}"
             rospy.set_param('poi', poi_str)
             print("set poi:", poi_str)
 
