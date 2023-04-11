@@ -6,6 +6,7 @@ from pepper_fruit_detector import PepperFruitDetector
 from pepper_peduncle_detector import PepperPeduncleDetector
 from pepper_peduncle_utils import *
 from pepper_fruit_utils import *
+from realsense_utils import *
 import os
 
 
@@ -91,6 +92,12 @@ class OneFrame:
                 self._pepper_detections[number] = pepper
                 number += 1
 
+    def determine_pepper_xyz(self):
+        for key, single_pepper in self._pepper_detections.items():
+            x, y, z = get_depth(int(single_pepper.xywh[1]), int(single_pepper.xywh[0]))
+            xyz = np.array([z, x, -y])
+            single_pepper.pepper_fruit.xyz = xyz
+
     def determine_peduncle_poi(self):
         for key, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh)
@@ -127,6 +134,8 @@ class OneFrame:
         self.match_peppers()
         # self.plot_pepper()
         
+        self.determine_pepper_xyz()
+
         self.determine_peduncle_poi()
         # self.plot_poi()
         draw_all(self)

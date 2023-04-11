@@ -46,16 +46,27 @@ class Communication:
         self.poi_pub.publish(peduncle_pose)
 
     def obstacle_pub_fn(self, obstacles):
+        now = rospy.Time.now()
+        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
+        (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+
+        r = R.from_quat([rot[0], rot[1], rot[2], rot[3]])
+
+        H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
+        row = np.array([0, 0, 0, 1])
+        H = np.vstack((H, row))
+
         obstacle_msg = Obstacle()
         for obstacle in obstacles:
+            point = np.array(H) @ np.array([obstacle.xyz[0], obstacle.xyz[1], obstacle.xyz[2], 1]).T
             pose = Pose()
-            pose.position.x = obstacle.xywh[0]/100
-            pose.position.y = obstacle.xywh[1]/100
-            pose.position.z = 0.2
+            pose.position.x = float(point[0])
+            pose.position.y = float(point[1])
+            pose.position.z = float(point[2])
 
             primitive = SolidPrimitive()
             primitive.type = SolidPrimitive.BOX
-            primitive.dimensions = [obstacle.xywh[2]/100, obstacle.xywh[3]/100, 0.1]
+            primitive.dimensions = [0.12, 0.12, 0.12]
             obstacle_msg.pose.append(pose)
             obstacle_msg.primitive.append(primitive)
             

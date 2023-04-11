@@ -7,6 +7,7 @@ class PepperFruit:
 
         self._xywh: Optional[List[float]] = xywh
         self._conf: float = conf
+        self._xyz = None
         self._true_positive: bool = False
         self._occurences: int = 1
         self._associated_peppers: List[(int, PepperFruit)] = list()
@@ -30,6 +31,14 @@ class PepperFruit:
     @conf.setter
     def conf(self, conf):
         self._conf = conf
+
+    @property
+    def xyz(self):
+        return self._xyz
+    
+    @xyz.setter
+    def xyz(self, xyz):
+        self._xyz = xyz
 
     @property
     def true_positive(self):
