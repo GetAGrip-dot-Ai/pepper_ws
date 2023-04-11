@@ -208,3 +208,18 @@ def get_all_peduncles(frames):
                                 all_frames_positive_peduncles.remove(associated_peduncle)
                 
     return unique_positive_peduncles, unmatched_positive_peduncles
+
+
+def get_image_webcam():
+    cap = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cap.read()
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    return frame

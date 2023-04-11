@@ -30,7 +30,7 @@ class MultiFrame:
             self._video_frames.popleft()
         self._video_frames.append(video_frame)
 
-    def video_frame_to_one_frame(self):
+    def video_frames_to_one_frames(self):
         number = 0
         for frame in self._video_frames:
             cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', frame)
@@ -44,9 +44,15 @@ class MultiFrame:
         for frame in self._one_frames:
             frame.run()
 
+    def populate_last_frame(self):
+        self._one_frames[-1].run()
+
     def assign_frame_numbers(self):
         for i, frame in enumerate(self._one_frames):
             frame.frame_number = i
+
+    def assign_last_frame_number(self):
+        self._one_frames[-1].frame_number = len(self._one_frames) - 1
 
     def write_results(self):
         filename = os.getcwd() + '/test_multi_frame/log/results.txt'
