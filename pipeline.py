@@ -164,8 +164,9 @@ class Perception:
         while not rospy.is_shutdown():
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
-            # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
-            # rate.sleep()
+            self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
+            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            rate.sleep()
             # print("publishing", list(self.peppers.values()))
 
     #####################################################################

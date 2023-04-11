@@ -39,6 +39,8 @@ def tfCallback(msg):
         quat_msg = Quaternion(quat[0], quat[1], quat[2], quat[3])
         pepper_tf.transform.rotation = quat_msg
         pepper_tf.header.stamp = rospy.Time.now()
+
+
         br.sendTransform((pepper_tf.transform.translation.x, pepper_tf.transform.translation.y, pepper_tf.transform.translation.z),(pepper_tf.transform.rotation.x, pepper_tf.transform.rotation.y, pepper_tf.transform.rotation.z, pepper_tf.transform.rotation.w), time=pepper_tf.header.stamp , child = "pepper", parent="rs_ee")
     else:
         print("waiting for image to be a thing")
@@ -52,3 +54,13 @@ def tf_listener():
 
 if __name__ == '__main__':
     tf_listener()
+    # rospy.init_node('turtle_tf_listener')
+    # listener = tf.TransformListener()
+    # rospy.Subscriber("/tf", TFMessage, tfCallback)
+    # while not rospy.is_shutdown():
+    #     try:
+    #         now = rospy.Time.now()
+    #         listener.waitForTransform("/base_link", "/rs_ee", now, rospy.Duration(4.0))
+    #         (trans,rot) = listener.lookupTransform("/base_link", "/rs_ee", now)
+    #     except:
+    #         print("hi")

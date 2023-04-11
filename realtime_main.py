@@ -7,6 +7,7 @@ import os
 if __name__ == '__main__':
     # os.chdir(os.getcwd()+'/pepper_ws/')
     # os.chdir('/'.join(__file__.split('/')[:-1]))
+    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
     print("current working dir: ",os.getcwd())
     test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)
@@ -19,6 +20,7 @@ if __name__ == '__main__':
     #     msg = Int64MultiArray()
     #     msg.data = [int(x*100),int(y*100)]
     #     pub.publish(msg)
+
 
 
 
