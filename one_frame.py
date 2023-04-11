@@ -107,11 +107,15 @@ class OneFrame:
             pepper_distances[dist] = pepper
 
         distances = list(pepper_distances.keys()).sort()
+        sorted_peppers = []
         order = 1
         for i in distances:
             pepper = pepper_distances[i]
+            sorted_peppers.append(pepper)
             pepper.order = order
             order += 1
+
+        return sorted_peppers
 
     def run(self):
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
