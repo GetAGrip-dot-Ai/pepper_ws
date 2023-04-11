@@ -99,3 +99,8 @@ class MultiFrame:
             update_peduncle_true_positives(frame.pepper_peduncle_detections.values(), len(self._one_frames))
 
         self._matched_positive_peduncles, self._unmatched_positive_peduncles = get_all_peduncles(self._one_frames)
+
+    # def get_pepper(self):
+    #     if self._matched_positive_fruits:
+    #         frame_number, peppers = next(iter(self._matched_positive_fruits.items()))
+    #         pepper = peppers.pop()

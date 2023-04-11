@@ -7,11 +7,18 @@ from pepper_peduncle_detector import PepperPeduncleDetector
 from pepper_peduncle_utils import *
 from pepper_fruit_utils import *
 import os
+import tf
+import rospy
+from scipy.spatial.transform import Rotation as R
 
 
 class OneFrame:
     def __init__(self, img_path):
         self._frame_number: int = -1
+
+        self._trans = None
+        self._R = None
+        self.listener = tf.TransformListener()
     
         self.img_path = img_path  # should be a path to one image file
 
@@ -28,7 +35,7 @@ class OneFrame:
         self._pepper_fruit_detections: Dict[int, PepperFruit] = dict()
         self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
-
+        print("///////////////////", os.getcwd())
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
                                  yolo_weight_path='weights/pepper_fruit_best_3.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
@@ -41,6 +48,14 @@ class OneFrame:
     @frame_number.setter
     def frame_number(self, frame_number):
         self._frame_number = frame_number
+
+    @property
+    def trans(self):
+        return self._trans
+
+    @property
+    def rot(self):
+        return self._rot
     
     @property
     def img_shape(self):
@@ -109,13 +124,27 @@ class OneFrame:
             pepper_distances[dist] = pepper
 
         distances = list(pepper_distances.keys()).sort()
+        sorted_peppers = []
         order = 1
         for i in distances:
             pepper = pepper_distances[i]
+            sorted_peppers.append(pepper)
             pepper.order = order
             order += 1
 
+        return sorted_peppers
+
+    def set_transform(self):
+        now = rospy.Time.now()
+        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
+        (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+
+        self._trans = np.array(trans).reshape(3, 1)
+        self._R = R.from_quat([rot[0], rot[1], rot[2], rot[3]]).as_matrix() 
+
     def run(self):
+        self.set_transform()
+
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                                                   show_result=False)
         # self.plot_pepper_fruit()
