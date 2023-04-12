@@ -37,16 +37,9 @@ class Communication:
         # print("POI: ", poi)
         point = np.array(H) @ np.array(poi).T
         peduncle_pose = Pose()
-        # # import pdb; pdb.set_trace()
-        # pp = np.array(r.as_matrix()) @ np.array(list(poi)).T+np.array(trans).T
-        # peduncle_pose.position.x = -trans[0] +poi[0]
-        # peduncle_pose.position.y = trans[1]-poi[1]
-        # peduncle_pose.position.z = trans[2] +poi[2]
-        # peduncle_pose.orientation = orientation
-        # import pdb; pdb.set_trace()
-        peduncle_pose.position.x = float(point[0])
-        peduncle_pose.position.y = float(point[1])
-        peduncle_pose.position.z = float(point[2])
+        peduncle_pose.position.x = float(point.x)
+        peduncle_pose.position.y = float(point.y)
+        peduncle_pose.position.z = float(point.z)
         peduncle_pose.orientation.x = 0
         peduncle_pose.orientation.y = 0
         peduncle_pose.orientation.z = 0
@@ -129,3 +122,20 @@ class Communication:
 
         self.poi_rviz_pub.publish(marker)
 
+        p = Point()
+        p.x = point[0] + 0.02
+        p.y = point[1] + 0.02
+        p.z = point[2] + 0.003 # convert to meter
+        return p
+    
+def make_marker(frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
+    marker = Marker()
+    marker.type = 8
+    marker.header.frame_id = frame_id
+    marker.color.a = 0.5
+    marker.color.r = r
+    marker.color.g = g
+    marker.color.b = b
+    marker.scale.x = scale
+    marker.scale.y = scale
+    return marker

@@ -13,6 +13,22 @@ def tf_callback(msg):
     br3 = tf.TransformBroadcaster()
     
     for t in msg.transforms:
+
+        if (t.child_frame_id=="bracelet_link"):
+
+            # making fake bracelet frame bc end-effector is mounted rotated 90 clockwise
+            # set translations
+            real_bracelet_tf = geometry_msgs.msg.TransformStamped()
+            real_bracelet_tf.transform.translation.x = 0 #t.transform.translation.x
+            real_bracelet_tf.transform.translation.y = 0 #t.transform.translation.y
+            real_bracelet_tf.transform.translation.z = 0 #t.transform.translation.z
+            # rotate frame
+            quat3 = quaternion_from_euler(0, 0, math.pi/2)
+            quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
+            real_bracelet_tf.transform.rotation = quat_msg
+            # broadcast tf
+            real_bracelet_tf.header.stamp = rospy.Time.now()
+            br1.sendTransform((real_bracelet_tf.transform.translation.x, real_bracelet_tf.transform.translation.y, real_bracelet_tf.transform.translation.z),(real_bracelet_tf.transform.rotation.x, real_bracelet_tf.transform.rotation.y, real_bracelet_tf.transform.rotation.z, real_bracelet_tf.transform.rotation.w), time=real_bracelet_tf.header.stamp, child = "real_bracelet_link", parent="bracelet_link")
         
         if (t.child_frame_id=="bracelet_link"):
 
@@ -35,15 +51,15 @@ def tf_callback(msg):
             # making rs_ee tf frame
             # set translations
             camera_tf = geometry_msgs.msg.TransformStamped()
-            camera_tf.transform.translation.x = 0 #-0.02
-            camera_tf.transform.translation.y = 0.03 #0.04 # real: -0.021  #+z
-            camera_tf.transform.translation.z = -0.17 #-0.092  #-x
+            camera_tf.transform.translation.x = 0
+            camera_tf.transform.translation.y = 0.04 #0.21
+            camera_tf.transform.translation.z = -0.132
             # rotate frame
             r = 0
             p = math.pi/2
             y = 0
             quat_1 = quaternion_from_euler(r, p, y)
-            r =  math.pi/2
+            r =  -math.pi/2
             p = 0
             y = 0
             quat_2 = quaternion_from_euler(r, p, y)
@@ -52,37 +68,10 @@ def tf_callback(msg):
             # broadcast tf
             camera_tf.transform.rotation = quat_msg
             camera_tf.header.stamp = rospy.Time.now()
-            br2.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "rs_ee", parent="real_bracelet_link")
+            br1.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "realsense_frame", parent="real_bracelet_link")
         
 
-            # making realsense_frame
-            # set translations
-            rgbd_tf = geometry_msgs.msg.TransformStamped()
-            rgbd_tf.transform.translation.x = 0
-            rgbd_tf.transform.translation.y = 0
-            rgbd_tf.transform.translation.z = 0
-            # rotate frame
-            quat3 = quaternion_from_euler(math.pi, 0, 0)
-            quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
-            rgbd_tf.transform.rotation = quat_msg
-            # broadcast tf
-            rgbd_tf.header.stamp = rospy.Time.now()
-            br3.sendTransform((rgbd_tf.transform.translation.x, rgbd_tf.transform.translation.y, rgbd_tf.transform.translation.z),(rgbd_tf.transform.rotation.x, rgbd_tf.transform.rotation.y, rgbd_tf.transform.rotation.z, rgbd_tf.transform.rotation.w), time=rgbd_tf.header.stamp , child = "realsense_frame", parent="rs_ee")
 
-
-            # # making ee frame
-            # # translate
-            # ee_tf = geometry_msgs.msg.TransformStamped()
-            # ee_tf.transform.translation.x = 0
-            # ee_tf.transform.translation.y = 0 # maybe change to offset gripper height
-            # ee_tf.transform.translation.z = -0.192 # maybe change based on if the bracelet link spot is correct
-            # # rotate
-            # quat3 = quaternion_from_euler(0, math.pi, 0)
-            # quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
-            # ee_tf.transform.rotation = quat_msg
-            # # broadcast
-            # ee_tf.header.stamp = rospy.Time.now()
-            # br3.sendTransform((ee_tf.transform.translation.x, ee_tf.transform.translation.y, ee_tf.transform.translation.z),(ee_tf.transform.rotation.x, ee_tf.transform.rotation.y, ee_tf.transform.rotation.z, ee_tf.transform.rotation.w), time=ee_tf.header.stamp , child = "ee_frame", parent="bracelet_link")
 
 
 
