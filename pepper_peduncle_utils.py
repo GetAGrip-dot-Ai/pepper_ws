@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from shapely import Polygon
 from scipy.optimize import curve_fit
-# from skimage.morphology import medial_axis
+from skimage.morphology import medial_axis
 import pepper_utils 
 import pepper_fruit_utils
 

@@ -21,9 +21,9 @@ class Communication:
         self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
         # now = now -9
         (trans,rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
-        print("?????????",trans)
-        print("^^", poi)
-        print("!!!", rot)
+        # print("?????????",trans)
+        # print("^^", poi)
+        # print("!!!", rot)
 
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
         # import pdb; pdb.set_trace()
@@ -31,10 +31,10 @@ class Communication:
         H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
         row = np.array([0,0,0,1])
         H = np.vstack((H,row))
-        print("H: ", H)
+        # print("H: ", H)
         poi = list(poi)
         poi.append(1)
-        print("POI: ", poi)
+        # print("POI: ", poi)
         point = np.array(H) @ np.array(poi).T
         peduncle_pose = Pose()
         # # import pdb; pdb.set_trace()
@@ -93,6 +93,7 @@ class Communication:
 
         # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
+        print("poi marker is publishing")
 
     def poi_rviz_pub_fn_base_link(self, peppers):
         marker = Marker()
@@ -101,25 +102,21 @@ class Communication:
         marker.color.a = 1.0
         marker.color.r = 1.0
         marker.color.b = 1.0
-        marker.scale.x = 0.1
-        marker.scale.y = 0.1
+        marker.scale.x = 0.03
+        marker.scale.y = 0.03
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
             now = rospy.Time.now()
             self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-            # now = now -9
             (trans,rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
 
             r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
-            # import pdb; pdb.set_trace()
             H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
             row = np.array([0,0,0,1])
             H = np.vstack((H,row))
-            print("H: ", H)
             poi = list(poi)
             poi.append(1)
-            print("POI: ", poi)
             point = np.array(H) @ np.array(poi).T
             p = Point()
             p.x = point[0]
@@ -127,9 +124,8 @@ class Communication:
             p.z = point[2] # convert to meter
             marker.points.append(p)
 
-        
-        # print(marker.points)
+        print(marker.points)
+        print("poi marker is publishing base")
 
-        # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
 

@@ -150,37 +150,55 @@ class Perception:
     # ROS related
     #####################################################################
 
+    # def send_to_manipulator(self):
+    #     #################################################################
+    #     # send the point of interaction to the manipulator over ROS
+    #     #################################################################
+    #     # if self.peppers:
+    #     #     pepper = self.peppers.pop(0)
+    #     #     del self.pepper_fruits[pepper.pepper_fruit.number]
+    #     #     del self.pepper_peduncles[pepper.pepper_peduncle.number]
+    #     # else: 
+    #     #     pepper = None
+    #     #     print("No peppers left!")
+
+    #     rate = rospy.Rate(10)
+
+    #     while not rospy.is_shutdown():
+    #         # if pepper != None:
+    #         poi = pepper.pepper_peduncle.poi
+    #         self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
+    #         # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+    #         self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
+    #         self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+    #         rate.sleep()
+                # print("publishing", list(self.peppers.values()))
+
     def send_to_manipulator(self):
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
-        print(self.peppers)
-        print(self.pepper_fruits)
-        print(self.pepper_peduncles)
 
-        if self.peppers:
-            pepper = self.peppers.pop(0)
-            del self.pepper_fruits[pepper.pepper_fruit.number]
-            del self.pepper_peduncles[pepper.pepper_peduncle.number]
-            print(self.peppers)
-            print(self.pepper_fruits)
-            print(self.pepper_peduncles)
-        else: 
-            pepper = None
-            print("No peppers left!")
+        # if self.peppers:
+        #     pepper = self.peppers.pop(0)
+        #     del self.pepper_fruits[pepper.pepper_fruit.number]
+        #     del self.pepper_peduncles[pepper.pepper_peduncle.number]
+        #     print(self.peppers)
+        #     print(self.pepper_fruits)
+        #     print(self.pepper_peduncles)
+        # else: 
+        #     pepper = None
+        #     print("No peppers left!")
 
+        pepper = list(self.peppers.values())[0]
+        poi = pepper.pepper_peduncle.poi
         rate = rospy.Rate(10)
-
         while not rospy.is_shutdown():
-            if pepper != None:
-                poi = pepper.pepper_peduncle.poi
-                print(poi)
-                # self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
-                # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
-                # self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
-                # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
-                rate.sleep()
-                # print("publishing", list(self.peppers.values()))
+            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
+            # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
+            self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
+            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            rate.sleep()
 
     #####################################################################
     # VISUALIZATION related

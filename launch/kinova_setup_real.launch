@@ -1,6 +1,7 @@
 <launch>
-    <!-- <include file="$(find gen3_move_it_config)/launch/demo.launch">
-    </include> -->
+    <include file="$(find gen3_move_it_config)/launch/demo.launch">
+    
+    </include> 
 
     <node name="cammera_tf_node" pkg="pepper_ws" type="camera_tf.py" output="screen"/>
 
