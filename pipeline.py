@@ -179,10 +179,10 @@ class Perception:
         while not rospy.is_shutdown() and time_elapsed<20:
             time_elapsed = time.time() - start_time
             print("time elapsed:", time_elapsed)
-            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
+            self.communication.rviz_marker_poi_realsense_frame(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
-            self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
-            # self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            self.communication.rviz_marker_poi_base_link(list(self.peppers.values()))
+            # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
             rate.sleep()
             # print("publishing", list(self.peppers.values()))
 
