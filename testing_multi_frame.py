@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from pepper_fruit import PepperFruit
 from one_frame import OneFrame
 from multi_frame import MultiFrame
@@ -62,8 +63,7 @@ if __name__ == '__main__':
     number = 0
 
     while user_input == "1":
-        img = get_image_webcam()
-        cv2.imshow('Image', img)
+        img = get_image()
         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         obj.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
         obj.assign_last_frame_number()
@@ -76,9 +76,9 @@ if __name__ == '__main__':
     # obj.delete_duplicate_matched_peppers()
     obj.write_results()
 
-    pepper = obj.get_pepper()
-    while pepper is not None:
-        print(pepper.number)
+    # pepper = obj.get_pepper()
+    # while pepper is not None:
+    #     print(pepper.number)
 
 
     """
