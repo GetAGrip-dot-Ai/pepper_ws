@@ -73,7 +73,12 @@ if __name__ == '__main__':
    
     obj.find_fruits()
     obj.find_peduncles()
+    # obj.delete_duplicate_matched_peppers()
     obj.write_results()
+
+    pepper = obj.get_pepper()
+    while pepper is not None:
+        print(pepper.number)
 
 
     """

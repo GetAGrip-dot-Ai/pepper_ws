@@ -115,7 +115,7 @@ class PepperPeduncle:
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
         # poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
 
-        self._poi = (poi_z, poi_x, -poi_y)
+        # self._poi = (poi_z, poi_x, -poi_y)
         self._poi_px = (poi_x_px, poi_y_px)
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         print("POI in pixel frame:", self._poi_px)

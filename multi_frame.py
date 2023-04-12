@@ -19,6 +19,7 @@ class MultiFrame:
         self._unmatched_positive_fruits: Dict[int, List[PepperFruit]] = dict()
         self._matched_positive_peduncles: Dict[int, List[PepperPeduncle]] = dict()
         self._unmatched_positive_peduncles: Dict[int, List[PepperPeduncle]] = dict()
+        self._matched_positive_peppers: Dict[int, List[Pepper]] = dict()
 
     def add_one_frame(self, one_frame: OneFrame):
         if len(self._one_frames) == self._max_frames:
@@ -100,7 +101,27 @@ class MultiFrame:
 
         self._matched_positive_peduncles, self._unmatched_positive_peduncles = get_all_peduncles(self._one_frames)
 
-    # def get_pepper(self):
-    #     if self._matched_positive_fruits:
-    #         frame_number, peppers = next(iter(self._matched_positive_fruits.items()))
-    #         pepper = peppers.pop()
+
+    # def delete_duplicate_matched_peppers(self):
+    #     for frame_number, fruits in self._matched_positive_fruits.items():
+    #         for fruit in fruits:
+    #             parent = fruit.parent_pepper
+    #             peduncles = self._matched_positive_peduncles[frame_number]
+                    
+    #             for peduncle in peduncles:
+    #                 if parent == peduncle.parent_pepper:
+    #                     peduncles.remove(peduncle)
+    #                     break
+                
+    #             self._matched_positive_peduncles[frame_number] = peduncles
+
+
+    def get_pepper(self):
+        if self._matched_positive_peppers:
+            frame_number, peppers = next(iter(self._matched_positive_peppers.items()))
+            pepper = peppers.pop()
+            if not peppers:
+                del self._matched_positive_peppers[frame_number]
+            return pepper
+        else:
+            return None

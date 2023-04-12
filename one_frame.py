@@ -18,7 +18,7 @@ class OneFrame:
 
         self._trans = None
         self._R = None
-        self.listener = tf.TransformListener()
+        # self.listener = tf.TransformListener()
     
         self.img_path = img_path  # should be a path to one image file
 
@@ -143,7 +143,7 @@ class OneFrame:
         self._R = R.from_quat([rot[0], rot[1], rot[2], rot[3]]).as_matrix() 
 
     def run(self):
-        self.set_transform()
+        # self.set_transform()
 
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                                                   show_result=False)
