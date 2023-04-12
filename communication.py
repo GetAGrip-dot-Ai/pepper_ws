@@ -18,8 +18,8 @@ class Communication:
     def poi_pub_fn(self, poi, orientation):
 
         now = rospy.Time.now()
-        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-        (trans,rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+        self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
+        (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
         H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
         row = np.array([0,0,0,1])
@@ -47,8 +47,8 @@ class Communication:
 
     def obstacle_pub_fn(self, obstacles):
         now = rospy.Time.now()
-        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-        (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+        self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
+        (trans, rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
 
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]])
 
@@ -76,7 +76,7 @@ class Communication:
     def poi_rviz_pub_fn(self, peppers):
         marker = Marker()
         marker.type = 8
-        marker.header.frame_id = "rs_ee"
+        marker.header.frame_id = "realsense_frame"
         marker.color.a = 1.0
         marker.color.r = 1.0
         marker.scale.x = 0.03
@@ -112,9 +112,9 @@ class Communication:
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
             now = rospy.Time.now()
-            self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
+            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
             # now = now -9
-            (trans,rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+            (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
 
             r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
             # import pdb; pdb.set_trace()

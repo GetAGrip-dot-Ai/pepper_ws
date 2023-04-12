@@ -24,7 +24,6 @@ def xy_callback(msg):
         # print(msg.data)
         x, y = np.array(msg.data)
 
-def tfCallback(msg):
     br = tf.TransformBroadcaster()
     
     # for t in msg.transforms:
@@ -41,14 +40,13 @@ def tfCallback(msg):
         pepper_tf.header.stamp = rospy.Time.now()
 
 
-        br.sendTransform((pepper_tf.transform.translation.x, pepper_tf.transform.translation.y, pepper_tf.transform.translation.z),(pepper_tf.transform.rotation.x, pepper_tf.transform.rotation.y, pepper_tf.transform.rotation.z, pepper_tf.transform.rotation.w), time=pepper_tf.header.stamp , child = "pepper", parent="rs_ee")
+        br.sendTransform((pepper_tf.transform.translation.x, pepper_tf.transform.translation.y, pepper_tf.transform.translation.z),(pepper_tf.transform.rotation.x, pepper_tf.transform.rotation.y, pepper_tf.transform.rotation.z, pepper_tf.transform.rotation.w), time=pepper_tf.header.stamp , child = "pepper", parent="realsense_frame")
     else:
         print("waiting for image to be a thing")
 
 def tf_listener():
     rospy.init_node('pp_p_pepper_tf_node')
     rospy.Subscriber("/pp/depth_img", Int64MultiArray, getDepthCallback)
-    rospy.Subscriber("/tf", TFMessage, tfCallback)
     rospy.Subscriber("/pp/poi_test", Int64MultiArray, xy_callback)
     rospy.spin()
 
@@ -60,7 +58,7 @@ if __name__ == '__main__':
     # while not rospy.is_shutdown():
     #     try:
     #         now = rospy.Time.now()
-    #         listener.waitForTransform("/base_link", "/rs_ee", now, rospy.Duration(4.0))
-    #         (trans,rot) = listener.lookupTransform("/base_link", "/rs_ee", now)
+    #         listener.waitForTransform("/base_link", "/realsense_frame", now, rospy.Duration(4.0))
+    #         (trans,rot) = listener.lookupTransform("/base_link", "/realsense_frame", now)
     #     except:
     #         print("hi")

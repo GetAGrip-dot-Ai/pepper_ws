@@ -9,8 +9,6 @@ launch = roslaunch.parent.ROSLaunchParent(uuid, ["/root/catkin_ws/src/realsense-
 launch.start()
 rospy.loginfo("started")
 
-
-
 rospy.sleep(10)
 # 3 seconds later
 launch.shutdown()

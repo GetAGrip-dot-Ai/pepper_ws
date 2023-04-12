@@ -15,8 +15,8 @@ try:
 
     listener = tf.TransformListener()
     now = rospy.Time.now()
-    listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-    (trans,rot) = listener.lookupTransform("/base_link", "/rs_ee", now)
+    listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
+    (trans,rot) = listener.lookupTransform("/base_link", "/realsense_frame", now)
 
     r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
     H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
