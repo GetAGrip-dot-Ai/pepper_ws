@@ -93,7 +93,6 @@ class Communication:
         
         # print(marker.points)
 
-        # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
         if not rospy.has_param('poi') and poi:
             poi_str = f"{poi[0]},{poi[1]},{poi[2]}"

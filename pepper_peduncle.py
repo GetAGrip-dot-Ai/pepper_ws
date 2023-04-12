@@ -71,8 +71,6 @@ class PepperPeduncle:
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
     def set_point_of_interaction(self, img_shape, pepper_fruit_xywh):
-        # import pdb; pdb.set_trace()
-        # plt.savefig(f"{os.getcwd()}/result/hi.png")
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
 

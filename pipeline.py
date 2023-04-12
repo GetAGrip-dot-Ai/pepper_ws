@@ -72,7 +72,6 @@ class Perception:
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
         self.peppers = self.one_frame.pepper_detections
-        print("pipeline", self.pepper_peduncles[0])
         return self.pepper_peduncles[0].poi
 
     def detect_peppers_in_folder(self):
@@ -176,7 +175,10 @@ class Perception:
 
         rate = rospy.Rate(10)
         start_time = time.time()
-        while not rospy.is_shutdown() and time.time()- start_time<20:
+        time_elapsed = 0
+        while not rospy.is_shutdown() and time_elapsed<20:
+            time_elapsed = time.time() - start_time
+            print("time elapsed:", time_elapsed)
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
