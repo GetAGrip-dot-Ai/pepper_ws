@@ -12,7 +12,7 @@ def detect_peppers_realtime():
 	pipeline = Perception(test_img_path, 0)
 	(x, y) = pipeline.detect_peppers_realtime()
 	
-	pipeline.send_to_manipulator()
+	pipeline.send_to_manipulator(time_limit=5)
 
 def handle_harvest(req):
 	# state = req.req_id

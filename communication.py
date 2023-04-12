@@ -14,21 +14,24 @@ class Communication:
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
         self.listener = tf.TransformListener()
+        self.transform_from_base = None
         
     def publish_poi(self, poi, orientation):
 
         point = self.transform_to_base_link(poi)
 
         peduncle_pose = Pose()
-        peduncle_pose.position.x = float(point[0])
-        peduncle_pose.position.y = float(point[1])
-        peduncle_pose.position.z = float(point[2])
+        peduncle_pose.position.x = float(point.x)
+        peduncle_pose.position.y = float(point.y)
+        peduncle_pose.position.z = float(point.z)
         peduncle_pose.orientation.x = 0
         peduncle_pose.orientation.y = 0
         peduncle_pose.orientation.z = 0
         peduncle_pose.orientation.w = 1
         rospy.loginfo(peduncle_pose)
         self.poi_pub.publish(peduncle_pose)
+
+
 
     def obstacle_pub_fn(self, obstacles):
         now = rospy.Time.now()
@@ -59,7 +62,7 @@ class Communication:
         self.obstacle_pub.publish(obstacle_msg)
 
     def rviz_marker_poi_realsense_frame(self, peppers):
-        marker = make_marker("realsense_frame", r=0, g=1, b=0, scale=0.04)
+        marker = self.make_marker("realsense_frame", r=0, g=1, b=0, scale=0.04)
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
@@ -71,28 +74,38 @@ class Communication:
         
         self.poi_rviz_pub.publish(marker)
 
-        if not rospy.has_param('poi') and poi:
-            poi_str = f"{poi[0]},{poi[1]},{poi[2]}"
-            rospy.set_param('poi', poi_str)
-            print("set poi:", poi_str)
+
+    def single_rviz_marker_poi_realsense_frame(self, poi):
+        marker = self.make_marker("base_link", r=0, g=1, b=0, scale=0.04)
+
+        point = Point()
+        point.x = poi[0]
+        point.y = poi[1]
+        point.z = poi[2] 
+        marker.points.append(point)
+        
+        self.poi_rviz_pub.publish(marker)
 
     def rviz_marker_poi_base_link(self, peppers):
-        marker = make_marker("base_link", r=1, g=0, b=0)
+        marker = self.make_marker("base_link", r=1, g=0, b=0)
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
             p = self.transform_to_base_link(poi)
             marker.points.append(p)
 
-        # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
 
-    def transform_to_base_link(self, point_in_relative_frame):
-        now = rospy.Time.now()
-        self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
-        # now = now -9
-        (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
 
+    def transform_to_base_link(self, point_in_relative_frame):
+        try:
+            now = rospy.Time.now()
+            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
+            (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
+            self.transform_from_base = (trans, rot)
+        except Exception as e:
+            print(e)
+            (trans,rot) = self.transform_from_base
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
         H = np.vstack((np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1))),np.array([0,0,0,1])))
         point_in_relative_frame = list(point_in_relative_frame) + [1]
@@ -103,14 +116,15 @@ class Communication:
         p.y = point[1]
         p.z = point[2] # convert to meter
         return p
-def make_marker(frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
-    marker = Marker()
-    marker.type = 8
-    marker.header.frame_id = frame_id
-    marker.color.a = 0.5
-    marker.color.r = r
-    marker.color.g = g
-    marker.color.b = b
-    marker.scale.x = scale
-    marker.scale.y = scale
-    return marker
+    
+    def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
+        marker = Marker()
+        marker.type = 8
+        marker.header.frame_id = frame_id
+        marker.color.a = 0.5
+        marker.color.r = r
+        marker.color.g = g
+        marker.color.b = b
+        marker.scale.x = scale
+        marker.scale.y = scale
+        return marker

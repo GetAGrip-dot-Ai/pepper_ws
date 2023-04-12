@@ -157,7 +157,7 @@ class Perception:
     # ROS related
     #####################################################################
 
-    def send_to_manipulator(self):
+    def send_to_manipulator(self, time_limit=10):
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
@@ -173,16 +173,18 @@ class Perception:
         #     pepper = None
         #     print("No peppers left!")
 
+        pepper = list(self.peppers.values())[0]
+        poi = pepper.pepper_peduncle.poi
         rate = rospy.Rate(10)
         start_time = time.time()
         time_elapsed = 0
-        while not rospy.is_shutdown() and time_elapsed<20:
+        while not rospy.is_shutdown() and time_elapsed<time_limit:
             time_elapsed = time.time() - start_time
             print("time elapsed:", time_elapsed)
             self.communication.rviz_marker_poi_realsense_frame(list(self.peppers.values()))
             # self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             self.communication.rviz_marker_poi_base_link(list(self.peppers.values()))
-            # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
+            self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
             rate.sleep()
             # print("publishing", list(self.peppers.values()))
 

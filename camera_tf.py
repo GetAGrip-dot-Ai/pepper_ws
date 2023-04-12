@@ -9,8 +9,6 @@ from tf.transformations import *
 
 def tf_callback(msg):
     br1 = tf.TransformBroadcaster()
-    br2 = tf.TransformBroadcaster()
-    br3 = tf.TransformBroadcaster()
     
     for t in msg.transforms:
         
@@ -38,8 +36,21 @@ def tf_callback(msg):
     
 
 def pepper_tf_callback(msg):
+
+    point = msg.position
+
+    if not rospy.has_param('pepper_tf'):
+        poi_str = f"{point.x},{point.y},{point.z}"
+        rospy.set_param('pepper_tf', poi_str)
+    
+    elif round(float(rospy.get_param('pepper_tf').split(',')[0]), 3) != round(float(point.x), 3):
+        poi_str = f"{point.x},{point.y},{point.z}"
+        rospy.set_param('pepper_tf', poi_str)
+
     br4 = tf.TransformBroadcaster()
     br4.sendTransform((msg.position.x, msg.position.y, msg.position.z),(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), time=rospy.Time.now(), child = "pepper_tf", parent="base_link")
+    
+
 
 def listener():
     rospy.init_node('camera_tf_node')
