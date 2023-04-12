@@ -7,11 +7,18 @@ from pepper_peduncle_detector import PepperPeduncleDetector
 from pepper_peduncle_utils import *
 from pepper_fruit_utils import *
 import os
+import tf
+import rospy
+from scipy.spatial.transform import Rotation as R
 
 
 class OneFrame:
     def __init__(self, img_path):
-        self._frame_number: int = 0
+        self._frame_number: int = -1
+
+        self._trans = None
+        self._R = None
+        # self.listener = tf.TransformListener()
     
         self.img_path = img_path  # should be a path to one image file
 
@@ -41,6 +48,14 @@ class OneFrame:
     @frame_number.setter
     def frame_number(self, frame_number):
         self._frame_number = frame_number
+
+    @property
+    def trans(self):
+        return self._trans
+
+    @property
+    def rot(self):
+        return self._rot
     
     @property
     def img_shape(self):
@@ -87,16 +102,18 @@ class OneFrame:
             else:
                 pepper = Pepper(number, pfn, ppn)
                 pepper.pepper_fruit = self._pepper_fruit_detections[pfn]
+                pepper.pepper_fruit.parent_pepper = number
                 pepper.pepper_peduncle = self.pepper_peduncle_detections[ppn]
+                pepper.pepper_peduncle.parent_pepper = number
                 self._pepper_detections[number] = pepper
                 number += 1
 
     def determine_peduncle_poi(self):
-        for key, single_pepper in self._pepper_detections.items():
+        for _, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh)
 
     def determine_peduncle_orientation(self):
-        for key, single_pepper in self._pepper_detections.items():
+        for _, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_peduncle_orientation(single_pepper.pepper_fruit.xywh)
 
     def determine_pepper_order(self, arm_xyz):
@@ -117,7 +134,17 @@ class OneFrame:
 
         return sorted_peppers
 
+    def set_transform(self):
+        now = rospy.Time.now()
+        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
+        (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+
+        self._trans = np.array(trans).reshape(3, 1)
+        self._R = R.from_quat([rot[0], rot[1], rot[2], rot[3]]).as_matrix() 
+
     def run(self):
+        # self.set_transform()
+
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                                                   show_result=False)
         # self.plot_pepper_fruit()
@@ -125,6 +152,8 @@ class OneFrame:
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
+        # print(self.frame_number)
+        # print(self.pepper_fruit_detections)
         # self.plot_pepper()
         
         self.determine_peduncle_poi()
