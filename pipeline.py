@@ -145,6 +145,7 @@ class Perception:
         #   self.pepper.order must be set
         #################################################################
         self.peppers = self.one_frame.determine_pepper_order(arm_xyz)
+        self.peppers = self.one_frame.determine_pepper_order(arm_xyz)
 
     #####################################################################
     # ROS related
@@ -178,20 +179,11 @@ class Perception:
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
+        if self.peppers:
+            pepper = self.peppers.pop(0)
+        else:
+            print("All peppers picked !!")
 
-        # if self.peppers:
-        #     pepper = self.peppers.pop(0)
-        #     del self.pepper_fruits[pepper.pepper_fruit.number]
-        #     del self.pepper_peduncles[pepper.pepper_peduncle.number]
-        #     print(self.peppers)
-        #     print(self.pepper_fruits)
-        #     print(self.pepper_peduncles)
-        # else: 
-        #     pepper = None
-        #     print("No peppers left!")
-
-        pepper = list(self.peppers.values())[0]
-        poi = pepper.pepper_peduncle.poi
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
