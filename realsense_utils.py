@@ -116,7 +116,7 @@ def get_depth(x=320, y=240):
         distance = 0
         count = 0
         file_name = str(time.time()).split('.')[0]
-        path = os.getcwd() + '/depthlog/'+file_name+'/'
+        path = os.getcwd() + '/depthlog/'
         isExist = os.path.exists(path)
         if not isExist:
             os.makedirs(path)

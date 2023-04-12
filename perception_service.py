@@ -34,7 +34,7 @@ def perception_server():
 	# s = rospy.Service('/perception/harvest', harvest, handle_harvest)
 	state = 0
 	while state != '0':
-		state = input("input the service please and just work please")
+		state = input("0:exit\n2:harvest\n")
 		handle_harvest(state)
 		print("done one")
 		

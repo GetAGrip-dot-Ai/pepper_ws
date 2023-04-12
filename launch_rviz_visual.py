@@ -1,17 +1,3 @@
-# #!/usr/bin/env python3
-# import roslaunch
-
-# package = 'realsesnse2_camera'
-# executable = 'demo_pointcloud.launch'
-# node = roslaunch.core.Node(package, executable)
-
-# launch = roslaunch.scriptapi.ROSLaunch()
-# launch.start()
-
-# process = launch.launch(node)
-# print (process.is_alive())
-# process.stop()
-
 import roslaunch
 import rospy
 
