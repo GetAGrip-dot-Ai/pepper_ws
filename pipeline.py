@@ -9,14 +9,16 @@ import time
 print(os.getcwd())
 
 from one_frame import OneFrame
+from multi_frame import MultiFrame
 from communication import Communication
 from pepper_fruit_utils import *
+from pepper_utils import *
 from realsense_utils import *
 
 
 # input: image
 class Perception:
-    def __init__(self, source, fps, threshold=0.5, percentage=0.5, save=True):
+    def __init__(self, source, fps, multi_frame_number = 10, threshold=0.5, percentage=0.5, save=True):
         self.source = source
         self.start_time = time.time()
         self.fps = fps
@@ -27,7 +29,9 @@ class Perception:
         self.pepper_peduncles = dict()
         self.peppers = dict()
         self.one_frame = None
+        self.multi_frame = MultiFrame(multi_frame_number)
         self.communication = Communication()
+        self.poi_in_rviz = None
 
     def get_image(self):
         #################################################################
@@ -81,7 +85,8 @@ class Perception:
             self.detect_peppers_one_frame(path)
             
     def detect_peppers_realtime(self):
-        while True:
+        complete = False
+        while not complete:
             user_input = input("1: start\n2: end\n")
             if user_input == "1":
                 print("taking pic!")
@@ -89,8 +94,13 @@ class Perception:
                 img_name=str(time.time()).split('.')[0]
                 cv2.imwrite(os.getcwd()+'/realtime/'+img_name+'.png', img)
                 print("saved to :", os.getcwd()+'/realtime/'+img_name+'.png')
-                (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
-                return (poi_x, poi_y)
+                try:
+                    (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
+                    self.poi_in_rviz = (poi_x, poi_y, poi_z)
+                    complete = True
+                    return (poi_x, poi_y)
+                except:
+                    print("no pepper detected")
             elif user_input == "2":
                 return False
             else:
@@ -144,30 +154,65 @@ class Perception:
         # output:
         #   self.pepper.order must be set
         #################################################################
-        self.peppers = self.one_frame.determine_pepper_order(arm_xyz)
+        self.peppers = determine_pepper_order(self.peppers.values(), arm_xyz)
 
     #####################################################################
     # ROS related
     #####################################################################
 
+    def add_frame_to_multi_frame(self):
+        #################################################################
+        # Take an image and add it as a frame to the multi frame
+        #################################################################
+        img = get_image()
+
+        number = 0 if self.multi_frame.one_frames == [] else len(self.multi_frame._one_frames)
+        cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
+        self.multi_frame.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
+
+    def process_multi_frame(self):
+        #################################################################
+        # Get the point of interaction from the multi frame
+        #################################################################
+        self.multi_frame.run()
+        # self.peppers = self.multi_frame.pepper_detections
+
+        # self.set_pepper_order(arm_xyz)
+
+
     def send_to_manipulator(self):
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
+        print(self.peppers)
+        print(self.pepper_fruits)
+        print(self.pepper_peduncles)
+
         if self.peppers:
             pepper = self.peppers.pop(0)
-        else:
-            print("All peppers picked !!")
-
+            poi = pepper.pepper_peduncle.poi
+            del self.pepper_fruits[pepper.pepper_fruit.number]
+            del self.pepper_peduncles[pepper.pepper_peduncle.number]
+            print(self.peppers)
+            print(self.pepper_fruits)
+            print(self.pepper_peduncles)
+        else: 
+            pepper = None
+            print("No peppers left!")
+        
         rate = rospy.Rate(10)
-
-        while not rospy.is_shutdown():
+        start_time = time.time()
+        while pepper is not None and not rospy.is_shutdown() and time.time()- start_time < 20:
             self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
             self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
             self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
             self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
             rate.sleep()
+
+            self.multi_frame.clear_frames()
             # print("publishing", list(self.peppers.values()))
+
+        return 1 if pepper is not None else 0
 
     #####################################################################
     # VISUALIZATION related

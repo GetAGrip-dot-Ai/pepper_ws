@@ -1,6 +1,8 @@
-Frame: 5
-Matched Fruit: 1
-Frame: 5
-Unmatched Fruit: 0
-Frame: 1
-Matched Peduncle: 0
+Frame: 3
+Matched Fruit: 0
+Frame: 0
+Matched Peduncle: 1
+----------------------------------------
+Frame: 3
+Matched Fruit: 0
+----------------------------------------

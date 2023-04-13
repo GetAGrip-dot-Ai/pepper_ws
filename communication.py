@@ -9,7 +9,7 @@ import numpy as np
 
 class Communication:
     def __init__(self):
-        rospy.init_node('pp_p_communication_node', anonymous=True)
+        # rospy.init_node('pp_p_communication_node', anonymous=True)
         self.poi_pub = rospy.Publisher('/perception/peduncle/poi', Pose, queue_size=10)
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
@@ -19,22 +19,13 @@ class Communication:
 
         now = rospy.Time.now()
         self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-        # now = now -9
         (trans,rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
-        print("?????????",trans)
-        print("^^", poi)
-        print("!!!", rot)
-
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
-        # import pdb; pdb.set_trace()
-
         H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
         row = np.array([0,0,0,1])
         H = np.vstack((H,row))
-        print("H: ", H)
         poi = list(poi)
         poi.append(1)
-        print("POI: ", poi)
         point = np.array(H) @ np.array(poi).T
         peduncle_pose = Pose()
         # # import pdb; pdb.set_trace()
@@ -55,16 +46,27 @@ class Communication:
         self.poi_pub.publish(peduncle_pose)
 
     def obstacle_pub_fn(self, obstacles):
+        now = rospy.Time.now()
+        self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
+        (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+
+        r = R.from_quat([rot[0], rot[1], rot[2], rot[3]])
+
+        H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
+        row = np.array([0, 0, 0, 1])
+        H = np.vstack((H, row))
+
         obstacle_msg = Obstacle()
         for obstacle in obstacles:
+            point = np.array(H) @ np.array([obstacle.xyz[0], obstacle.xyz[1], obstacle.xyz[2], 1]).T
             pose = Pose()
-            pose.position.x = obstacle.xywh[0]/100
-            pose.position.y = obstacle.xywh[1]/100
-            pose.position.z = 0.2
+            pose.position.x = float(point[0])
+            pose.position.y = float(point[1])
+            pose.position.z = float(point[2])
 
             primitive = SolidPrimitive()
             primitive.type = SolidPrimitive.BOX
-            primitive.dimensions = [obstacle.xywh[2]/100, obstacle.xywh[3]/100, 0.1]
+            primitive.dimensions = [0.12, 0.12, 0.12]
             obstacle_msg.pose.append(pose)
             obstacle_msg.primitive.append(primitive)
             
@@ -93,6 +95,10 @@ class Communication:
 
         # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
+        poi_str = f"{poi[0]},{poi[1]},{poi[2]}"
+        if not rospy.has_param('poi'):
+            rospy.set_param('poi', poi_str)
+            print("set poi:", poi_str)
 
     def poi_rviz_pub_fn_base_link(self, peppers):
         marker = Marker()
@@ -116,10 +122,8 @@ class Communication:
             H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
             row = np.array([0,0,0,1])
             H = np.vstack((H,row))
-            print("H: ", H)
             poi = list(poi)
             poi.append(1)
-            print("POI: ", poi)
             point = np.array(H) @ np.array(poi).T
             p = Point()
             p.x = point[0]

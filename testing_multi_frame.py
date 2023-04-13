@@ -58,28 +58,18 @@ if __name__ == '__main__':
     """
     This is for testing on webcam with discontinuous input
     """
-    user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
+    # user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
     number = 0
 
-    while user_input == "1":
+    # while user_input == "1":
+    while number != 4:
         img = get_image_webcam()
-        cv2.imshow('Image', img)
         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         obj.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
-        obj.assign_last_frame_number()
-        obj.populate_last_frame()
         number += 1
-        user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
+        # user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
    
-    obj.find_fruits()
-    obj.find_peduncles()
-    # obj.delete_duplicate_matched_peppers()
-    obj.write_results()
-
-    pepper = obj.get_pepper()
-    while pepper is not None:
-        print(pepper.number)
-
+    obj.run()
 
     """
     This code is used for testing on fake bounding box data.

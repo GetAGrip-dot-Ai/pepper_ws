@@ -180,6 +180,24 @@ def red_to_green_2(img):
     plt.show()
     return retrack_original
 
+def determine_pepper_order(peppers, arm_xyz):
+        pepper_distances = {}
+        for pepper in peppers:
+            poi = pepper.pepper_peduncle.poi
+            dist = np.linalg.norm(poi - arm_xyz)
+            pepper_distances[dist] = pepper
+
+        distances = list(pepper_distances.keys()).sort()
+        sorted_peppers = []
+        order = 1
+        for i in distances:
+            pepper = pepper_distances[i]
+            sorted_peppers.append(pepper)
+            pepper.order = order
+            order += 1
+
+        return sorted_peppers
+
 if __name__=="__main__":
     # img = get_image_from_webcam()
     img = get_image_from_realsense()

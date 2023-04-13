@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import geometry_msgs.msg
-from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Quaternion, Pose
 from tf2_msgs.msg import TFMessage
 import tf
 import math
@@ -66,9 +66,14 @@ def tf_callback(msg):
             rgbd_tf.header.stamp = rospy.Time.now()
             br3.sendTransform((rgbd_tf.transform.translation.x, rgbd_tf.transform.translation.y, rgbd_tf.transform.translation.z),(rgbd_tf.transform.rotation.x, rgbd_tf.transform.rotation.y, rgbd_tf.transform.rotation.z, rgbd_tf.transform.rotation.w), time=rgbd_tf.header.stamp , child = "realsense_frame", parent="rs_ee")
 
+def pepper_tf_callback(msg):
+    br4 = tf.TransformBroadcaster()
+    br4.sendTransform((msg.position.x, msg.position.y, msg.position.z),(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), time=rospy.Time.now(), child = "pepper_tf", parent="base_link")
+
 def listener():
     rospy.init_node('camera_tf_node')
     rospy.Subscriber("/tf", TFMessage, tf_callback)
+    rospy.Subscriber("/perception/peduncle/poi", Pose, pepper_tf_callback)
     rospy.spin()
 
 if __name__ == '__main__':

@@ -7,12 +7,14 @@ import os
 if __name__ == '__main__':
     # os.chdir(os.getcwd()+'/pepper_ws/')
     # os.chdir('/'.join(__file__.split('/')[:-1]))
-    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    os.chdir('/root/catkin_ws/src/pepper_ws/')
     print("current working dir: ",os.getcwd())
+
     test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)
+
     (x, y) = pipeline.detect_peppers_realtime()
-    # rospy.init_node('hi2_node')
     pipeline.send_to_manipulator()
 
     # pub = rospy.Publisher('/pp/poi_test', Int64MultiArray, queue_size=10)
@@ -20,8 +22,6 @@ if __name__ == '__main__':
     #     msg = Int64MultiArray()
     #     msg.data = [int(x*100),int(y*100)]
     #     pub.publish(msg)
-
-
 
 
 '''
