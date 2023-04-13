@@ -2,6 +2,7 @@ from pepper_peduncle_utils import *
 import os
 from realsense_utils import *
 
+
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
         self.number: int = number
@@ -70,7 +71,10 @@ class PepperPeduncle:
     def __str__(self):
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
-    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh):
+    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None):
+        if pepper_fruit_xywh is None:
+            pepper_fruit_xywh = self._xywh
+            pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
 

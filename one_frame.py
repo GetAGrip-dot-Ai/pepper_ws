@@ -1,12 +1,11 @@
 from typing import Optional, Tuple
 
-import pepper_fruit_utils as pepper_fruit_utils
 from pepper import Pepper
 from pepper_fruit_detector import PepperFruitDetector
 from pepper_peduncle_detector import PepperPeduncleDetector
-from pepper_peduncle_utils import *
 from pepper_fruit_utils import *
 from realsense_utils import *
+from pepper_utils import *
 import os
 
 

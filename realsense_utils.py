@@ -134,12 +134,11 @@ def get_depth(x=320, y=240):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
+            dx -= - 0.0325 
             color_image = np.asanyarray(color_frame.get_data())
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
 
             img = np.hstack((color_image, color_frame_not_aligned))
-            # color_image = cv2.circle(color_image, (x, y), 5, (0, 0, 255), 1)
-            # cv2.imwrite(path+file_name+'.png', color_image)\
             plt.imshow(img)
             plt.axis('on')
             print("--------", x, y)
@@ -150,7 +149,6 @@ def get_depth(x=320, y=240):
             plt.cla()
             plt.clf()
             print("=========saved to : ", path+file_name+str(count)+'.png')
-            # cv2.waitKey(1)
             
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
             print("========", dx ,dy, dz, "depth", depth)
@@ -165,6 +163,7 @@ def get_depth(x=320, y=240):
         print(e)
         pipeline.stop()
         return -1, -1, -1
+    
     
 def get_image():
     # Configure depth and color streams
@@ -229,9 +228,7 @@ def get_image():
             
             k = cv2.waitKey(0)
             if k==27:
-                print("hey")
                 cv2.destroyAllWindows()
-                print("images", images.shape)
                 return images[:, :640, :]
                 # break
 
@@ -240,9 +237,6 @@ def get_image():
         # Stop streaming
         pipeline.stop()
 
-    return resized_color_image
-if __name__=="__main__":
+    return images[:, :640, :]
 
-    # show_img_depth()
-    # print(get_depth(320, 240))
-    get_image()
+

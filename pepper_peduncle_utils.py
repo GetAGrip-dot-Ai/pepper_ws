@@ -8,8 +8,7 @@ from PIL import Image, ImageDraw
 from shapely import Polygon
 from scipy.optimize import curve_fit
 from skimage.morphology import medial_axis
-import pepper_utils 
-import pepper_fruit_utils
+# import pepper_fruit_utils
 
 from curve import Curve
 
@@ -142,49 +141,3 @@ def draw_poi(one_frame):
     plt.clf()
     plt.cla()
 
-def draw_all(one_frame):
-    print("in drawww")
-    img = np.asarray(Image.open(one_frame.img_path))
-    plt.imshow(img)
-    img_name = one_frame.img_path.split('/')[-1].split('.')[0]
-    pepper_utils.put_title(one_frame)
-
-    for peduncle in one_frame.pepper_peduncle_detections.values():
-        mask = peduncle.mask
-        pepper_fruit_utils.draw_bounding_polygon(peduncle.conf, mask, one_frame.img_shape, color='black', fill=False)
-    for pepper_fruit in one_frame.pepper_fruit_detections.values():
-        xywh = pepper_fruit.xywh
-        x = int(xywh[0])
-        y = int(xywh[1])
-        w = int(xywh[2])
-        h = int(xywh[3])
-        pepper_fruit_utils.draw_bounding_box(pepper_fruit.conf, x, y, w, h, color="black", fill=False)
-
-    for idx, pepper in one_frame.pepper_detections.items():
-        r = np.round(np.random.rand(), 1)
-        g = np.round(np.random.rand(), 1)
-        b = np.round(np.random.rand(), 1)
-        # a = np.round(np.clip(np.random.rand(), 0, 1), 1)
-        color = (r, g, b)
-        pepper_fruit = pepper.pepper_fruit
-        pepper_peduncle = pepper.pepper_peduncle
-        xywh = pepper_fruit.xywh
-        x = int(xywh[0])
-        y = int(xywh[1])
-        w = int(xywh[2])
-        h = int(xywh[3])
-        pepper_fruit_utils.draw_bounding_box(pepper_fruit.conf, x, y, w, h, color=color)
-
-        mask = pepper_peduncle.mask
-        pepper_fruit_utils.draw_bounding_polygon(pepper_peduncle.conf, mask, one_frame.img_shape, color=color)
-        poi_px = pepper.pepper_peduncle.poi_px
-        plt.plot(poi_px[1], poi_px[0], 'bo', markersize=2)
-        
-    # plt.axis('off')
-
-    plt.savefig(
-        f"{os.getcwd()}/result/{img_name}_pepper_poi_result.png",
-        bbox_inches='tight', pad_inches=0)
-    plt.clf()
-    plt.cla()
-    print("well I don't like this")

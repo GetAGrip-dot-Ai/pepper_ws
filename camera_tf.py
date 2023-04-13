@@ -36,7 +36,7 @@ def tf_callback(msg):
     
 
 def pepper_tf_callback(msg):
-
+    print("pepper_tf_callback")
     point = msg.position
 
     if not rospy.has_param('pepper_tf'):
@@ -48,8 +48,8 @@ def pepper_tf_callback(msg):
         rospy.set_param('pepper_tf', poi_str)
 
     br4 = tf.TransformBroadcaster()
-    br4.sendTransform((msg.position.x, msg.position.y, msg.position.z),(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), time=rospy.Time.now(), child = "pepper_tf", parent="base_link")
-    
+    br4.sendTransform((msg.position.x + 0.0325, msg.position.y, msg.position.z),(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), time=rospy.Time.now(), child = "pepper_tf", parent="base_link")
+    print("###############")
 
 
 def listener():
