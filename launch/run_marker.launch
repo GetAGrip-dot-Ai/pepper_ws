@@ -1,0 +1,4 @@
+<launch>
+    <node name="poi_marker" pkg="pepper_ws" type="marker_publisher.py" output="screen"/>
+
+</launch>

@@ -29,8 +29,8 @@ def update_fruit_occurences(fruits_frame1, fruits_frame2, frame1_number, frame2_
             fruit1.occurences += 1
             fruit2.occurences += 1
 
-            fruit1.add_associated_pepper(frame2_number, fruit2.number)
-            fruit2.add_associated_pepper(frame1_number, fruit1.number)
+            fruit1.add_associated_fruit(frame2_number, fruit2.number)
+            fruit2.add_associated_fruit(frame1_number, fruit1.number)
             # print(f"fruit 1: {fruit1.number}, fruit 2: {fruit2.number}")
 
 
@@ -71,7 +71,7 @@ def get_all_fruits(frames):
                         else:  
                             unique_positive_fruits[frame.frame_number].append(fruit)
 
-                        for frame_number, associated_fruit_number in fruit.associated_peppers:
+                        for frame_number, associated_fruit_number in fruit.associated_fruits:
                             associated_fruit = frames[frame_number].pepper_fruit_detections[associated_fruit_number]
 
                             if associated_fruit in all_frames_positive_fruits:
@@ -79,7 +79,7 @@ def get_all_fruits(frames):
                     else:
                         found = False
                         while not found:
-                            for frame_number, associated_fruit_number in fruit.associated_peppers:
+                            for frame_number, associated_fruit_number in fruit.associated_fruits:
                                 
                                 associated_fruit = frames[frame_number].pepper_fruit_detections[associated_fruit_number]
 
@@ -101,7 +101,7 @@ def get_all_fruits(frames):
                                 found = True
                                 break
 
-                        for frame_number, associated_fruit_number in fruit.associated_peppers:
+                        for frame_number, associated_fruit_number in fruit.associated_fruits:
                             associated_fruit = frames[frame_number].pepper_fruit_detections[associated_fruit_number]
 
                             if associated_fruit in all_frames_positive_fruits:
