@@ -9,50 +9,14 @@ from tf.transformations import *
 
 def tf_callback(msg):
     br1 = tf.TransformBroadcaster()
-    br2 = tf.TransformBroadcaster()
-    br3 = tf.TransformBroadcaster()
     
     for t in msg.transforms:
 
         if (t.child_frame_id=="bracelet_link"):
-
-            # making fake bracelet frame bc end-effector is mounted rotated 90 clockwise
-            # set translations
-            real_bracelet_tf = geometry_msgs.msg.TransformStamped()
-            real_bracelet_tf.transform.translation.x = 0 #t.transform.translation.x
-            real_bracelet_tf.transform.translation.y = 0 #t.transform.translation.y
-            real_bracelet_tf.transform.translation.z = 0 #t.transform.translation.z
-            # rotate frame
-            quat3 = quaternion_from_euler(0, 0, math.pi/2)
-            quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
-            real_bracelet_tf.transform.rotation = quat_msg
-            # broadcast tf
-            real_bracelet_tf.header.stamp = rospy.Time.now()
-            br1.sendTransform((real_bracelet_tf.transform.translation.x, real_bracelet_tf.transform.translation.y, real_bracelet_tf.transform.translation.z),(real_bracelet_tf.transform.rotation.x, real_bracelet_tf.transform.rotation.y, real_bracelet_tf.transform.rotation.z, real_bracelet_tf.transform.rotation.w), time=real_bracelet_tf.header.stamp, child = "real_bracelet_link", parent="bracelet_link")
-        
-        if (t.child_frame_id=="bracelet_link"):
-
-            # making fake bracelet frame bc end-effector is mounted rotated 90 clockwise
-            # set translations
-            real_bracelet_tf = geometry_msgs.msg.TransformStamped()
-            real_bracelet_tf.transform.translation.x = 0 #t.transform.translation.x
-            real_bracelet_tf.transform.translation.y = 0 #t.transform.translation.y
-            real_bracelet_tf.transform.translation.z = 0 #t.transform.translation.z
-            # rotate frame
-            quat3 = quaternion_from_euler(0, 0, math.pi/2)
-            quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
-            real_bracelet_tf.transform.rotation = quat_msg
-            # broadcast tf
-            real_bracelet_tf.header.stamp = rospy.Time.now()
-            br1.sendTransform((real_bracelet_tf.transform.translation.x, real_bracelet_tf.transform.translation.y, real_bracelet_tf.transform.translation.z),(real_bracelet_tf.transform.rotation.x, real_bracelet_tf.transform.rotation.y, real_bracelet_tf.transform.rotation.z, real_bracelet_tf.transform.rotation.w), time=real_bracelet_tf.header.stamp, child = "real_bracelet_link", parent="bracelet_link")
-
-        if (t.child_frame_id=="real_bracelet_link"):
-
-            # making rs_ee tf frame
             # set translations
             camera_tf = geometry_msgs.msg.TransformStamped()
             camera_tf.transform.translation.x = 0
-            camera_tf.transform.translation.y = 0.04 #0.21
+            camera_tf.transform.translation.y = -0.21
             camera_tf.transform.translation.z = -0.132
             # rotate frame
             r = 0
@@ -68,11 +32,24 @@ def tf_callback(msg):
             # broadcast tf
             camera_tf.transform.rotation = quat_msg
             camera_tf.header.stamp = rospy.Time.now()
-            br1.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "realsense_frame", parent="real_bracelet_link")
-        
+            br1.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "realsense_frame", parent="bracelet_link")
+    
 
+def pepper_tf_callback(msg):
+    print("pepper_tf_callback")
+    point = msg.position
 
+    if not rospy.has_param('pepper_tf'):
+        poi_str = f"{point.x},{point.y},{point.z}"
+        rospy.set_param('pepper_tf', poi_str)
+    
+    elif round(float(rospy.get_param('pepper_tf').split(',')[0]), 3) != round(float(point.x), 3):
+        poi_str = f"{point.x},{point.y},{point.z}"
+        rospy.set_param('pepper_tf', poi_str)
 
+    br4 = tf.TransformBroadcaster()
+    br4.sendTransform((msg.position.x + 0.0325, msg.position.y, msg.position.z),(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w), time=rospy.Time.now(), child = "pepper_tf", parent="base_link")
+    print("###############")
 
 
 def listener():

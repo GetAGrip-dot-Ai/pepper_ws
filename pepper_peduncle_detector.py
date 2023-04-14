@@ -7,8 +7,7 @@ from ultralytics import YOLO
 import matplotlib.pyplot as plt
 
 from pepper_peduncle import PepperPeduncle
-from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image, \
-    draw_pepper_peduncles
+from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_peduncles
 
 
 class PepperPeduncleDetector:
@@ -51,6 +50,7 @@ class PepperPeduncleDetector:
 
         img = read_image(img_path)
         results = self._model(img, conf=thresh)
+        # print("results: ", results)
         peduncle_count = 0
 
         result = results[0]
@@ -69,9 +69,9 @@ class PepperPeduncleDetector:
                 peduncle_list[i] = peduncle
                 peduncle_count += 1
 
-        if show_result:
-            for result in results:
-                res_plotted = result[0].plot()
+        # if show_result:
+        #     for result in results:
+        #         res_plotted = result[0].plot()
                 # cv2.imshow("result", res_plotted)
 
         # if print_result:

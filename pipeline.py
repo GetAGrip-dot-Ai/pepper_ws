@@ -81,7 +81,6 @@ class Perception:
     def detect_peppers_in_folder(self):
         files = get_all_image_path_in_folder(self.source)
         print(os.getcwd(),"==", self.source)
-        print("wt:", files)
         for path in files:
             self.detect_peppers_one_frame(path)
             
@@ -100,8 +99,9 @@ class Perception:
                     self.poi_in_rviz = (poi_x, poi_y, poi_z)
                     complete = True
                     return (poi_x, poi_y)
-                except:
+                except Exception as e:
                     print("no pepper detected")
+                    print(e)
             elif user_input == "2":
                 return False
             else:
