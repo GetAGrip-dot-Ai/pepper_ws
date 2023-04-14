@@ -48,11 +48,11 @@ def tf_callback(msg):
 
         if (t.child_frame_id=="real_bracelet_link"):
 
-            # making rs_ee tf frame
+            # making rs tf frame
             # set translations
             camera_tf = geometry_msgs.msg.TransformStamped()
             camera_tf.transform.translation.x = 0
-            camera_tf.transform.translation.y = 0.04 #0.21
+            camera_tf.transform.translation.y = 0.06 #0.21
             camera_tf.transform.translation.z = -0.132
             # rotate frame
             r = 0
