@@ -5,6 +5,7 @@ import math
 import os
 import time
 import matplotlib.pyplot as plt
+from termcolor import colored
 
 def show_img_depth():
     # Configure depth and color streams
@@ -78,7 +79,7 @@ def show_img_depth():
 
 
 def get_depth(x=320, y=240):
-    print(f"x: {x}, y:{y}")
+    # print(f"x: {x}, y:{y}")
     x, y = y, x
     # Configure depth and color streams
     pipeline = rs.pipeline()
@@ -116,7 +117,7 @@ def get_depth(x=320, y=240):
         distance = 0
         count = 0
         file_name = str(time.time()).split('.')[0]
-        path = os.getcwd() + '/depthlog/'+file_name+'/'
+        path = os.getcwd() + '/depthlog/'
         isExist = os.path.exists(path)
         if not isExist:
             os.makedirs(path)
@@ -134,26 +135,24 @@ def get_depth(x=320, y=240):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
+            # dx -= - 0.0325 
             color_image = np.asanyarray(color_frame.get_data())
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
 
             img = np.hstack((color_image, color_frame_not_aligned))
-            # color_image = cv2.circle(color_image, (x, y), 5, (0, 0, 255), 1)
-            # cv2.imwrite(path+file_name+'.png', color_image)\
             plt.imshow(img)
             plt.axis('on')
-            print("--------", x, y)
+            # print("--------", x, y)
             plt.plot(x, y,  'r*', markersize=5)
             plt.plot(x+640, y, 'b*', markersize=5)
             plt.plot(0, 0, 'g*', markersize=50)
             plt.savefig(path+file_name+str(count)+'.png')
             plt.cla()
             plt.clf()
-            print("=========saved to : ", path+file_name+str(count)+'.png')
-            # cv2.waitKey(1)
+            # print("=========saved to : ", path+file_name+str(count)+'.png')
             
             distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
-            print("========", dx ,dy, dz, "depth", depth)
+            # print("========", dx ,dy, dz, "depth", depth)
             # print("Distance from camera to pixel:", distance)
             # print("Z-depth from camera surface to pixel surface:", depth)
 
@@ -165,6 +164,7 @@ def get_depth(x=320, y=240):
         print(e)
         pipeline.stop()
         return -1, -1, -1
+    
     
 def get_image():
     # Configure depth and color streams
@@ -244,9 +244,6 @@ def get_image():
         # Stop streaming
         pipeline.stop()
 
-    return resized_color_image
-if __name__=="__main__":
+    return images[:, :640, :]
 
-    # show_img_depth()
-    # print(get_depth(320, 240))
-    get_image()
+

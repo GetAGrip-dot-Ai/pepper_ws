@@ -314,7 +314,7 @@ Visualization Manager:
           Value: false
         half_arm_2_link:
           Value: false
-        rs_ee:
+        realsense_frame:
           Value: true
         shoulder_link:
           Value: false
@@ -349,7 +349,7 @@ Visualization Manager:
                                 {}
                           tool_frame:
                             {}
-                        rs_ee:
+                        realsense_frame:
                           {}
       Update Interval: 0
       Value: true

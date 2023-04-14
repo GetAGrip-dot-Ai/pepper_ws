@@ -215,19 +215,6 @@ def remove_duplicate_peduncles(pepper_fruit_peduncle_distances: list):
     duplicate_pepper_peduncle = [item for item, count in collections.Counter(detected_pepper_peduncle).items() if
                                  count > 1]
 
-    # pf_duplicate_list = list()
-    # for pepper_fruit in duplicate_pepper_fruit: # index of peppers
-    #     duplicate_list = list()
-    #     for i in range(len(pepper_fruit_peduncle_distances)):
-    #         (pf, pp), d = pepper_fruit_peduncle_distances[i]
-    #         if pf == pepper_fruit:
-    #             duplicate_list.append(pepper_fruit_peduncle_distances[i])
-    #     pf_duplicate_list.append(duplicate_list)
-    # pepper_fruit_delete = choose_unmatching(pf_duplicate_list)
-    # for d in pepper_fruit_peduncle_distances:
-    #     if d in pepper_fruit_delete:
-    #         pepper_fruit_peduncle_distances.remove(d)
-
     pp_duplicate_list = list()
     for pepper_peduncle in duplicate_pepper_peduncle:  # index of peppers
         duplicate_list = list()
@@ -261,15 +248,8 @@ def calculate_iou(box_1, box_2):
     :param box_2: (4 x 2) tl, tr, br, bl
     :return: iou from 0-1
     '''
-    # fig = plt.figure(1, dpi=90)
     poly_1 = Polygon(box_1)
     poly_2 = Polygon(box_2)
-
-    # plot_polygon(poly_1, add_points=False, color='red')
-    # plot_polygon(poly_2, add_points=False, color='blue')
-    # plt.savefig(f"/home/jy/PycharmProjects/Perception-Resources/yolov8_scripts/src/results_5/{int(np.random.rand()*100)}.png")
-    # plt.clf()
-    # plt.cla()
 
     if poly_1.intersects(poly_2): 
         iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area
@@ -281,8 +261,6 @@ def calculate_iou(box_1, box_2):
 
 
 if __name__ == '__main__':
-    # get_image_from_webcam()
-    # image = cv2.imread("/home/jy/PycharmProjects/Perception-Resources/dataset/colorful/bell-peppers-do-the-different-colors-really-taste-any-different.jpg")
     image = cv2.imread("/home/jy/PycharmProjects/Perception-Resources/dataset/colorful/bell-peppers-in-season.jpg")
     # cv2.imwrite("img1.jpg", image)
     # image = red_to_green(image)

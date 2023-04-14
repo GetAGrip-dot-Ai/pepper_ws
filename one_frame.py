@@ -1,12 +1,11 @@
 from typing import Optional, Tuple
 
-import pepper_fruit_utils as pepper_fruit_utils
 from pepper import Pepper
 from pepper_fruit_detector import PepperFruitDetector
 from pepper_peduncle_detector import PepperPeduncleDetector
-from pepper_peduncle_utils import *
 from pepper_fruit_utils import *
 from realsense_utils import *
+from pepper_utils import *
 import os
 import tf
 import rospy
@@ -36,7 +35,6 @@ class OneFrame:
         self._pepper_fruit_detections: Dict[int, PepperFruit] = dict()
         self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
-        print("///////////////////", os.getcwd())
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
                                  yolo_weight_path='weights/pepper_fruit_best_3.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
@@ -119,6 +117,7 @@ class OneFrame:
         for _, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh)
 
+
     def determine_peduncle_orientation(self):
         for _, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_peduncle_orientation(single_pepper.pepper_fruit.xywh)
@@ -148,4 +147,4 @@ class OneFrame:
 
         self.determine_peduncle_poi()
         # self.plot_poi()
-        draw_all(self)
+        draw_all_multi_frame(self)

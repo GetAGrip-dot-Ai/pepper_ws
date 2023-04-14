@@ -23,15 +23,11 @@ def handle_multi_frame(req):
     
 def multi_frame_server():
     global pipeline
-    print("1")
     rospy.init_node('multi_frame_server')
     rate = rospy.Rate(1)
     os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
-    print("2")
     pipeline = Perception(None, 0)
-    print("3")
     s = rospy.Service('/perception/multi_frame', multi_frame, handle_multi_frame)
-    print("4")
     rospy.spin()
     # while not rospy.is_shutdown():
     #     rate.sleep()

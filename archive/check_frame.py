@@ -40,7 +40,7 @@ def listener():
     end_effector_link
     world
     ==========================
-    rs_ee
+    realsense_frame
     camera_bottom_screw_frame
     ==========================
     camera_link

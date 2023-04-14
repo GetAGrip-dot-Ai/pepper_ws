@@ -10,7 +10,7 @@ from multi_frame_utils import *
 
 
 class MultiFrame:
-    def __init__(self, max_frames=5):
+    def __init__(self, max_frames=10):
         self._max_frames = max_frames
         self._one_frames = deque()
         self._video_frames = deque()
@@ -51,6 +51,9 @@ class MultiFrame:
     def assign_frame_numbers(self):
         for i, frame in enumerate(self._one_frames):
             frame.frame_number = i
+
+    def assign_last_frame_number(self, number):
+        self._one_frames[-1].frame_number = number
 
     def write_results(self):
         filename = os.getcwd() + '/test_multi_frame/log/results.txt'
@@ -137,7 +140,7 @@ class MultiFrame:
                                 del self._matched_positive_peduncles[associated_fruit_frame_number]
 
     def run(self):
-        self.assign_frame_numbers()
+        # self.assign_frame_numbers()
         self.find_fruits()
         self.find_peduncles()
 

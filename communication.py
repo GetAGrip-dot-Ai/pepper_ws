@@ -6,6 +6,8 @@ from pepper_ws.msg import Obstacle
 import tf
 from scipy.spatial.transform import Rotation as R
 import numpy as np
+from termcolor import colored
+
 
 class Communication:
     def __init__(self):
@@ -14,36 +16,25 @@ class Communication:
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
         self.listener = tf.TransformListener()
+        self.transform_from_base = [[0, 0, 0], [0, 0, 0, 1]]
         
-    def poi_pub_fn(self, poi, orientation):
+    def publish_poi(self, poi, orientation):
 
-        now = rospy.Time.now()
-        self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
-        (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
-        r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
-        H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
-        row = np.array([0,0,0,1])
-        H = np.vstack((H,row))
-        poi = list(poi)
-        poi.append(1)
-        point = np.array(H) @ np.array(poi).T
+        # point = self.transform_to_base_link(poi)
+        point = poi
+
         peduncle_pose = Pose()
-        # # import pdb; pdb.set_trace()
-        # pp = np.array(r.as_matrix()) @ np.array(list(poi)).T+np.array(trans).T
-        # peduncle_pose.position.x = -trans[0] +poi[0]
-        # peduncle_pose.position.y = trans[1]-poi[1]
-        # peduncle_pose.position.z = trans[2] +poi[2]
-        # peduncle_pose.orientation = orientation
-        # import pdb; pdb.set_trace()
-        peduncle_pose.position.x = float(point[0])
-        peduncle_pose.position.y = float(point[1])
-        peduncle_pose.position.z = float(point[2])
+        peduncle_pose.position.x = float(point.x)
+        peduncle_pose.position.y = float(point.y)
+        peduncle_pose.position.z = float(point.z)
         peduncle_pose.orientation.x = 0
         peduncle_pose.orientation.y = 0
         peduncle_pose.orientation.z = 0
         peduncle_pose.orientation.w = 1
-        rospy.loginfo(peduncle_pose)
+        # rospy.loginfo(peduncle_pose)
         self.poi_pub.publish(peduncle_pose)
+
+
 
     def obstacle_pub_fn(self, obstacles):
         now = rospy.Time.now()
@@ -73,64 +64,87 @@ class Communication:
         rospy.loginfo(obstacle_msg)
         self.obstacle_pub.publish(obstacle_msg)
 
-    def poi_rviz_pub_fn(self, peppers):
-        marker = Marker()
-        marker.type = 8
-        marker.header.frame_id = "realsense_frame"
-        marker.color.a = 1.0
-        marker.color.r = 1.0
-        marker.scale.x = 0.03
-        marker.scale.y = 0.03
+    def rviz_marker_poi_realsense_frame(self, peppers):
+        marker = self.make_marker("realsense_frame", r=1, g=0, b=1, scale=0.1)
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
-            
             point = Point()
             point.x = poi[0]
             point.y = poi[1]
             point.z = poi[2] # convert to meter
             marker.points.append(point)
         
-        # print(marker.points)
-
-        # rospy.loginfo(marker)
         self.poi_rviz_pub.publish(marker)
-        poi_str = f"{poi[0]},{poi[1]},{poi[2]}"
-        if not rospy.has_param('poi'):
-            rospy.set_param('poi', poi_str)
-            print("set poi:", poi_str)
+    
+    def rviz_marker(self, point, r=1, g=0, b=0):
+        marker = self.make_marker("base_link", r=r, g=g, b=b, scale=0.1)
+        marker.points.append(point)
+        self.poi_rviz_pub.publish(marker)
+    def rviz_marker_rs(self, point, r=1, g=0, b=1):
+        marker = self.make_marker("realsense_frame", r=r, g=g, b=b, scale=0.1)
+        marker.points.append(point)
+        self.poi_rviz_pub.publish(marker)
 
-    def poi_rviz_pub_fn_base_link(self, peppers):
-        marker = Marker()
-        marker.type = 8
-        marker.header.frame_id = "base_link"
-        marker.color.a = 1.0
-        marker.color.r = 1.0
-        marker.color.b = 1.0
-        marker.scale.x = 0.03
-        marker.scale.y = 0.03
+
+    def single_rviz_marker_poi_realsense_frame(self, poi):
+        marker = self.make_marker("base_link", r=0, g=1, b=0, scale=0.04)
+
+        point = Point()
+        point.x = poi[0]
+        point.y = poi[1]
+        point.z = poi[2] 
+        marker.points.append(point)
+        
+        self.poi_rviz_pub.publish(marker)
+
+    def rviz_marker_poi_base_link(self, peppers):
+        marker = self.make_marker("base_link", r=1, g=0, b=0)
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
-            now = rospy.Time.now()
-            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
-            (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
-
-            r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
-            H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
-            row = np.array([0,0,0,1])
-            H = np.vstack((H,row))
-            poi = list(poi)
-            poi.append(1)
-            point = np.array(H) @ np.array(poi).T
-            p = Point()
-            p.x = point[0]
-            p.y = point[1]
-            p.z = point[2] # convert to meter
+            p = self.transform_to_base_link(poi)
             marker.points.append(p)
-
-        print(marker.points)
-        print("poi marker is publishing base")
 
         self.poi_rviz_pub.publish(marker)
 
+
+    def transform_to_base_link(self, point_in_relative_frame):
+        rate = rospy.Rate(10)
+        rospy.sleep(7)
+
+        try:
+            # rospy.spin()
+            now = rospy.Time.now()
+            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(12.0))
+            (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
+            print(colored('Transform success', 'blue'))
+            self.transform_from_base = (trans, rot)
+            
+        except Exception as e:
+            print(e)
+            print(colored('Transform failed', 'red'))
+            (trans,rot) = self.transform_from_base
+        # print("*")
+        r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
+        H = np.vstack((np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1))),np.array([0,0,0,1])))
+        point_in_relative_frame = list(point_in_relative_frame) + [1]
+        point = np.array(H) @ np.array(point_in_relative_frame).T
+
+        p = Point()
+        p.x = point[0]
+        p.y = point[1]
+        p.z = point[2] # convert to meter
+        return p
+    
+    def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
+        marker = Marker()
+        marker.type = 8
+        marker.header.frame_id = frame_id
+        marker.color.a = 0.5
+        marker.color.r = r
+        marker.color.g = g
+        marker.color.b = b
+        marker.scale.x = scale
+        marker.scale.y = scale
+        return marker

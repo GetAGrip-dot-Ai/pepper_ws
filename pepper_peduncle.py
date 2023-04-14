@@ -2,6 +2,7 @@ import os
 from typing import List
 from realsense_utils import *
 from pepper_peduncle_utils import *
+from communication import Communication
 
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
@@ -18,7 +19,16 @@ class PepperPeduncle:
         self._occurences: int = 1
         self._associated_peduncles: List[(int, PepperPeduncle)] = list()
         self._parent_pepper: int = None
+        self._poi_in_base_link = None
     
+    @property
+    def poi_in_base_link(self):
+        return self._poi_in_base_link
+
+    @poi_in_base_link.setter
+    def poi_in_base_link(self, poi_in_base_link):
+        self._poi_in_base_link = poi_in_base_link
+
     @property
     def mask(self):
         return self._mask
@@ -107,19 +117,31 @@ class PepperPeduncle:
     def __str__(self):
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
-    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh):
-        # plt.savefig(f"{os.getcwd()}/result/hi.png")
+    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None):
+        if pepper_fruit_xywh is None:
+            pepper_fruit_xywh = self._xywh
+            pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
 
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
         poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
 
-        self._poi = (poi_z, poi_x, -poi_y)
+        self._poi = (poi_z, -poi_x, -poi_y)
         self._poi_px = (poi_x_px, poi_y_px)
-        print("POI in world frame:", poi_x, poi_y, poi_z)
-        print("POI in pixel frame:", self._poi_px)
-              
+        self.get_poi_in_base_link()
+        # print("POI in world frame:", poi_x, poi_y, poi_z)
+        # print("POI in pixel frame:", self._poi_px)
+    def get_poi_in_base_link(self):
+        poi = self._poi
+        comm = Communication()
+        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        # print(poi)
+        self.poi_in_base_link = comm.transform_to_base_link(poi)    # point in real world   
+        # print("do things  ")
+        # print(self.poi_in_base_link)      
+        # print("*******************************************************")
+
     def set_peduncle_orientation(self, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)
         point_z = get_depth(point_x, point_y)

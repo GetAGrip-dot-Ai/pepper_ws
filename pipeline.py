@@ -81,7 +81,6 @@ class Perception:
     def detect_peppers_in_folder(self):
         files = get_all_image_path_in_folder(self.source)
         print(os.getcwd(),"==", self.source)
-        print("wt:", files)
         for path in files:
             self.detect_peppers_one_frame(path)
             
@@ -100,8 +99,9 @@ class Perception:
                     self.poi_in_rviz = (poi_x, poi_y, poi_z)
                     complete = True
                     return (poi_x, poi_y)
-                except:
+                except Exception as e:
                     print("no pepper detected")
+                    print(e)
             elif user_input == "2":
                 return False
             else:
@@ -165,13 +165,14 @@ class Perception:
         #################################################################
         # Take an image and add it as a frame to the multi frame
         #################################################################
-        print("In frame addition")
         img = get_image()
 
         number = 0 if not self.multi_frame._one_frames else len(self.multi_frame._one_frames)
         print(f"Number: {number}")
+        # print("-------", os.getcwd())
         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         self.multi_frame.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
+        self.multi_frame.assign_last_frame_number(number)
         self.multi_frame.populate_last_frame()
 
     def process_multi_frame(self):
@@ -223,19 +224,28 @@ class Perception:
         # else: 
         #     pepper = None
         #     print("No peppers left!")
-        
+        print("00000000000000")
+        print(self.chosen_pepper.pepper_peduncle)
+        poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
+        print("11111111111111111")
+        print(poi_in_base_link)
+
         rate = rospy.Rate(10)
         start_time = time.time()
         while not rospy.is_shutdown() and time.time()- start_time < 20:
-            poi = self.chosen_pepper.pepper_peduncle.poi
-            self.communication.poi_rviz_pub_fn(self.peppers)
+            # poi = self.chosen_pepper.pepper_peduncle.poi
+            
+            self.communication.publish_poi(poi_in_base_link, None)
             # self.communication.obstacle_pub_fn(self.pepper_fruits)
-            self.communication.poi_rviz_pub_fn_base_link(self.peppers)
-            self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
+            # self.communication.rviz_marker_poi_base_link(self.peppers)
+            self.communication.rviz_marker(poi_in_base_link)
+            self.communication.rviz_marker_rs(poi_in_base_link)
+            # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
+
             rate.sleep()
 
             self.multi_frame.clear_frames()
-            print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
+            # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
             # print("publishing", list(self.peppers.values()))
 
     #####################################################################
