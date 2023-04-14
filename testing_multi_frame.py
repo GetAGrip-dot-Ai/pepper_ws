@@ -63,9 +63,9 @@ if __name__ == '__main__':
     number = 0
 
     # while user_input == "1":
-    while number != 4:
-        img = get_image_webcam()
-        cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
+    while number != 6:
+        # img = get_image_webcam()
+        # cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         obj.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
         number += 1
         # user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")

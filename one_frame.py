@@ -141,6 +141,7 @@ class OneFrame:
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
+        # self.determine_pepper_xyz()
         # print(self.frame_number)
         # print(self.pepper_fruit_detections)
         # self.plot_pepper()

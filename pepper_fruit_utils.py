@@ -44,7 +44,8 @@ def draw_bounding_box(confidence, x, y, w, h, color="blue", fill=False):
     # plt.plot(x, y, 'b*')
 
     # plot conf
-    plt.text(x - w / 2, y - h / 2, round(float(confidence[0]), 2), color='red', fontsize=10)  # round(confidence[0], 2)
+    # plt.text(x - w / 2, y - h / 2, round(float(confidence[0]), 2), color='red', fontsize=10)  # round(confidence[0], 2)
+    plt.text(x - w / 2, y - h / 2, round(float(confidence), 2), color='red', fontsize=10)  # round(confidence[0], 2)
 
 
 def draw_bounding_polygon(confidence, mask, img_shape, color="blue", fill=True):

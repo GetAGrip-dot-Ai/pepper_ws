@@ -158,14 +158,14 @@ def draw_all(one_frame):
 
     for peduncle in one_frame.pepper_peduncle_detections.values():
         mask = peduncle.mask
-        pepper_fruit_utils.draw_bounding_polygon(peduncle.conf, mask, one_frame.img_shape, color='black', fill=False)
+        pepper_fruit_utils.draw_bounding_polygon(peduncle.number, mask, one_frame.img_shape, color='red', fill=True)
     for pepper_fruit in one_frame.pepper_fruit_detections.values():
         xywh = pepper_fruit.xywh
         x = int(xywh[0])
         y = int(xywh[1])
         w = int(xywh[2])
         h = int(xywh[3])
-        pepper_fruit_utils.draw_bounding_box(pepper_fruit.conf, x, y, w, h, color="black", fill=False)
+        pepper_fruit_utils.draw_bounding_box(pepper_fruit.number, x, y, w, h, color="red", fill=True)
 
     for idx, pepper in one_frame.pepper_detections.items():
         r = np.round(np.random.rand(), 1)
@@ -180,10 +180,10 @@ def draw_all(one_frame):
         y = int(xywh[1])
         w = int(xywh[2])
         h = int(xywh[3])
-        pepper_fruit_utils.draw_bounding_box(pepper_fruit.conf, x, y, w, h, color=color)
+        pepper_fruit_utils.draw_bounding_box(pepper_fruit.number, x, y, w, h, color=color)
 
         mask = pepper_peduncle.mask
-        pepper_fruit_utils.draw_bounding_polygon(pepper_peduncle.conf, mask, one_frame.img_shape, color=color)
+        pepper_fruit_utils.draw_bounding_polygon(pepper_peduncle.number, mask, one_frame.img_shape, color=color)
         poi_px = pepper.pepper_peduncle.poi_px
         plt.plot(poi_px[1], poi_px[0], 'bo', markersize=2)
         

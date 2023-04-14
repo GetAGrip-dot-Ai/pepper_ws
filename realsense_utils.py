@@ -197,8 +197,9 @@ def get_image():
     pipeline.start(config)
 
     try:
-        while True:
-
+        count  = 0
+        while count < 100 :
+            count += 1
             # Wait for a coherent pair of frames: depth and color
             frames = pipeline.wait_for_frames()
             depth_frame = frames.get_depth_frame()
@@ -223,17 +224,20 @@ def get_image():
             else:
                 images = np.hstack((color_image, depth_colormap))
 
-            # Show images
-            cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('RealSense', images)
+            # # Show images
+            # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+            # cv2.imshow('RealSense', images)
             
-            k = cv2.waitKey(0)
-            if k==27:
-                print("hey")
-                cv2.destroyAllWindows()
-                print("images", images.shape)
-                return images[:, :640, :]
-                # break
+            # k = cv2.waitKey(0)
+            # if k==27:
+            #     print("hey")
+            #     cv2.destroyAllWindows()
+            #     print("images", images.shape)
+            #     return images[:, :640, :]
+            #     # break
+
+            # cv2.destroyAllWindows()
+        return images[:, :640, :]
 
     finally:
 

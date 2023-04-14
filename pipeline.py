@@ -32,6 +32,7 @@ class Perception:
         self.multi_frame = MultiFrame(multi_frame_number)
         self.communication = Communication()
         self.poi_in_rviz = None
+        self.chosen_pepper = None
 
     def get_image(self):
         #################################################################
@@ -164,18 +165,42 @@ class Perception:
         #################################################################
         # Take an image and add it as a frame to the multi frame
         #################################################################
+        print("In frame addition")
         img = get_image()
 
-        number = 0 if self.multi_frame.one_frames == [] else len(self.multi_frame._one_frames)
+        number = 0 if not self.multi_frame._one_frames else len(self.multi_frame._one_frames)
+        print(f"Number: {number}")
         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         self.multi_frame.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
+        self.multi_frame.populate_last_frame()
 
     def process_multi_frame(self):
         #################################################################
         # Get the point of interaction from the multi frame
         #################################################################
         self.multi_frame.run()
-        # self.peppers = self.multi_frame.pepper_detections
+        peppers_temp = self.multi_frame._matched_positive_peppers
+        print(peppers_temp)
+
+        if not peppers_temp:
+            print("No peppers here!")
+            return -1
+        else:
+            for key, value in peppers_temp.items():
+                self.peppers = peppers_temp[key]
+                print(f"Peppers, {self.peppers}")
+                for v in value:
+                    self.chosen_pepper = v
+                    print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
+                    if key in self.multi_frame._unmatched_positive_fruits:
+                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
+                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                        print(self.pepper_fruits)
+                    else:
+                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
+                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                        print(self.pepper_fruits)
+                    return key
 
         # self.set_pepper_order(arm_xyz)
 
@@ -183,35 +208,35 @@ class Perception:
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
-        print(self.peppers)
-        print(self.pepper_fruits)
-        print(self.pepper_peduncles)
+        # print(self.peppers)
+        # print(self.pepper_fruits)
+        # print(self.pepper_peduncles)
 
-        if self.peppers:
-            pepper = self.peppers.pop(0)
-            poi = pepper.pepper_peduncle.poi
-            del self.pepper_fruits[pepper.pepper_fruit.number]
-            del self.pepper_peduncles[pepper.pepper_peduncle.number]
-            print(self.peppers)
-            print(self.pepper_fruits)
-            print(self.pepper_peduncles)
-        else: 
-            pepper = None
-            print("No peppers left!")
+        # if self.peppers:
+        #     pepper = self.peppers.pop(0)
+        #     poi = pepper.pepper_peduncle.poi
+        #     del self.pepper_fruits[pepper.pepper_fruit.number]
+        #     del self.pepper_peduncles[pepper.pepper_peduncle.number]
+        #     print(self.peppers)
+        #     print(self.pepper_fruits)
+        #     print(self.pepper_peduncles)
+        # else: 
+        #     pepper = None
+        #     print("No peppers left!")
         
         rate = rospy.Rate(10)
         start_time = time.time()
-        while pepper is not None and not rospy.is_shutdown() and time.time()- start_time < 20:
-            self.communication.poi_rviz_pub_fn(list(self.peppers.values()))
-            self.communication.obstacle_pub_fn(list(self.pepper_fruits.values()))
-            self.communication.poi_rviz_pub_fn_base_link(list(self.peppers.values()))
+        while not rospy.is_shutdown() and time.time()- start_time < 20:
+            poi = self.chosen_pepper.pepper_peduncle.poi
+            self.communication.poi_rviz_pub_fn(self.peppers)
+            # self.communication.obstacle_pub_fn(self.pepper_fruits)
+            self.communication.poi_rviz_pub_fn_base_link(self.peppers)
             self.communication.poi_pub_fn([poi[0], poi[1], poi[2]], None)
             rate.sleep()
 
             self.multi_frame.clear_frames()
+            print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
             # print("publishing", list(self.peppers.values()))
-
-        return 1 if pepper is not None else 0
 
     #####################################################################
     # VISUALIZATION related
