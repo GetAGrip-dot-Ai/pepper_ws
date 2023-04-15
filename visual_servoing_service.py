@@ -3,9 +3,10 @@ import numpy as np
 import cv2
 import os
 import time
-import matplotlib.pyplot as plt
 from pepper_peduncle_detector import PepperPeduncleDetector
 from realsense_utils import get_image
+from geometry_msgs.msg import Pose
+
 def get_xy_in_realworld(x=350, y=200):
     y, x = int(x), int(y)
     pipeline = rs.pipeline()
@@ -103,6 +104,39 @@ def visual_servoing():
     (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
     print("x, y, z", dx, dy, dz)
     retrun (dx ,dy, dz)
+
+def publish_d(x, y, z):
+    visual_servo_pub = rospy.Publisher('/perception/visual_servoing', Pose, queue_size=10)
+    change_pose = Pose()
+    change_pose.position.x = 0
+    change_pose.position.y = -float(x)
+    change_pose.position.z = float(-y)
+    change_pose.orientation.x = 0
+    change_pose.orientation.y = 0
+    change_pose.orientation.z = 0
+    change_pose.orientation.w = 1
+    # rospy.loginfo(peduncle_pose)
+    visual_servo_pub.publish(change_pose)
+
+def handle_visual_servoing(req):
+    print("Returning visual servoing")
+    if req.req_id == 0:
+        start_time = time.time()
+        (dx ,dy, dz) = visual_servoing()
+        while time.time() - start_time:
+            publish_d(dx ,dy, dz)
+            time.sleep(1)
+        return 1
+    # else:
+    #     continue
+
+
+def vs_server():
+    rospy.init_node('visual_servoing_server')
+    rate = rospy.Rate(10)
+    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    s = rospy.Service('/perception/visual_servoing', VisualServoing, handle_visual_servoing)
+    rospy.spin()
 
 if __name__=="__main__":
 
