@@ -37,19 +37,10 @@ class Communication:
 
 
     def obstacle_pub_fn(self, obstacles):
-        now = rospy.Time.now()
-        self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
-        (trans, rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
-
-        r = R.from_quat([rot[0], rot[1], rot[2], rot[3]])
-
-        H = np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1)))
-        row = np.array([0, 0, 0, 1])
-        H = np.vstack((H, row))
-
         obstacle_msg = Obstacle()
+
         for obstacle in obstacles:
-            point = np.array(H) @ np.array([obstacle.xyz[0], obstacle.xyz[1], obstacle.xyz[2], 1]).T
+            point = obstacle.xyz
             pose = Pose()
             pose.position.x = float(point[0])
             pose.position.y = float(point[1])

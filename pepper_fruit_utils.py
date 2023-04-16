@@ -202,6 +202,27 @@ def choose_unmatching(duplicate_list):
     return pepper_delete
 
 
+def remove_overlapping_boxes(pepper_list):
+    no_duplicate_pepper_list = pepper_list.copy()
+
+    for number1, pepper1 in pepper_list.items():
+        for number2, pepper2 in pepper_list.items():
+            if number1 != number2:
+                x, y, w, h = pepper1.xywh
+                box1 = [[x - w / 2, y - h / 2], [x + w / 2, y - h / 2], [x + w / 2, y + h / 2], [x - w / 2, y + h / 2]]
+                x, y, w, h = pepper2.xywh
+                box2 = [[x - w / 2, y - h / 2], [x + w / 2, y - h / 2], [x + w / 2, y + h / 2], [x - w / 2, y + h / 2]]
+                iou = calculate_iou(box1, box2)
+                
+                if iou > 0.7:
+                    if pepper1.conf > pepper2.conf and number2 in no_duplicate_pepper_list:
+                        del no_duplicate_pepper_list[number2]
+                    elif pepper1.conf < pepper2.conf and number1 in no_duplicate_pepper_list:
+                        del no_duplicate_pepper_list[number1]
+
+    return no_duplicate_pepper_list
+
+
 def remove_duplicate_peduncles(pepper_fruit_peduncle_distances: list):
     # remove duplicate peduncles
 
