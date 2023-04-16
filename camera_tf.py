@@ -5,53 +5,81 @@ from geometry_msgs.msg import Quaternion
 from tf2_msgs.msg import TFMessage
 import tf
 import math
+import numpy as np
+from scipy.spatial.transform import Rotation as R
 from tf.transformations import *
 
 def tf_callback(msg):
     br1 = tf.TransformBroadcaster()
     
-    for t in msg.transforms:
+    # for t in msg.transforms:
 
-        if (t.child_frame_id=="bracelet_link"):
+    #     if (t.child_frame_id=="bracelet_link"):
 
-            # making fake bracelet frame bc end-effector is mounted rotated 90 clockwise
-            # set translations
-            real_bracelet_tf = geometry_msgs.msg.TransformStamped()
-            real_bracelet_tf.transform.translation.x = 0 #t.transform.translation.x
-            real_bracelet_tf.transform.translation.y = 0 #t.transform.translation.y
-            real_bracelet_tf.transform.translation.z = 0 #t.transform.translation.z
-            # rotate frame
-            quat3 = quaternion_from_euler(0, 0, math.pi/2)
-            quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
-            real_bracelet_tf.transform.rotation = quat_msg
-            # broadcast tf
-            real_bracelet_tf.header.stamp = rospy.Time.now()
-            br1.sendTransform((real_bracelet_tf.transform.translation.x, real_bracelet_tf.transform.translation.y, real_bracelet_tf.transform.translation.z),(real_bracelet_tf.transform.rotation.x, real_bracelet_tf.transform.rotation.y, real_bracelet_tf.transform.rotation.z, real_bracelet_tf.transform.rotation.w), time=real_bracelet_tf.header.stamp, child = "real_bracelet_link", parent="bracelet_link")
+    #         # making fake bracelet frame bc end-effector is mounted rotated 90 clockwise
+    #         # set translations
+    #         real_bracelet_tf = geometry_msgs.msg.TransformStamped()
+    #         real_bracelet_tf.transform.translation.x = 0 #t.transform.translation.x
+    #         real_bracelet_tf.transform.translation.y = 0 #t.transform.translation.y
+    #         real_bracelet_tf.transform.translation.z = 0 #t.transform.translation.z
+    #         # rotate frame
+    #         quat3 = quaternion_from_euler(0, 0, math.pi/2)
+    #         quat_msg = Quaternion(quat3[0], quat3[1], quat3[2], quat3[3])
+    #         real_bracelet_tf.transform.rotation = quat_msg
+    #         # broadcast tf
+    #         real_bracelet_tf.header.stamp = rospy.Time.now()
+    #         br1.sendTransform((real_bracelet_tf.transform.translation.x, real_bracelet_tf.transform.translation.y, real_bracelet_tf.transform.translation.z),(real_bracelet_tf.transform.rotation.x, real_bracelet_tf.transform.rotation.y, real_bracelet_tf.transform.rotation.z, real_bracelet_tf.transform.rotation.w), time=real_bracelet_tf.header.stamp, child = "real_bracelet_link", parent="bracelet_link")
         
-        if (t.child_frame_id=="real_bracelet_link"):
+    #     if (t.child_frame_id=="real_bracelet_link"):
 
-            # making rs tf frame
-            # set translations
-            camera_tf = geometry_msgs.msg.TransformStamped()
-            camera_tf.transform.translation.x = 0
-            camera_tf.transform.translation.y = 0.06 #0.21
-            camera_tf.transform.translation.z = -0.132
-            # rotate frame
-            r = 0
-            p = math.pi/2
-            y = 0
-            quat_1 = quaternion_from_euler(r, p, y)
-            r =  -math.pi/2
-            p = 0
-            y = 0
-            quat_2 = quaternion_from_euler(r, p, y)
-            quat = quaternion_multiply( quat_1, quat_2)
-            quat_msg = Quaternion(quat[0], quat[1], quat[2], quat[3])
-            # broadcast tf
-            camera_tf.transform.rotation = quat_msg
-            camera_tf.header.stamp = rospy.Time.now()
-            br1.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "realsense_frame", parent="real_bracelet_link")
+    #         # making rs tf frame
+    #         # set translations
+    #         camera_tf = geometry_msgs.msg.TransformStamped()
+    #         camera_tf.transform.translation.x = 0
+    #         camera_tf.transform.translation.y = 0.06 #0.21
+    #         camera_tf.transform.translation.z = -0.132
+    #         # rotate frame
+    #         r = 0
+    #         p = math.pi/2
+    #         y = 0
+    #         quat_1 = quaternion_from_euler(r, p, y)
+    #         r =  -math.pi/2
+    #         p = 0
+    #         y = 0
+    #         quat_2 = quaternion_from_euler(r, p, y)
+    #         quat = quaternion_multiply( quat_1, quat_2)
+    #         quat_msg = Quaternion(quat[0], quat[1], quat[2], quat[3])
+    #         # broadcast tf
+    #         camera_tf.transform.rotation = quat_msg
+    #         camera_tf.header.stamp = rospy.Time.now()
+    #         br1.sendTransform((camera_tf.transform.translation.x, camera_tf.transform.translation.y, camera_tf.transform.translation.z),(camera_tf.transform.rotation.x, camera_tf.transform.rotation.y, camera_tf.transform.rotation.z, camera_tf.transform.rotation.w), time=camera_tf.header.stamp , child = "realsense_frame", parent="real_bracelet_link")
     
+    with open("/home/sridevi/kinova_ws/src/pepper_ws/realsense_wrt_bracelet.npy", "rb") as f:
+        H_realsense_bracelet = np.load(f)
+
+    R_realsense_bracelet = np.asmatrix(H_realsense_bracelet[:3, :3])
+    H = R.from_matrix(R_realsense_bracelet)
+    q_realsense_bracelet = H.as_quat()
+
+    # rotate frame
+    r = math.pi/2
+    p = 0
+    y = 0
+    quat_1 = quaternion_from_euler(r, p, y)
+    q_realsense_bracelet = quaternion_multiply(q_realsense_bracelet, quat_1)
+
+    r = 0
+    p = 0
+    y = math.pi/2
+    quat_2 = quaternion_from_euler(r, p, y)
+    q_realsense_bracelet = quaternion_multiply( q_realsense_bracelet, quat_2)
+
+    
+    p_realsense_bracelet = H_realsense_bracelet[:3, 3]
+    
+    br1.sendTransform((p_realsense_bracelet[0], p_realsense_bracelet[1], p_realsense_bracelet[2]), (q_realsense_bracelet[0], q_realsense_bracelet[1], q_realsense_bracelet[2], q_realsense_bracelet[3]), time=rospy.Time.now(), child = "realsense_frame", parent="bracelet_link")
+
+
 
 def pepper_tf_callback(msg):
     print("pepper_tf_callback")

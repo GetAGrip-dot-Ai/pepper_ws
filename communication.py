@@ -111,12 +111,12 @@ class Communication:
 
     def transform_to_base_link(self, point_in_relative_frame):
         rate = rospy.Rate(10)
-        rospy.sleep(7)
+        rospy.sleep(10)
 
         try:
             # rospy.spin()
             now = rospy.Time.now()
-            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(12.0))
+            self.listener.waitForTransform("/base_link", "/realsense_frame", now, rospy.Duration(12.0))
             (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
             print(colored('Transform success', 'blue'))
             self.transform_from_base = (trans, rot)
@@ -135,6 +135,7 @@ class Communication:
         p.x = point[0]
         p.y = point[1]
         p.z = point[2] # convert to meter
+        rospy.sleep(5)
         return p
     
     def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
