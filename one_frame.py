@@ -107,11 +107,11 @@ class OneFrame:
                 self._pepper_detections[number] = pepper
                 number += 1
 
-    def determine_pepper_xyz(self):
-        for key, single_pepper in self._pepper_detections.items():
-            x, y, z = get_depth(int(single_pepper.xywh[1]), int(single_pepper.xywh[0]))
-            xyz = np.array([z, x, -y])
-            single_pepper.pepper_fruit.xyz = xyz
+    def determine_pepper_fruit_xyz(self):
+        for key, single_pepper_fruit in self._pepper_fruit_detections.items():
+            x, y, z = get_depth(int(single_pepper_fruit.xywh[1]), int(single_pepper_fruit.xywh[0]))
+            xyz = np.array([z + 0.06, x, -y])
+            single_pepper_fruit.xyz = xyz
 
     def determine_peduncle_poi(self):
         for _, single_pepper in self._pepper_detections.items():
@@ -140,7 +140,7 @@ class OneFrame:
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
-        # self.determine_pepper_xyz()
+        self.determine_pepper_fruit_xyz()
         # print(self.frame_number)
         # print(self.pepper_fruit_detections)
         # self.plot_pepper()

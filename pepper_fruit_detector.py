@@ -4,7 +4,7 @@ import ultralytics
 from ultralytics import YOLO
 
 from pepper_fruit import PepperFruit
-from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image, print_result_boxes
+from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image, print_result_boxes, remove_overlapping_boxes
 
 
 class PepperFruitDetector:
@@ -55,6 +55,9 @@ class PepperFruitDetector:
                 # cv2.imshow("result", res_plotted)
         if print_result:
             print_result_boxes(pepper_list)
+
+        pepper_list = remove_overlapping_boxes(pepper_list)
+
         return pepper_list
     
     def predict_peppers(self, show_result: bool = False, print_result: bool = False):
