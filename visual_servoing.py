@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pyrealsense2 as rs
 import numpy as np
 import cv2
@@ -6,6 +7,7 @@ import time
 import matplotlib.pyplot as plt
 from pepper_peduncle_detector import PepperPeduncleDetector
 from realsense_utils import get_image
+import rospy
 def get_xy_in_realworld(x=350, y=200):
     y, x = int(x), int(y)
     pipeline = rs.pipeline()
@@ -95,15 +97,17 @@ def visual_servoing():
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)
+            (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
+            print("x, y, z", dx, dy, dz)
+            # return (dx ,dy, dz)
+            return (0.3, 0.3, 0.3)
     except Exception as e:
         print("Error in detecting pepper", e)
     # get the x, y, z in the realsense axis frame
     # this should be 0, offset of the camera in th rs frame's -z axis 
     # and the z is just not going to work because it dies at 0.15 depth
-    (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
-    print("x, y, z", dx, dy, dz)
-    retrun (dx ,dy, dz)
+
 
 if __name__=="__main__":
-
+    rospy.init_node("visual_servo")
     print(visual_servoing())

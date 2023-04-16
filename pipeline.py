@@ -185,7 +185,6 @@ class Perception:
 
         if not peppers_temp:
             print("No peppers here!")
-            return -1
         else:
             for key, value in peppers_temp.items():
                 self.peppers = peppers_temp[key]
@@ -201,7 +200,6 @@ class Perception:
                         self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
                         self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
                         print(self.pepper_fruits)
-                    return key
 
         # self.set_pepper_order(arm_xyz)
 
@@ -224,29 +222,34 @@ class Perception:
         # else: 
         #     pepper = None
         #     print("No peppers left!")
-        print("00000000000000")
-        print(self.chosen_pepper.pepper_peduncle)
-        poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
-        print("11111111111111111")
-        print(poi_in_base_link)
 
-        rate = rospy.Rate(10)
-        start_time = time.time()
-        while not rospy.is_shutdown() and time.time()- start_time < 20:
-            # poi = self.chosen_pepper.pepper_peduncle.poi
-            
-            self.communication.publish_poi(poi_in_base_link, None)
-            # self.communication.obstacle_pub_fn(self.pepper_fruits)
-            # self.communication.rviz_marker_poi_base_link(self.peppers)
-            self.communication.rviz_marker(poi_in_base_link)
-            self.communication.rviz_marker_rs(poi_in_base_link)
-            # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
+        if self.chosen_pepper is None:
+            return 0
+        else:
+            print("00000000000000")
+            print(self.chosen_pepper.pepper_peduncle)
+            poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
+            print("11111111111111111")
+            print(poi_in_base_link)
 
-            rate.sleep()
+            rate = rospy.Rate(10)
+            start_time = time.time()
+            while not rospy.is_shutdown() and time.time()- start_time < 20:
+                # poi = self.chosen_pepper.pepper_peduncle.poi
+                
+                self.communication.publish_poi(poi_in_base_link, None)
+                # self.communication.obstacle_pub_fn(self.pepper_fruits)
+                # self.communication.rviz_marker_poi_base_link(self.peppers)
+                self.communication.rviz_marker(poi_in_base_link)
+                self.communication.rviz_marker_rs(poi_in_base_link)
+                # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
 
-            self.multi_frame.clear_frames()
-            # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
-            # print("publishing", list(self.peppers.values()))
+                rate.sleep()
+
+                self.multi_frame.clear_frames()
+                return 1
+                # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
+                # print("publishing", list(self.peppers.values()))
 
     #####################################################################
     # VISUALIZATION related

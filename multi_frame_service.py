@@ -12,14 +12,11 @@ def handle_multi_frame(req):
         print("In 0")
         pipeline.add_frame_to_multi_frame()
         return 1
-    elif req.req_id == 1:
-        print("In 1")
-        frame_number = pipeline.process_multi_frame()
-        return frame_number
     else:
-        print("In 2")
-        pipeline.send_to_manipulator()
-        return 1
+        print("In 1")
+        pipeline.process_multi_frame()
+        pepper_found = pipeline.send_to_manipulator()
+        return pepper_found
     
 def multi_frame_server():
     global pipeline

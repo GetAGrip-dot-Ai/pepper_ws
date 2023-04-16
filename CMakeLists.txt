@@ -58,6 +58,7 @@ add_service_files(
   FILES
   harvest.srv
   multi_frame.srv
+  visual_servo.srv
 )
 
 ## Generate actions in the 'action' folder

@@ -5,7 +5,7 @@ from pepper_peduncle_utils import *
 from communication import Communication
 
 class PepperPeduncle:
-    def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
+    def __init__(self, number: int, mask=None, conf=None, percentage=0.7):
         self.number: int = number
         self._mask = mask
         self._conf: float = conf
