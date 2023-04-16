@@ -192,7 +192,7 @@ class Perception:
                 for v in value:
                     self.chosen_pepper = v
                     print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
-                    if key in self.multi_frame._unmatched_positive_fruits:
+                    if key in self.multi_frame._unmatched_positive_fruits.keys():
                         self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
                         self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
                         print(self.pepper_fruits)
@@ -200,6 +200,7 @@ class Perception:
                         self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
                         self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
                         print(self.pepper_fruits)
+                    return
 
         # self.set_pepper_order(arm_xyz)
 
@@ -224,6 +225,7 @@ class Perception:
         #     print("No peppers left!")
 
         if self.chosen_pepper is None:
+            self.multi_frame.clear_frames()
             return 0
         else:
             print("00000000000000")

@@ -117,7 +117,7 @@ class PepperPeduncle:
     def __str__(self):
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
-    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None):
+    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None, trans=None, rot=None):
         if pepper_fruit_xywh is None:
             pepper_fruit_xywh = self._xywh
             pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
@@ -129,15 +129,15 @@ class PepperPeduncle:
 
         self._poi = (poi_z, -poi_x, -poi_y)
         self._poi_px = (poi_x_px, poi_y_px)
-        self.get_poi_in_base_link()
+        self.get_poi_in_base_link(trans, rot)
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         # print("POI in pixel frame:", self._poi_px)
-    def get_poi_in_base_link(self):
+    def get_poi_in_base_link(self, trans, rot):
         poi = self._poi
         comm = Communication()
         # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         # print(poi)
-        self.poi_in_base_link = comm.transform_to_base_link(poi)    # point in real world   
+        self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
         # print("do things  ")
         # print(self.poi_in_base_link)      
         # print("*******************************************************")
