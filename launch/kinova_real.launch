@@ -1,0 +1,12 @@
+<launch>
+    
+    <include file="$(find kortex_driver)/launch/kortex_driver.launch">
+        <arg name="dof" default="6"/> <!-- Number of degrees of freedom of the arm -->
+        <arg name="ip_address" default="192.168.2.10" />
+        <arg name="gripper" default="robotiq_2f_85" />
+    </include>
+
+
+    <node name="camera_node" pkg="pepper_ws" type="camera_tf.py" output="screen"/>
+
+</launch>

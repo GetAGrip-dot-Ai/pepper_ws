@@ -5,7 +5,6 @@ import math
 import os
 import time
 import matplotlib.pyplot as plt
-from termcolor import colored
 
 def show_img_depth():
     # Configure depth and color streams

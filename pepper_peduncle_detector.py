@@ -14,7 +14,7 @@ class PepperPeduncleDetector:
     def __init__(self, file_path, yolo_weight_path, img=None):
 
         ultralytics.checks()
-
+        print("yolo path is:", yolo_weight_path)
         self._model: YOLO = YOLO(yolo_weight_path)
         self._path: str = file_path
         self._classes: List[str] = ["pepper"]
