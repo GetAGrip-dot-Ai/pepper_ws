@@ -112,7 +112,6 @@ class Communication:
         p.x = point[0]
         p.y = point[1]
         p.z = point[2] # convert to meter
-        print(16)
         return p
     
     def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):

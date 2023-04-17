@@ -121,7 +121,7 @@ def get_depth(x=320, y=240):
         if not isExist:
             os.makedirs(path)
 
-        while distance==0 and count <10:
+        while count <100:
             count += 1
             frames = pipeline.wait_for_frames()
             aligned_frames =  align.process(frames)
@@ -139,18 +139,18 @@ def get_depth(x=320, y=240):
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
 
             img = np.hstack((color_image, color_frame_not_aligned))
-            plt.imshow(img)
-            plt.axis('on')
-            # print("--------", x, y)
-            plt.plot(x, y,  'r*', markersize=5)
-            plt.plot(x+640, y, 'b*', markersize=5)
-            plt.plot(0, 0, 'g*', markersize=50)
-            plt.savefig(path+file_name+str(count)+'.png')
-            plt.cla()
-            plt.clf()
-            # print("=========saved to : ", path+file_name+str(count)+'.png')
+        plt.imshow(img)
+        plt.axis('on')
+        # print("--------", x, y)
+        plt.plot(x, y,  'r*', markersize=5)
+        plt.plot(x+640, y, 'b*', markersize=5)
+        plt.plot(0, 0, 'g*', markersize=50)
+        plt.savefig(path+file_name+str(count)+'.png')
+        plt.cla()
+        plt.clf()
+        # print("=========saved to : ", path+file_name+str(count)+'.png')
             
-            distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
+        # distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
             # print("========", dx ,dy, dz, "depth", depth)
             # print("Distance from camera to pixel:", distance)
             # print("Z-depth from camera surface to pixel surface:", depth)
@@ -159,7 +159,7 @@ def get_depth(x=320, y=240):
         return dx ,dy, dz
     
     except Exception as e:
-        print("CANNOT DO STUFF")
+        print("CANNOT GET DEPTH")
         print(e)
         pipeline.stop()
         return -1, -1, -1
