@@ -80,6 +80,9 @@ def get_xy_in_realworld(x=350, y=200):
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             # dx -= - 0.0325
+            dx *= -1 
+            dy *= -1
+            dy += 0.01
             print(colored(f"x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'red'))
             
             # k = cv2.waitKey(0)
@@ -101,6 +104,8 @@ def visual_servoing():
         pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_2.pt")
         print(colored("here", "green"))
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
+        # pp.plot_results()
+        # print()
         print(colored(f"this is the detection: \n{peduncle_list.items()}", "green"))
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)

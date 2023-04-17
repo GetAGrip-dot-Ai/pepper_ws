@@ -141,10 +141,10 @@ def draw_pepper_peduncles(detected_frame):
         mask = peduncle.mask
         draw_bounding_polygon(peduncle.conf, mask, detected_frame.img_shape)
 
-    plt.savefig(f"{os.getcwd()}/result/{img_name}_peduncle_result.png")
+    plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
     plt.clf()
     plt.cla()
-
+    print(f"saved to: {os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
 
 def print_pepperdetection(pd):
     output = "\n============================================\n"

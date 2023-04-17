@@ -148,3 +148,4 @@ class MultiFrame:
 
         self.find_peppers()
         self.write_results()
+        plot_frames(self._one_frames)

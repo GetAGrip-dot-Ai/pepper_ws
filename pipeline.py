@@ -234,13 +234,6 @@ class Perception:
         #     pepper = None
         #     print("No peppers left!")
 
-        """
-        Uses this for POI testing in RViz
-        """
-        self.communication.rviz_marker_rs(self, self.poi_in_rviz, r=1, g=0, b=0)
-        return
-
-
         if self.chosen_pepper is None:
             self.multi_frame.clear_frames()
             self.multi_frame = MultiFrame()
