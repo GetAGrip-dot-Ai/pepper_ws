@@ -137,6 +137,7 @@ class PepperPeduncle:
             comm = Communication()
             self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
         else:
+            print(colored("NO TRANSFORM FOUND FOR ONE FRAME", "red"))
             return
 
     def set_peduncle_orientation(self, pepper_fruit_xywh):

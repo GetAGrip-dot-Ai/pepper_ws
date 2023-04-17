@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+import os
 import rospy
 from geometry_msgs.msg import Pose, Point
 from shape_msgs.msg import SolidPrimitive
@@ -6,7 +8,7 @@ from pepper_ws.msg import Obstacle
 import tf
 from scipy.spatial.transform import Rotation as R
 import numpy as np
-from termcolor import colored
+# from termcolor import colored
 
 
 class Communication:

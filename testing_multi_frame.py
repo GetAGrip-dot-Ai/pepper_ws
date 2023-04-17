@@ -63,14 +63,19 @@ if __name__ == '__main__':
     number = 0
 
     # while user_input == "1":
-    while number != 10:
-        # img = get_image_webcam()
+    while number != 6:
+        # img = get_image()
         # cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         obj.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
+        obj.assign_last_frame_number(number)
         number += 1
         # user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
-   
+    
+    # obj.populate_frames()
     obj.run()
+
+
+
 
     """
     This code is used for testing on fake bounding box data.

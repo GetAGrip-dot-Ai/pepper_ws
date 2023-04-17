@@ -223,3 +223,25 @@ def get_image_webcam():
     cv2.destroyAllWindows()
 
     return frame
+
+
+def plot_frames(frames, chosen_frame, chosen_fruit):
+    num_frames = len(frames)
+    fig, axs = plt.subplots(2, num_frames//2)
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+    plt.margins(0, 0)
+
+    str1 = f"Chosen frame: {chosen_frame}, Chosen fruit: {chosen_fruit} \n"
+    str2 = "Associated frame: Associated fruit - "
+    for frame_number, associated_fruit in chosen_fruit.associated_fruits:
+        str2 += f"{frame_number} : {associated_fruit} "
+
+    fig.title(str1 + str2, fontsize=16)
+
+    for i in range(num_frames):
+        frame = frames[i]
+        img = np.asarray(Image.open(f"{os.getcwd()}/test_multi_frame/log/frame_{i}_pepper_poi_result.png"))
+        idx = 0 if i < num_frames//2 else 1
+        axs[idx, i%(num_frames//2)].imshow(img)
+        axs[idx, i%(num_frames//2)].axis('off')
+    plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
