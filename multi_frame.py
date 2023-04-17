@@ -7,7 +7,7 @@ from one_frame import OneFrame
 from pepper import Pepper
 from pepper_fruit_utils import *
 from multi_frame_utils import *
-
+from termcolor import colored
 
 class MultiFrame:
     def __init__(self, max_frames=10):
@@ -95,6 +95,8 @@ class MultiFrame:
             update_fruit_true_positives(frame.pepper_fruit_detections.values(), len(self._one_frames))
 
         self._matched_positive_fruits, self._unmatched_positive_fruits = get_all_fruits(self._one_frames)
+        print(colored(f"matched fruit: {self._matched_positive_fruits}", "blue"))
+        print(colored(f"unmatched fruit: {self._unmatched_positive_fruits}", "blue"))
         
 
     def find_peduncles(self):

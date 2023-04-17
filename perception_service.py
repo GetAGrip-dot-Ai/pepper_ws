@@ -7,10 +7,10 @@ import rospy
 from pipeline import Perception
 
 def detect_peppers_realtime():
-	os.chdir('/root/catkin_ws/src/pepper_ws/')
+	os.chdir('/home/shri/pepper_ros_ws/src/pepper_ws/')
 	test_img_path = '/realtime'
 	pipeline = Perception(test_img_path, 0)
-	(x, y) = pipeline.detect_peppers_realtime()
+	(x, y, z) = pipeline.detect_peppers_realtime()
 	
 	pipeline.send_to_manipulator(time_limit=5)
 

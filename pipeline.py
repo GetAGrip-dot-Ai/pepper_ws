@@ -5,6 +5,7 @@ import time
 import matplotlib.pyplot as plt
 import rospy
 import time
+from termcolor import colored
 
 print(os.getcwd())
 
@@ -75,6 +76,7 @@ class Perception:
         self.one_frame.run()
         self.pepper_fruits = self.one_frame.pepper_fruit_detections
         self.pepper_peduncles = self.one_frame.pepper_peduncle_detections
+        print(f"Pepper peduncles: {self.pepper_peduncles}")
         self.peppers = self.one_frame.pepper_detections
         return self.pepper_peduncles[0].poi
 
@@ -98,7 +100,7 @@ class Perception:
                     (poi_x, poi_y, poi_z) = self.detect_peppers_one_frame(os.getcwd()+'/realtime/'+img_name+'.png')
                     self.poi_in_rviz = (poi_x, poi_y, poi_z)
                     complete = True
-                    return (poi_x, poi_y)
+                    return (poi_x, poi_y, poi_z)
                 except Exception as e:
                     print("no pepper detected")
                     print(e)
@@ -181,7 +183,11 @@ class Perception:
         #################################################################
         self.multi_frame.run()
         peppers_temp = self.multi_frame._matched_positive_peppers
-        print(peppers_temp)
+        print(colored(f"Peppers: {peppers_temp}", 'red'))
+
+        print(f"matched positive peppers: {peppers_temp.keys()}")
+        print(f"matched positive fruits: {self.multi_frame._matched_positive_fruits.keys()}")
+        print(f"unmatched positive fruits: {self.multi_frame._unmatched_positive_fruits.keys()}")
 
         if not peppers_temp:
             print("No peppers here!")
@@ -192,18 +198,23 @@ class Perception:
                 for v in value:
                     self.chosen_pepper = v
                     print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
-                    if key in self.multi_frame._unmatched_positive_fruits:
-                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
-                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                        print(self.pepper_fruits)
-                    else:
-                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
-                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                        print(self.pepper_fruits)
+                    try: 
+                        if key in self.multi_frame._unmatched_positive_fruits.keys():
+                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
+                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                            print(self.pepper_fruits)
+                        else:
+                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
+                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                            print(self.pepper_fruits)
+                    except Exception as e:
+                        print(f"Pepper fruit error: {e}")
+                        pass
+                    return
 
         # self.set_pepper_order(arm_xyz)
 
-    def send_to_manipulator(self):
+    def ssend_to_manipulator(self):
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
@@ -223,7 +234,16 @@ class Perception:
         #     pepper = None
         #     print("No peppers left!")
 
+        """
+        Uses this for POI testing in RViz
+        """
+        self.communication.rviz_marker_rs(self, self.poi_in_rviz, r=1, g=0, b=0)
+        return
+
+
         if self.chosen_pepper is None:
+            self.multi_frame.clear_frames()
+            self.multi_frame = MultiFrame()
             return 0
         else:
             print("00000000000000")
@@ -247,6 +267,7 @@ class Perception:
                 rate.sleep()
 
                 self.multi_frame.clear_frames()
+                self.multi_frame = MultiFrame()
                 return 1
                 # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
                 # print("publishing", list(self.peppers.values()))
