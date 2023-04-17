@@ -127,7 +127,7 @@ def draw_pepper_fruits(one_frame):
         draw_bounding_box(pepper.conf, x, y, w, h)
 
     plt.savefig(
-        f"{os.getcwd()}/result/{img_name}_fruit_result.png")
+        f"{os.getcwd()}/test_multi_frame/log/{img_name}_fruit_result.png")
     plt.clf()
     plt.cla()
 

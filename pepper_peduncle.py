@@ -125,19 +125,13 @@ class PepperPeduncle:
         total_curve_length = self._curve.full_curve_length()
 
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
+        # poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))RuntimeError: No device connected
 
-        self._poi = (poi_z, -poi_x, -poi_y)
-        self._poi_px = (poi_x_px, poi_y_px)
-        self.get_poi_in_base_link()
-        # print("POI in world frame:", poi_x, poi_y, poi_z)
-        # print("POI in pixel frame:", self._poi_px)
-    def get_poi_in_base_link(self):
-        poi = self._poi
-        comm = Communication()
+        # self._poi = (poi_z, -poi_x, -poi_y)
+        self._poi_px = (poi_x_px, poi_y_px) 
         # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         # print(poi)
-        self.poi_in_base_link = comm.transform_to_base_link(poi)    # point in real world   
+        # self.poi_in_base_link = comm.transform_to_base_link(poi)    # point in real world   
         # print("do things  ")
         # print(self.poi_in_base_link)      
         # print("*******************************************************")

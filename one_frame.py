@@ -39,7 +39,7 @@ class OneFrame:
                                  yolo_weight_path='weights/pepper_fruit_best_3.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
                                  yolo_weight_path='weights/pepper_peduncle_best_2.pt')
-
+        self._transform = None
     @property
     def frame_number(self):
         return self._frame_number
@@ -124,6 +124,7 @@ class OneFrame:
 
     def set_transform(self):
         now = rospy.Time.now()
+        if not self.transform:
         self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
         (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
 
@@ -135,16 +136,16 @@ class OneFrame:
 
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                 show_result=False)
-        # self.plot_pepper_fruit()
+        draw_pepper_fruits(self)
         self._pepper_peduncle_detections = self._pepper_peduncle_detector.run_detection(self.img_path, thresh=0.3,
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
-        self.determine_pepper_fruit_xyz()
+        # self.determine_pepper_fruit_xyz()
         # print(self.frame_number)
         # print(self.pepper_fruit_detections)
         # self.plot_pepper()
 
         self.determine_peduncle_poi()
         # self.plot_poi()
-        draw_all_multi_frame(self)
+        # draw_all_multi_frame(self)
