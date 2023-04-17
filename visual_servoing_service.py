@@ -101,7 +101,7 @@ def visual_servoing():
     img_name=str(time.time()).split('.')[0]
     cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
     try:
-        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_2.pt")
+        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_3.pt")
         print(colored("here", "green"))
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
         # pp.plot_results()
@@ -111,7 +111,7 @@ def visual_servoing():
             v.set_point_of_interaction(img.shape)
             (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
             return (dx ,dy, dz)
-            # return (0.1, 0.1, 0.1)
+            
 
     except Exception as e:
         print("Error in detecting pepper", e)
@@ -119,6 +119,7 @@ def visual_servoing():
     # get the x, y, z in the realsense axis frame
     # this should be 0, offset of the camera in th rs frame's -z axis 
     # and the z is just not going to work because it dies at 0.15 depth
+    return (0.1, 0.1, 0.1)
 
 def publish_d(x, y, z):
     visual_servo_pub = rospy.Publisher('/perception/peduncle/dpoi', Pose, queue_size=10)
@@ -140,7 +141,7 @@ def handle_visual_servoing(req):
     print(colored("Returning visual servoing", 'magenta'))
     if req.req_id == 0:
         (dx ,dy, dz) = visual_servoing()
-        if dx == 0.1:
+        if abs(dx) == 0.1:
             return 0
         return 1
     # else:
