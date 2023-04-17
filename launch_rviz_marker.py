@@ -2,11 +2,13 @@
 import sys
 import roslaunch
 import rospy
+import rospkg
+rospack = rospkg.RosPack()
 
 rospy.init_node('marker_rviz', anonymous=True)
 uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 roslaunch.configure_logging(uuid)
-launch = roslaunch.parent.ROSLaunchParent(uuid, ["/root/catkin_ws/src/pepper_ws/launch/run_marker.launch"])
+launch = roslaunch.parent.ROSLaunchParent(uuid, [os.chdir(rospack.get_path('pepper_ws'))+"/launch/run_marker.launch"])
 launch.start()
 rospy.loginfo("started")
 
