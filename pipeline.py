@@ -5,6 +5,7 @@ import time
 import matplotlib.pyplot as plt
 import rospy
 import time
+from termcolor import colored
 
 print(os.getcwd())
 
@@ -181,7 +182,11 @@ class Perception:
         #################################################################
         self.multi_frame.run()
         peppers_temp = self.multi_frame._matched_positive_peppers
-        print(peppers_temp)
+        print(colored(f"Peppers: {peppers_temp}", 'red'))
+
+        print(f"matched positive peppers: {peppers_temp.keys()}")
+        print(f"matched positive fruits: {self.multi_frame._matched_positive_fruits.keys()}")
+        print(f"unmatched positive fruits: {self.multi_frame._unmatched_positive_fruits.keys()}")
 
         if not peppers_temp:
             print("No peppers here!")
@@ -192,14 +197,18 @@ class Perception:
                 for v in value:
                     self.chosen_pepper = v
                     print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
-                    if key in self.multi_frame._unmatched_positive_fruits.keys():
-                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
-                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                        print(self.pepper_fruits)
-                    else:
-                        self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
-                        self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                        print(self.pepper_fruits)
+                    try: 
+                        if key in self.multi_frame._unmatched_positive_fruits.keys():
+                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
+                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                            print(self.pepper_fruits)
+                        else:
+                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
+                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+                            print(self.pepper_fruits)
+                    except Exception as e:
+                        print(f"Pepper fruit error: {e}")
+                        pass
                     return
 
         # self.set_pepper_order(arm_xyz)
@@ -226,6 +235,7 @@ class Perception:
 
         if self.chosen_pepper is None:
             self.multi_frame.clear_frames()
+            self.multi_frame = MultiFrame()
             return 0
         else:
             print("00000000000000")
@@ -249,6 +259,7 @@ class Perception:
                 rate.sleep()
 
                 self.multi_frame.clear_frames()
+                self.multi_frame = MultiFrame()
                 return 1
                 # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
                 # print("publishing", list(self.peppers.values()))

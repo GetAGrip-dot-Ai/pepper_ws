@@ -10,7 +10,8 @@ import os
 import tf
 import rospy
 from scipy.spatial.transform import Rotation as R
-
+from termcolor import colored
+from communication import Communication
 
 class OneFrame:
     def __init__(self, img_path):
@@ -18,7 +19,7 @@ class OneFrame:
 
         self._trans = None
         self._R = None
-        # self.listener = tf.TransformListener()
+        self.listener = tf.TransformListener()
     
         self.img_path = img_path  # should be a path to one image file
 
@@ -108,10 +109,11 @@ class OneFrame:
                 number += 1
 
     def determine_pepper_fruit_xyz(self):
+        comm = Communication()
         for key, single_pepper_fruit in self._pepper_fruit_detections.items():
             x, y, z = get_depth(int(single_pepper_fruit.xywh[1]), int(single_pepper_fruit.xywh[0]))
             xyz = np.array([z + 0.06, x, -y])
-            single_pepper_fruit.xyz = xyz
+            single_pepper_fruit.xyz = comm.transform_to_base_link( xyz, self._trans, self._rot)
 
     def determine_peduncle_poi(self):
         self.set_transform()
@@ -124,22 +126,19 @@ class OneFrame:
             single_pepper.pepper_peduncle.set_peduncle_orientation(single_pepper.pepper_fruit.xywh)
 
     def set_transform(self):
-        now = rospy.Time.now()
         if not self._trans:
-            self.listener.waitForTransform("/rs_ee", "/base_link", now, rospy.Duration(10.0))
-            (trans, rot) = self.listener.lookupTransform("/base_link", "/rs_ee", now)
+            now = rospy.Time.now()
+
+            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0))
+            (trans, rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
 
             self._trans = np.array(trans).reshape(3, 1)
             self._R = R.from_quat([rot[0], rot[1], rot[2], rot[3]]).as_matrix() 
             self._trans = trans
             self._rot= rot
-        else:
-            self._trans = trans
-            self._rot= rot
+            print(colored("TRANSFORM SUCCESS", 'blue'))
 
     def run(self):
-        
-
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                 show_result=False)
         # self.plot_pepper_fruit()
@@ -147,11 +146,12 @@ class OneFrame:
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
         self.match_peppers()
-        self.determine_pepper_fruit_xyz()
         # print(self.frame_number)
         # print(self.pepper_fruit_detections)
         # self.plot_pepper()
 
         self.determine_peduncle_poi()
+        self.determine_pepper_fruit_xyz()
+
         # self.plot_poi()
         draw_all_multi_frame(self)

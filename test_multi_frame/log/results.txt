@@ -1,0 +1,4 @@
+Frame: 2
+Matched Fruit: 0 Associated Fruits: 0 0, 1 0, 
+Matched Fruit: 1 Associated Fruits: 0 1, 1 1, 
+----------------------------------------

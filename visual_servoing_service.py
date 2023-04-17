@@ -9,6 +9,7 @@ from realsense_utils import get_image
 from geometry_msgs.msg import Pose
 from pepper_ws.srv import visual_servo
 import rospy
+from termcolor import colored
 
 dx, dy, dz = 0, 0, 0
 
@@ -76,10 +77,10 @@ def get_xy_in_realworld(x=350, y=200):
             # cv2.imshow('RealSense', images)
 
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
-            depth = 0.1 # depth_frame.get_distance(x, y)
+            depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
-            dx -= - 0.0325
-            # print("x, y, z", round(dx, 3), round(dy,3), round(dz,3))
+            # dx -= - 0.0325
+            print(colored(f"x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'red'))
             
             # k = cv2.waitKey(0)
             # if k==27:
@@ -89,7 +90,7 @@ def get_xy_in_realworld(x=350, y=200):
     finally:
         # Stop streaming
         pipeline.stop()
-
+    print(colored("should have some prints", 'red'))
     return (dx ,dy, dz)
 
 def visual_servoing():
@@ -98,7 +99,9 @@ def visual_servoing():
     cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
     try:
         pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_2.pt")
+        print(colored("here", "green"))
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
+        print(colored(f"this is the detection: \n{peduncle_list.items()}", "green"))
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)
             (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
@@ -107,6 +110,7 @@ def visual_servoing():
 
     except Exception as e:
         print("Error in detecting pepper", e)
+        return (0.1, 0.1, 0.1)
     # get the x, y, z in the realsense axis frame
     # this should be 0, offset of the camera in th rs frame's -z axis 
     # and the z is just not going to work because it dies at 0.15 depth
@@ -114,7 +118,7 @@ def visual_servoing():
 def publish_d(x, y, z):
     visual_servo_pub = rospy.Publisher('/perception/peduncle/dpoi', Pose, queue_size=10)
     change_pose = Pose()
-    change_pose.position.x = 0
+    change_pose.position.x = float(z)
     change_pose.position.y = -float(x)
     change_pose.position.z = -float(y)
     change_pose.orientation.x = 0
@@ -122,16 +126,17 @@ def publish_d(x, y, z):
     change_pose.orientation.z = 0
     change_pose.orientation.w = 1
     # rospy.loginfo(peduncle_pose)
-    print("published to topic")
+    print(colored("published to topic", "yellow"))
 
     visual_servo_pub.publish(change_pose)
 
 def handle_visual_servoing(req):
     global dx, dy, dz
-    print("Returning visual servoing")
+    print(colored("Returning visual servoing", 'magenta'))
     if req.req_id == 0:
         (dx ,dy, dz) = visual_servoing()
-
+        if dx == 0.1:
+            return 0
         return 1
     # else:
     #     continue

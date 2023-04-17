@@ -42,9 +42,9 @@ class Communication:
         for obstacle in obstacles:
             point = obstacle.xyz
             pose = Pose()
-            pose.position.x = float(point[0])
-            pose.position.y = float(point[1])
-            pose.position.z = float(point[2])
+            pose.position.x = float(point.x)
+            pose.position.y = float(point.y)
+            pose.position.z = float(point.z)
 
             primitive = SolidPrimitive()
             primitive.type = SolidPrimitive.BOX
@@ -102,21 +102,7 @@ class Communication:
 
     def transform_to_base_link(self, point_in_relative_frame, trans, rot):
         rate = rospy.Rate(10)
-        # rospy.sleep(10)
 
-        # try:
-        #     # rospy.spin()
-        #     now = rospy.Time.now()
-        #     self.listener.waitForTransform("/base_link", "/realsense_frame", now, rospy.Duration(12.0))
-        #     (trans,rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
-        #     print(colored('Transform success', 'blue'))
-        #     self.transform_from_base = (trans, rot)
-            
-        # except Exception as e:
-        #     print(e)
-        #     print(colored('Transform failed', 'red'))
-        #     (trans,rot) = self.transform_from_base
-        # print("*")
         r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
         H = np.vstack((np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1))),np.array([0,0,0,1])))
         point_in_relative_frame = list(point_in_relative_frame) + [1]
@@ -126,7 +112,7 @@ class Communication:
         p.x = point[0]
         p.y = point[1]
         p.z = point[2] # convert to meter
-        # rospy.sleep(5)
+        print(16)
         return p
     
     def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):

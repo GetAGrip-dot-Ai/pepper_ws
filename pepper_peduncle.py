@@ -118,29 +118,42 @@ class PepperPeduncle:
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
     def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None, trans=None, rot=None):
+        print(1)
         if pepper_fruit_xywh is None:
+            print(2)
             pepper_fruit_xywh = self._xywh
+            print(3)
             pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
+            print(4)
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
+        print(5)
         total_curve_length = self._curve.full_curve_length()
-
+        print(6)
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
+        print(7)
         poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
+        print(8)
 
         self._poi = (poi_z, -poi_x, -poi_y)
+        print(9)
         self._poi_px = (poi_x_px, poi_y_px)
+        print(10)
         self.get_poi_in_base_link(trans, rot)
+        print(11)
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         # print("POI in pixel frame:", self._poi_px)
+
     def get_poi_in_base_link(self, trans, rot):
-        poi = self._poi
-        comm = Communication()
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        # print(poi)
-        self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
-        # print("do things  ")
-        # print(self.poi_in_base_link)      
-        # print("*******************************************************")
+        print(12)
+        if trans:
+            poi = self._poi
+            print(13)
+            comm = Communication()
+            print(14)
+            self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
+            print(15)
+        else:
+            return
 
     def set_peduncle_orientation(self, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)

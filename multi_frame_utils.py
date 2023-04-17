@@ -36,7 +36,7 @@ def update_fruit_occurences(fruits_frame1, fruits_frame2, frame1_number, frame2_
 
 def update_fruit_true_positives(fruits, max_frames):
     for fruit in fruits:
-        if fruit.occurences >= 1:
+        if fruit.occurences >= 2:
             fruit.true_positive = True
     
 
