@@ -121,16 +121,13 @@ class PepperPeduncle:
         if pepper_fruit_xywh is None:
             pepper_fruit_xywh = self._xywh
             pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
- 
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
         poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
-
         self._poi = (poi_z, -poi_x, -poi_y)
         self._poi_px = (poi_x_px, poi_y_px)
         self.get_poi_in_base_link(trans, rot)
-
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         # print("POI in pixel frame:", self._poi_px)
 

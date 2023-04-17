@@ -46,16 +46,12 @@ class PepperPeduncleDetector:
     
     def predict_peduncle(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
         peduncle_list = dict()
-        print("Detecting image: ", img_path)
 
         img = read_image(img_path)
         results = self._model(img, conf=thresh)
-        # print("results: ", results)
-        # print("predict peduncle")
         peduncle_count = 0
 
         result = results[0]
-        # print("results:", results)
         if result.boxes.boxes.size(0) != 0:
             for i in range(result.masks.shape[0]):
                 mask = result.masks
@@ -78,7 +74,8 @@ class PepperPeduncleDetector:
 
         # if print_result:
         #     print_result_masks(detected_frame)
-        # print("peduncle_list: ", peduncle_list)
+        print("peduncle_list: ", peduncle_list)
+
         return peduncle_list
 
     def predict_peduncles(self, show_result: bool = False, print_result: bool = False):
@@ -89,6 +86,7 @@ class PepperPeduncleDetector:
 
     def plot_results(self):
         for detected_img in self.detected_frames:
+            print("saved image")
             draw_pepper_peduncles(detected_img)
 
 

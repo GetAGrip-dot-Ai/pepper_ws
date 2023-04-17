@@ -63,7 +63,7 @@ if __name__ == '__main__':
     number = 0
 
     # while user_input == "1":
-    while number != 10:
+    while number != 6:
         # img = get_image()
         # cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         obj.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         # user_input = input("Enter 1 to take picture and 2 to start multi-frame processing!")
     
     # obj.populate_frames()
-    # obj.run()
+    obj.run()
 
 
 
