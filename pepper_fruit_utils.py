@@ -135,7 +135,6 @@ def draw_pepper_fruits(one_frame):
 
 
 def draw_pepper_peduncles(img_path, peduncle_list, poi_px):
-    print(1)
     img = np.asarray(Image.open(img_path))
     img_name = img_path.split('/')[-1].split('.')[0]
     plt.imshow(img)

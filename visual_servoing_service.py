@@ -7,11 +7,12 @@ import time
 from pepper_peduncle_detector import PepperPeduncleDetector
 from realsense_utils import get_image
 from geometry_msgs.msg import Pose
-# from pepper_ws.srv import visual_servo
-import rospy
+import rospy, rospkg
 from termcolor import colored
+from pepper_peduncle_utils import draw_one_poi
 
 dx, dy, dz = 0, 0, 0
+got_depth = False
 
 def get_xy_in_realworld(x=350, y=200):
     y, x = int(x), int(y)
@@ -71,18 +72,10 @@ def get_xy_in_realworld(x=350, y=200):
             else:
                 images = np.hstack((color_image, depth_colormap))
 
-            # Show images
-            # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-            # cv2.circle(images, (x, y), 5, (0, 0, 255), -1)
-            # cv2.imshow('RealSense', images)
-
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             # dx -= - 0.0325
-            dx *= -1 
-            dy *= -1
-            dy += 0.01
             # k = cv2.waitKey(0)
             # if k==27:
             #     cv2.destroyAllWindows()
@@ -96,23 +89,38 @@ def get_xy_in_realworld(x=350, y=200):
     return (dx ,dy, dz)
 
 def visual_servoing():
+    global got_depth
     img = get_image()
     img_name=str(time.time()).split('.')[0]
     cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
     try:
-        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_2.pt")
-        print(colored("here", "green"))
+        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_3.pt")
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
-        print(colored("here 2", "green"))
+
+        pepper_of_interest = None
+        poi_xyz = (0.1, 0.1, 0.1)
+        
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)
-            (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
-            pp.plot_results(peduncle_list, v.poi_px)
-            return (dx ,dy, dz)
-        return (0.1, 0.1, 0.1)
+            (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1]) #TODO
+
+            if not pepper_of_interest:
+                pepper_of_interest = v
+                poi_xyz = (dx ,dy, dz)
+
+            if abs(dx)<abs(poi_xyz[0]):
+                pepper_of_interest = v
+                poi_xyz = (dx ,dy, dz)
+
+        if pepper_of_interest:
+            pp.plot_results(peduncle_list, pepper_of_interest.poi_px)
+            got_depth = True
+
+        return poi_xyz
 
     except Exception as e:
         print("Error in detecting pepper", e)
+        
         return (0.1, 0.1, 0.1)
     # get the x, y, z in the realsense axis frame
     # this should be 0, offset of the camera in th rs frame's -z axis 
@@ -121,6 +129,7 @@ def visual_servoing():
 def publish_d(x, y, z):
     visual_servo_pub = rospy.Publisher('/perception/peduncle/dpoi', Pose, queue_size=10)
     change_pose = Pose()
+    # change to the base_link frame 
     change_pose.position.x = float(z)
     change_pose.position.y = -float(x)
     change_pose.position.z = -float(y)
@@ -139,7 +148,9 @@ def handle_visual_servoing(req):
     # if req.req_id == 0:
     if req == 0:
         (dx ,dy, dz) = visual_servoing()
-        if dx == 0.1:
+        (dx ,dy, dz) = (0.029-dx ,0.029 - dy, dz)
+        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
+        if not got_depth:
             return 0
         return 1
     # else:
@@ -150,11 +161,12 @@ def vs_server():
     global dx
     rospy.init_node('visual_servoing_server')
     rate = rospy.Rate(10)
-    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    rospack = rospkg.RosPack()
+    os.chdir(rospack.get_path("pepper_ws"))
     # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
     handle_visual_servoing(0)
     # while not rospy.is_shutdown():
-    #     if dx != 0:
+    #     if got_depth:
     #         start_time = time.time()
     #         print("visual servo results: x, y, z", dx, dy, dz)
     #         while time.time() - start_time<0:
@@ -165,7 +177,4 @@ def vs_server():
     # rospy.spin()
 
 if __name__=="__main__":
-    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
-    print(os.getcwd())
-    # os.chdir('~/catkin_ws/src/pepper_ws/')
     print(vs_server())

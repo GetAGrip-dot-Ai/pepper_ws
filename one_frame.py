@@ -39,7 +39,7 @@ class OneFrame:
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
                                  yolo_weight_path='weights/pepper_fruit_best_3.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
-                                 yolo_weight_path='weights/pepper_peduncle_best_2.pt')
+                                 yolo_weight_path='weights/pepper_peduncle_best_3.pt')
 
     @property
     def frame_number(self):

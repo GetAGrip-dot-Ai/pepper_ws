@@ -3,11 +3,13 @@
 import os 
 import time 
 from pepper_ws.srv import harvest
-import rospy
+import rospy, rospkg
 from pipeline import Perception
 
+rospack = rospkg.RosPack()
+
 def detect_peppers_realtime():
-	os.chdir('/root/catkin_ws/src/pepper_ws/')
+	os.chdir(rospack.get_path("pepper_ws"))
 	test_img_path = '/realtime'
 	pipeline = Perception(test_img_path, 0)
 	(x, y) = pipeline.detect_peppers_realtime()

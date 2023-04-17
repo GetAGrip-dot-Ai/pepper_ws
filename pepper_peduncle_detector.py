@@ -1,13 +1,14 @@
 from typing import List
-
+from PIL import Image
 import torch
 import numpy as np
 import ultralytics
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
+import os
 
 from pepper_peduncle import PepperPeduncle
-from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_peduncles
+from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_peduncles, draw_bounding_polygon
 
 
 class PepperPeduncleDetector:
@@ -68,14 +69,8 @@ class PepperPeduncleDetector:
                 peduncle_dict[i] = peduncle
                 peduncle_count += 1
 
-        # if show_result:
-        #     for result in results:
-        #         res_plotted = result[0].plot()
-                # cv2.imshow("result", res_plotted)
-
         # if print_result:
         #     print_result_masks(detected_frame)
-        print("peduncle_dict: ", peduncle_dict)
 
         return peduncle_dict
 
@@ -86,8 +81,19 @@ class PepperPeduncleDetector:
             self._detected_frames.append(detected_frame)
 
     def plot_results(self, peduncle_list, poi_px):
-        draw_pepper_peduncles(self._imgs_path, peduncle_list,poi_px)
-
+        img = np.asarray(Image.open(self._imgs_path))
+        img_name = self._imgs_path.split('/')[-1].split('.')[0]
+        plt.imshow(img)
+        for k, peduncle in peduncle_list.items():
+            mask = peduncle.mask
+            draw_bounding_polygon(peduncle.conf, mask, img.shape)
+            poi_px = peduncle.poi_px
+            plt.plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+        plt.plot(poi_px[1], poi_px[0], 'm*', markersize=5)
+        plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
+        plt.clf()
+        plt.cla()
+        print(f"saved to: {os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
 
 if __name__ == '__main__':
     PepperPeduncleDetection = PepperPeduncleDetector(
