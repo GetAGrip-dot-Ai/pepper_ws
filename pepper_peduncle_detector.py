@@ -42,10 +42,11 @@ class PepperPeduncleDetector:
         # self._imgs_path = get_all_image_path_in_folder(self._path)
         self._imgs_path = img_path
         # self.predict_peduncles(show_result, print_result)
-        return self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
+        self._predicted_peduncles = self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
+        return self._predicted_peduncles
     
     def predict_peduncle(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
-        peduncle_list = dict()
+        peduncle_dict = dict()
 
         img = read_image(img_path)
         results = self._model(img, conf=thresh)
@@ -64,7 +65,7 @@ class PepperPeduncleDetector:
                 peduncle.conf = box.conf[i]
                 peduncle.xywh = box.xywh[i].cpu().numpy()
 
-                peduncle_list[i] = peduncle
+                peduncle_dict[i] = peduncle
                 peduncle_count += 1
 
         # if show_result:
@@ -74,9 +75,9 @@ class PepperPeduncleDetector:
 
         # if print_result:
         #     print_result_masks(detected_frame)
-        print("peduncle_list: ", peduncle_list)
+        print("peduncle_dict: ", peduncle_dict)
 
-        return peduncle_list
+        return peduncle_dict
 
     def predict_peduncles(self, show_result: bool = False, print_result: bool = False):
 
@@ -84,10 +85,8 @@ class PepperPeduncleDetector:
             detected_frame = self.predict_peduncle(img_path, show_result, print_result)
             self._detected_frames.append(detected_frame)
 
-    def plot_results(self):
-        for detected_img in self.detected_frames:
-            print("saved image")
-            draw_pepper_peduncles(detected_img)
+    def plot_results(self, peduncle_list, poi_px):
+        draw_pepper_peduncles(self._imgs_path, peduncle_list,poi_px)
 
 
 if __name__ == '__main__':

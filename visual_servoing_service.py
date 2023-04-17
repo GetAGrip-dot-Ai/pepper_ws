@@ -7,7 +7,7 @@ import time
 from pepper_peduncle_detector import PepperPeduncleDetector
 from realsense_utils import get_image
 from geometry_msgs.msg import Pose
-from pepper_ws.srv import visual_servo
+# from pepper_ws.srv import visual_servo
 import rospy
 from termcolor import colored
 
@@ -83,8 +83,6 @@ def get_xy_in_realworld(x=350, y=200):
             dx *= -1 
             dy *= -1
             dy += 0.01
-            print(colored(f"x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'red'))
-            
             # k = cv2.waitKey(0)
             # if k==27:
             #     cv2.destroyAllWindows()
@@ -93,7 +91,8 @@ def get_xy_in_realworld(x=350, y=200):
     finally:
         # Stop streaming
         pipeline.stop()
-    print(colored("should have some prints", 'red'))
+        print(colored(f"x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'red'))
+
     return (dx ,dy, dz)
 
 def visual_servoing():
@@ -104,14 +103,13 @@ def visual_servoing():
         pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_2.pt")
         print(colored("here", "green"))
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
-        # pp.plot_results()
-        # print()
-        print(colored(f"this is the detection: \n{peduncle_list.items()}", "green"))
+        print(colored("here 2", "green"))
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)
             (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1])
+            pp.plot_results(peduncle_list, v.poi_px)
             return (dx ,dy, dz)
-            # return (0.1, 0.1, 0.1)
+        return (0.1, 0.1, 0.1)
 
     except Exception as e:
         print("Error in detecting pepper", e)
@@ -138,7 +136,8 @@ def publish_d(x, y, z):
 def handle_visual_servoing(req):
     global dx, dy, dz
     print(colored("Returning visual servoing", 'magenta'))
-    if req.req_id == 0:
+    # if req.req_id == 0:
+    if req == 0:
         (dx ,dy, dz) = visual_servoing()
         if dx == 0.1:
             return 0
@@ -151,19 +150,22 @@ def vs_server():
     global dx
     rospy.init_node('visual_servoing_server')
     rate = rospy.Rate(10)
-    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
-    s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
-    while not rospy.is_shutdown():
-        if dx != 0:
-            start_time = time.time()
-            print("visual servo results: x, y, z", dx, dy, dz)
-            while time.time() - start_time<20:
-                publish_d(dx ,dy, dz)
-                time.sleep(1)
-            dx = 0
-        rospy.sleep(1)
+    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
+    handle_visual_servoing(0)
+    # while not rospy.is_shutdown():
+    #     if dx != 0:
+    #         start_time = time.time()
+    #         print("visual servo results: x, y, z", dx, dy, dz)
+    #         while time.time() - start_time<0:
+    #             publish_d(dx ,dy, dz)
+    #             time.sleep(1)
+    #         dx = 0
+    #     rospy.sleep(1)
     # rospy.spin()
 
 if __name__=="__main__":
-    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
+    print(os.getcwd())
+    # os.chdir('~/catkin_ws/src/pepper_ws/')
     print(vs_server())
