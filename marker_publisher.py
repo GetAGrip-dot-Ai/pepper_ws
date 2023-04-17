@@ -3,7 +3,7 @@ import rospy
 from visualization_msgs.msg import Marker
 from communication import Communication
 from geometry_msgs.msg import Pose
-
+from termcolor import colored
 class MarkerPublisher:
     def __init__(self):
         rospy.init_node('marker_publisher', anonymous=True)
@@ -18,6 +18,7 @@ class MarkerPublisher:
             pepper_tf = rospy.get_param("pepper_tf").split(",")
             pepper_tf = (float(pepper_tf[0]), float(pepper_tf[1]), float(pepper_tf[2]))
             # self.poi_rviz_pub.publish(self.comm.make_marker("base_link", point, r=0, b=1, scale=0.5))
+            print(colored(pepper_tf, 'blue'))
             self.comm.single_rviz_marker_poi_realsense_frame(pepper_tf)
         except KeyError:
             print("value not set")

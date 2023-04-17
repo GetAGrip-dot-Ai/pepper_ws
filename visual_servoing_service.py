@@ -73,7 +73,7 @@ def get_xy_in_realworld(x=350, y=200):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
-            dx -= - 0.0325
+            # dx -= - 0.0325
             print("x, y, z", round(dx, 3), round(dy,3), round(dz,3))
             
             k = cv2.waitKey(0)

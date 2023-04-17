@@ -76,7 +76,7 @@ class Communication:
 
 
     def single_rviz_marker_poi_realsense_frame(self, poi):
-        marker = self.make_marker("base_link", r=0, g=1, b=0, scale=0.04)
+        marker = self.make_marker("base_link", r=1, g=0, b=0, scale=0.02)
 
         point = Point()
         point.x = poi[0]
@@ -127,4 +127,5 @@ class Communication:
         marker.color.b = b
         marker.scale.x = scale
         marker.scale.y = scale
+        marker.scale.z = scale
         return marker

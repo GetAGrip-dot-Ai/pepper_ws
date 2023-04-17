@@ -134,7 +134,7 @@ def get_depth(x=320, y=240):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
-            dx -= - 0.0325 
+            # dx -= - 0.0325 
             color_image = np.asanyarray(color_frame.get_data())
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
 
