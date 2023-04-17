@@ -5,6 +5,7 @@ import math
 import os
 import time
 import matplotlib.pyplot as plt
+from termcolor import colored
 
 def show_img_depth():
     # Configure depth and color streams
@@ -97,7 +98,8 @@ def get_depth(x=320, y=240):
             break
     if not found_rgb:
         print("The demo requires Depth camera with Color sensor")
-        exit(0)
+        print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
+        return
 
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
@@ -183,7 +185,7 @@ def get_image():
             break
     if not found_rgb:
         print("The demo requires Depth camera with Color sensor")
-        exit(0)
+        return None
 
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
@@ -223,19 +225,19 @@ def get_image():
             else:
                 images = np.hstack((color_image, depth_colormap))
 
-            # Show images
-            cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('RealSense', images)
+        #     # Show images
+        #     cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+        #     cv2.imshow('RealSense', images)
             
-            k = cv2.waitKey(0)
-            if k==27:
-                print("hey")
-                cv2.destroyAllWindows()
-                print("images", images.shape)
-                return images[:, :640, :]
-                # break
+        #     k = cv2.waitKey(0)
+        #     if k==27:
+        #         print("hey")
+        #         cv2.destroyAllWindows()
+        #         print("images", images.shape)
+        #         return images[:, :640, :]
+        #         # break
 
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
         return images[:, :640, :]
 
     finally:

@@ -168,9 +168,11 @@ class Perception:
         # Take an image and add it as a frame to the multi frame
         #################################################################
         img = get_image()
+        if img == None:
+            print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
 
         number = 0 if not self.multi_frame._one_frames else len(self.multi_frame._one_frames)
-        print(f"Number: {number}")
+        print(colored(f"Frame number being added to multi-frame: {number}", "blue"))
         # print("-------", os.getcwd())
         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', img)
         self.multi_frame.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
@@ -185,12 +187,13 @@ class Perception:
         peppers_temp = self.multi_frame._matched_positive_peppers
         print(colored(f"Peppers: {peppers_temp}", 'red'))
 
-        print(f"matched positive peppers: {peppers_temp.keys()}")
-        print(f"matched positive fruits: {self.multi_frame._matched_positive_fruits.keys()}")
-        print(f"unmatched positive fruits: {self.multi_frame._unmatched_positive_fruits.keys()}")
+        print(f"Matched positive peppers keys: {peppers_temp.keys()}")
+        print(f"Matched positive fruits keys: {self.multi_frame._matched_positive_fruits.keys()}")
+        print(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}")
 
         if not peppers_temp:
-            print("No peppers here!")
+            print(colored("No peppers here!", "blue"))
+            return
         else:
             for key, value in peppers_temp.items():
                 self.peppers = peppers_temp[key]
@@ -202,19 +205,19 @@ class Perception:
                         if key in self.multi_frame._unmatched_positive_fruits.keys():
                             self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
                             self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                            print(self.pepper_fruits)
+                            print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
                         else:
                             self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
                             self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                            print(self.pepper_fruits)
+                            print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
                     except Exception as e:
-                        print(f"Pepper fruit error: {e}")
+                        print(f"Key error while deleting pepper fruit from obstacles: {e}")
                         pass
                     return
 
         # self.set_pepper_order(arm_xyz)
 
-    def ssend_to_manipulator(self):
+    def send_to_manipulator(self):
         #################################################################
         # send the point of interaction to the manipulator over ROS
         #################################################################
@@ -233,13 +236,6 @@ class Perception:
         # else: 
         #     pepper = None
         #     print("No peppers left!")
-
-        """
-        Uses this for POI testing in RViz
-        """
-        self.communication.rviz_marker_rs(self, self.poi_in_rviz, r=1, g=0, b=0)
-        return
-
 
         if self.chosen_pepper is None:
             self.multi_frame.clear_frames()
@@ -260,8 +256,8 @@ class Perception:
                 self.communication.publish_poi(poi_in_base_link, None)
                 # self.communication.obstacle_pub_fn(self.pepper_fruits)
                 # self.communication.rviz_marker_poi_base_link(self.peppers)
-                self.communication.rviz_marker(poi_in_base_link)
-                self.communication.rviz_marker_rs(poi_in_base_link)
+                # self.communication.rviz_marker(poi_in_base_link)
+                # self.communication.rviz_marker_rs(poi_in_base_link)
                 # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
 
                 rate.sleep()
