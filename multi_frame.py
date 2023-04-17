@@ -142,10 +142,10 @@ class MultiFrame:
                                 del self._matched_positive_peduncles[associated_fruit_frame_number]
 
     def run(self):
-        # self.assign_frame_numbers()
-        self.find_fruits()
-        self.find_peduncles()
+        # # self.assign_frame_numbers()
+        # self.find_fruits()
+        # self.find_peduncles()
 
-        self.find_peppers()
-        self.write_results()
-        plot_frames(self._one_frames)
+        # self.find_peppers()
+        # self.write_results()
+        plot_frames(self._one_frames, 2, self._one_frames[2].pepper_fruit_detections[0])

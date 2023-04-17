@@ -225,11 +225,18 @@ def get_image_webcam():
     return frame
 
 
-def plot_frames(frames):
+def plot_frames(frames, chosen_frame, chosen_fruit):
     num_frames = len(frames)
     fig, axs = plt.subplots(2, num_frames//2)
     plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
     plt.margins(0, 0)
+
+    str1 = f"Chosen frame: {chosen_frame}, Chosen fruit: {chosen_fruit} \n"
+    str2 = "Associated frame: Associated fruit - "
+    for frame_number, associated_fruit in chosen_fruit.associated_fruits:
+        str2 += f"{frame_number} : {associated_fruit} "
+
+    fig.title(str1 + str2, fontsize=16)
 
     for i in range(num_frames):
         frame = frames[i]
