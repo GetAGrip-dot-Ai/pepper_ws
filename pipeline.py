@@ -262,9 +262,10 @@ class Perception:
 
                 rate.sleep()
 
-                self.multi_frame.clear_frames()
-                self.multi_frame = MultiFrame()
-                return 1
+            self.multi_frame.clear_frames()
+            self.multi_frame = MultiFrame()
+            self.chosen_pepper = None
+            return 1
                 # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
                 # print("publishing", list(self.peppers.values()))
 

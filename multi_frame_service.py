@@ -3,8 +3,7 @@ import rospy
 from pepper_ws.srv import multi_frame
 from pipeline import Perception
 from realsense_utils import *
-import rospkg
-rospack = rospkg.RosPack()
+
 global pipeline
 
 def handle_multi_frame(req):
@@ -23,7 +22,7 @@ def multi_frame_server():
     global pipeline
     rospy.init_node('multi_frame_server')
     rate = rospy.Rate(1)
-    os.chdir(rospack.get_path("pepper_ws"))
+    os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
     pipeline = Perception(None, 0)
     s = rospy.Service('/perception/multi_frame', multi_frame, handle_multi_frame)
     rospy.spin()
