@@ -224,24 +224,75 @@ def get_image_webcam():
 
     return frame
 
+def draw_bounding_box(ax, number, x, y, w, h, color="blue", fill=False):
+    rect = patches.Rectangle((x - w / 2, y - h / 2), w, h, linewidth=2, edgecolor=color, facecolor='none')
+    ax.add_patch(rect)
+    ax.text(x - w / 2, y - h / 2, number, color=color, fontsize=10)
 
-def plot_frames(frames, chosen_frame, chosen_fruit):
+
+def draw_bounding_polygon(ax, mask, img_shape, color="blue", fill=True):
+    mask = torch.transpose(mask, 0, 1)
+    polygon = Polygon(mask.T)
+    x, y = polygon.exterior.xy
+    x_scaled = [i*img_shape[1] for i in x]
+    y_scaled = [i*img_shape[0] for i in y]
+    if fill:
+        ax.fill(x_scaled, y_scaled, color=color, alpha=0.7)
+    polygon = Polygon(mask.T)
+    ax.plot(*polygon.exterior.xy)
+
+
+def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
+    frames = mf_obj.one_frames
     num_frames = len(frames)
-    fig, axs = plt.subplots(2, num_frames//2)
+
+    fig, axs = plt.subplots(1, 3)
     plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
     plt.margins(0, 0)
 
-    str1 = f"Chosen frame: {chosen_frame}, Chosen fruit: {chosen_fruit} \n"
-    str2 = "Associated frame: Associated fruit - "
-    for frame_number, associated_fruit in chosen_fruit.associated_fruits:
-        str2 += f"{frame_number} : {associated_fruit} "
-
-    fig.title(str1 + str2, fontsize=16)
-
+    images = []
     for i in range(num_frames):
-        frame = frames[i]
-        img = np.asarray(Image.open(f"{os.getcwd()}/test_multi_frame/log/frame_{i}_pepper_poi_result.png"))
-        idx = 0 if i < num_frames//2 else 1
-        axs[idx, i%(num_frames//2)].imshow(img)
-        axs[idx, i%(num_frames//2)].axis('off')
+        images.append(np.asarray(Image.open(f"{os.getcwd()}/test_multi_frame/log/frame_{i}.png")))
+        axs[i].imshow(images[i])
+        axs[i].axis('off')
+
+    fig.title(f"Chosen frame: {chosen_frame_num}, Chosen fruit: {chosen_fruit_num}", fontsize=16)
+
+    for frame_number, pepper in mf_obj.matched_positive_peppers.items():
+        r = np.round(np.random.rand(), 1)
+        g = np.round(np.random.rand(), 1)
+        b = np.round(np.random.rand(), 1)
+        color = (r, g, b)
+
+        pepper_fruit = pepper.pepper_fruit
+        xywh = pepper_fruit.xywh
+        x = int(xywh[0])
+        y = int(xywh[1])
+        w = int(xywh[2])
+        h = int(xywh[3])
+        draw_bounding_box(axs[frame_number], pepper_fruit.number, x, y, w, h, color=color)
+
+        pepper_peduncle = pepper.pepper_peduncle
+        mask = pepper_peduncle.mask
+        draw_bounding_polygon(axs[frame_number], mask, images[frame_number].shape, color=color)
+        poi_px = pepper.pepper_peduncle.poi_px
+        axs[i].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+
+        for associated_frame_number, associated_fruit_number in pepper_fruit.associated_fruits:
+            associated_fruit = frames[associated_frame_number].pepper_fruit_detections[associated_fruit_number]
+            xywh = associated_fruit.xywh
+            x = int(xywh[0])
+            y = int(xywh[1])
+            w = int(xywh[2])
+            h = int(xywh[3])
+            draw_bounding_box(axs[associated_frame_number], associated_fruit.number, x, y, w, h, color=color)
+
+            if associated_fruit.parent_pepper is not None:
+                parent_pepper = frames[associated_frame_number].pepper_detections[associated_fruit.parent_pepper]
+                associated_peduncle = parent_pepper.pepper_peduncle
+                mask = associated_peduncle.mask
+                draw_bounding_polygon(axs[associated_frame_number], mask, images[associated_frame_number].shape, color=color)
+                poi_px = associated_peduncle.poi_px
+                axs[associated_frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+        
     plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
