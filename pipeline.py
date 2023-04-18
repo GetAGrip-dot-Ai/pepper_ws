@@ -15,6 +15,7 @@ from communication import Communication
 from pepper_fruit_utils import *
 from pepper_utils import *
 from realsense_utils import *
+from multi_frame_utils import *     
 
 
 # input: image
@@ -201,6 +202,8 @@ class Perception:
                 for v in value:
                     self.chosen_pepper = v
                     print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
+                    plot_frames(self.multi_frame, key, self.chosen_pepper.pepper_fruit.number)
+
                     try: 
                         if key in self.multi_frame._unmatched_positive_fruits.keys():
                             self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]

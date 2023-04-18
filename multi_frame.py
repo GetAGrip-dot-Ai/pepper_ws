@@ -148,4 +148,3 @@ class MultiFrame:
 
         self.find_peppers()
         self.write_results()
-        # plot_frames(self._one_frames, 2, self._one_frames[2].pepper_fruit_detections[0])
