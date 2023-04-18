@@ -29,9 +29,9 @@ class RealtimeFrame:
 
         # print("weights path: ", os.getcwd())
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,img =self.img,
-                                                                               yolo_weight_path='weights/pepper_fruit_best_2.pt')
+                                                                               yolo_weight_path='weights/pepper_fruit_best_5.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
-                                                                                        yolo_weight_path='weights/pepper_peduncle_best.pt')
+                                                                                        yolo_weight_path='weights/pepper_peduncle_best_3.pt')
 
     @property
     def img_shape(self):

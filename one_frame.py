@@ -37,7 +37,7 @@ class OneFrame:
         self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
-                                 yolo_weight_path='weights/pepper_fruit_best_4.pt')
+                                 yolo_weight_path='weights/pepper_fruit_best_5.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
                                  yolo_weight_path='weights/pepper_peduncle_best_3.pt')
 

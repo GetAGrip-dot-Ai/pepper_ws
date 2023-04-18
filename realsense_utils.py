@@ -84,6 +84,8 @@ def get_depth(x=320, y=240):
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
+    colorizer = rs.colorizer()
+
 
     # Get device product line for setting a supporting resolution
     pipeline_wrapper = rs.pipeline_wrapper(pipeline)
@@ -140,16 +142,18 @@ def get_depth(x=320, y=240):
             color_image = np.asanyarray(color_frame.get_data())
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
 
-            img = np.hstack((color_image, color_frame_not_aligned))
-        plt.imshow(img)
-        plt.axis('on')
-        # print("--------", x, y)
-        plt.plot(x, y,  'r*', markersize=5)
-        plt.plot(x+640, y, 'b*', markersize=5)
-        plt.plot(0, 0, 'g*', markersize=50)
-        plt.savefig(path+file_name+str(count)+'.png')
-        plt.cla()
-        plt.clf()
+            depth_colormap = np.asanyarray(
+                        colorizer.colorize(depth_frame).get_data())
+            img = np.hstack((color_image, depth_colormap))
+            plt.imshow(img)
+            plt.axis('on')
+            # print("--------", x, y)
+            plt.plot(x, y,  'r*', markersize=5)
+            plt.plot(x+640, y, 'b*', markersize=5)
+            plt.plot(0, 0, 'g*', markersize=50)
+            plt.savefig(path+file_name+str(count)+'.png')
+            plt.cla()
+            plt.clf()
         # print("=========saved to : ", path+file_name+str(count)+'.png')
             
         # distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))

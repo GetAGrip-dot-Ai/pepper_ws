@@ -109,7 +109,7 @@ def visual_servoing():
                 pepper_of_interest = v
                 poi_xyz = (dx ,dy, dz)
 
-            elif abs(dx)<=abs(poi_xyz[0]):
+            elif int(dx) != 0 and abs(dx)<=abs(poi_xyz[0]):
                 print(f"dx: {dx}, v.xyz: {poi_xyz}")
                 pepper_of_interest = v
                 poi_xyz = (dx ,dy, dz)
@@ -117,7 +117,7 @@ def visual_servoing():
                 continue
 
         if pepper_of_interest != None:
-            pp.plot_results(peduncle_list, pepper_of_interest.poi_px)
+            pp.plot_results(peduncle_list, pepper_of_interest.poi_px, poi_xyz)
             got_depth = True
         print(colored(f"pepper of interest: \n{pepper_of_interest.poi_px}, {poi_xyz}"))
         return poi_xyz
@@ -141,7 +141,7 @@ def publish_d(x, y, z):
     change_pose.orientation.z = 0
     change_pose.orientation.w = 1
     # rospy.loginfo(peduncle_pose)
-    print(colored("published to topic", "yellow"))
+    # print(colored("published to topic", "yellow"))
     if z > 0.1:
         visual_servo_pub.publish(change_pose)
 
@@ -152,7 +152,7 @@ def handle_visual_servoing(req):
     # if req == 0:
         (dx ,dy, dz) = visual_servoing()
         print("before: ",(dx ,dy, dz) )
-        (dx ,dy, dz) = (0.02-dx ,0.029 - dy, dz)
+        (dx ,dy, dz) = (0.01-dx ,dy, dz)
         print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
         if not got_depth:
             print(colored("sent 0 cuz failed", 'red'))

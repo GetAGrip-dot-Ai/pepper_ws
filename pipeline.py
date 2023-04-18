@@ -187,12 +187,12 @@ class Perception:
         peppers_temp = self.multi_frame._matched_positive_peppers
         print(colored(f"Peppers: {peppers_temp}", 'red'))
 
-        print(f"Matched positive peppers keys: {peppers_temp.keys()}")
-        print(f"Matched positive fruits keys: {self.multi_frame._matched_positive_fruits.keys()}")
-        print(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}")
+        print(colored(f"Matched positive peppers keys: {peppers_temp.keys()}", 'yellow'))
+        print(colored(f"Matched positive fruits keys: {self.multi_frame._matched_positive_fruits.keys()}", 'yellow'))
+        print(colored(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}", 'yellow'))
 
         if not peppers_temp:
-            print(colored("No peppers here!", "blue"))
+            print(colored("No peppers here!", "red"))
             return
         else:
             for key, value in peppers_temp.items():
@@ -242,11 +242,9 @@ class Perception:
             self.multi_frame = MultiFrame()
             return 0
         else:
-            print("00000000000000")
-            print(self.chosen_pepper.pepper_peduncle)
+            # print("00000000000000")
             poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
-            print("11111111111111111")
-            print(poi_in_base_link)
+            print("poi:\n",poi_in_base_link)
 
             rate = rospy.Rate(10)
             start_time = time.time()

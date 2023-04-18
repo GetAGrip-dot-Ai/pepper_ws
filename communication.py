@@ -8,7 +8,7 @@ from pepper_ws.msg import Obstacle
 import tf
 from scipy.spatial.transform import Rotation as R
 import numpy as np
-# from termcolor import colored
+from termcolor import colored
 
 
 class Communication:
@@ -114,6 +114,7 @@ class Communication:
         p.x = point[0]
         p.y = point[1]
         p.z = point[2] # convert to meter
+        print(colored(f"poi relative to the base_link:{p}", "light_cyan"))
         return p
     
     def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):

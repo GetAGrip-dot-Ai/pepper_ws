@@ -80,7 +80,7 @@ class PepperPeduncleDetector:
             detected_frame = self.predict_peduncle(img_path, show_result, print_result)
             self._detected_frames.append(detected_frame)
 
-    def plot_results(self, peduncle_list, poi_px):
+    def plot_results(self, peduncle_list, poi_px, real_xyz):
         img = np.asarray(Image.open(self._imgs_path))
         img_name = self._imgs_path.split('/')[-1].split('.')[0]
         plt.imshow(img)
@@ -89,6 +89,7 @@ class PepperPeduncleDetector:
             draw_bounding_polygon(peduncle.conf, mask, img.shape)
             poi_px = peduncle.poi_px
             plt.plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+        plt.text(poi_px[1], poi_px[0], f'{real_xyz}')
         plt.plot(poi_px[1], poi_px[0], 'm*', markersize=5)
         plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
         plt.clf()

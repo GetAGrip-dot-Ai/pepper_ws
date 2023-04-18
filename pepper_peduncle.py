@@ -134,6 +134,7 @@ class PepperPeduncle:
     def get_poi_in_base_link(self, trans, rot):
         if trans:
             poi = self._poi
+            print(colored(f"poi relative to the realsense_frame:{poi}", "light_cyan"))
             comm = Communication()
             self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
         else:

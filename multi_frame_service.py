@@ -3,11 +3,12 @@ import rospy
 from pepper_ws.srv import multi_frame
 from pipeline import Perception
 from realsense_utils import *
+from termcolor import colored
 
 global pipeline
 
 def handle_multi_frame(req):
-    print(f"Request ID: {req.req_id}")
+    print(colored(f"Request ID: {req.req_id}"))
     if req.req_id == 0:
         print("In 0")
         pipeline.add_frame_to_multi_frame()
