@@ -37,10 +37,10 @@ class OneFrame:
         self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
         self._pepper_detections: Dict[int, Pepper] = dict()
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(img_path,
-                                 yolo_weight_path='weights/pepper_fruit_best_3.pt')
+                                 yolo_weight_path='weights/pepper_fruit_best_4.pt')
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(img_path,
-                                 yolo_weight_path='weights/pepper_peduncle_best_2.pt')
-        self._transform = None
+                                 yolo_weight_path='weights/pepper_peduncle_best_3.pt')
+
     @property
     def frame_number(self):
         return self._frame_number
@@ -141,7 +141,7 @@ class OneFrame:
     def run(self):
         self._pepper_fruit_detections = self._pepper_fruit_detector.run_detection(self.img_path, thresh=0.3,
                                                 show_result=False)
-        # draw_pepper_fruits(self)
+        # self.plot_pepper_fruit()
         self._pepper_peduncle_detections = self._pepper_peduncle_detector.run_detection(self.img_path, thresh=0.3,
                                                                                         show_result=False)
         # self.plot_pepper_peduncle()
@@ -154,5 +154,4 @@ class OneFrame:
         # self.determine_pepper_fruit_xyz()
 
         # self.plot_poi()
-        # draw_all_multi_frame(self)
-        draw_all(self)
+        draw_all_multi_frame(self)

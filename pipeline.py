@@ -169,7 +169,7 @@ class Perception:
         # Take an image and add it as a frame to the multi frame
         #################################################################
         img = get_image()
-        if img == None:
+        if img is None:
             print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
 
         number = 0 if not self.multi_frame._one_frames else len(self.multi_frame._one_frames)
@@ -265,9 +265,10 @@ class Perception:
 
                 rate.sleep()
 
-                self.multi_frame.clear_frames()
-                self.multi_frame = MultiFrame()
-                return 1
+            self.multi_frame.clear_frames()
+            self.multi_frame = MultiFrame()
+            self.chosen_pepper = None
+            return 1
                 # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
                 # print("publishing", list(self.peppers.values()))
 

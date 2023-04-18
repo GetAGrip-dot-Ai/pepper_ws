@@ -93,7 +93,7 @@ def visual_servoing():
     img_name=str(time.time()).split('.')[0]
     cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
     try:
-        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path="weights/pepper_peduncle_best_2.pt")
+        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path="weights/pepper_peduncle_best_3.pt")
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)

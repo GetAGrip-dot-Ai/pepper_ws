@@ -15,6 +15,8 @@ from pepper_fruit import PepperFruit
 from pepper_peduncle import PepperPeduncle
 from pepper_utils import *
 
+from termcolor import colored
+
 
 def print_result_boxes(pepper_list):
     print(f"detected {len(pepper_list)} peppers!")
@@ -132,15 +134,16 @@ def draw_pepper_fruits(one_frame):
     plt.cla()
 
 
-def draw_pepper_peduncles(detected_frame):
-    img = np.asarray(Image.open(detected_frame.img_path))
-    img_name = detected_frame.img_path.split('/')[-1].split('.')[0]
+def draw_pepper_peduncles(img_path, peduncle_list, poi_px):
+    img = np.asarray(Image.open(img_path))
+    img_name = img_path.split('/')[-1].split('.')[0]
     plt.imshow(img)
-    put_title(detected_frame)
-    for peduncle in detected_frame.pepper_peduncle_detections.values():
+    print(colored(f"{peduncle_list.items()}", "red"))
+    for k, peduncle in peduncle_list.items():
         mask = peduncle.mask
-        draw_bounding_polygon(peduncle.conf, mask, detected_frame.img_shape)
-
+        draw_bounding_polygon(peduncle.conf, mask, img.shape)
+        print(peduncle, peduncle.poi_px)
+        plt.plot(poi_px[1], poi_px[0], 'r*', markersize=2)
     plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
     plt.clf()
     plt.cla()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import rospy
+import rospy,rospkg
 from sensor_msgs.msg import Image as msg_Image
 from sensor_msgs.msg import CameraInfo, PointCloud2
 from cv_bridge import CvBridge, CvBridgeError
@@ -52,8 +52,8 @@ def main():
     depth_pub_topic = '/camera/pp/depth'
 
     test_img_path = '/test'
-
-    os.chdir('/'.join(__file__.split('/')[:-1]))
+    rospack = rospkg.RosPack()
+    os.chdir(rospack.get_path("pepper_ws"))
     pn = PerceptionNode(image_topic, aligned_topic,depth_pub_topic)
     pipeline = Perception(test_img_path, 0)
     

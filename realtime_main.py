@@ -2,16 +2,14 @@
 import rospy 
 from pipeline import Perception
 import os
+import rospkg
+
 # from std_msgs.msg import Float32, Int64MultiArray
 
 if __name__ == '__main__':
-    # os.chdir(os.getcwd()+'/pepper_ws/')
-    # os.chdir('/'.join(__file__.split('/')[:-1]))
-    # os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
-    os.chdir('/home/shri/pepper_ros_ws/src/pepper_ws')
-    print("current working dir: ", os.getcwd())
 
-    rospy.init_node('poi_test')
+    rospack = rospkg.RosPack()
+    os.chdir(rospack.get_path("pepper_ws"))
 
     test_img_path = '/realtime'
     pipeline = Perception(test_img_path, 0)
