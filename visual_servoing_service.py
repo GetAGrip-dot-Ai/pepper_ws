@@ -156,7 +156,7 @@ def handle_visual_servoing(req):
         print("before: ",(dx ,dy, dz) )
         (dx ,dy, dz) = (dx-0.02 ,-(dy+0.03), dz)
         print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
-        if not got_depth:
+        if dz<=0.2:
             print(colored("sent 0 cuz failed", 'red'))
             return 0
         print(colored("sent 1 cuz success", 'blue'))
