@@ -1,0 +1,10 @@
+<launch>
+    
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    </include>
+
+    <node name="aruco_run_node" pkg="aruco_ros" type="single" output="screen"/>
+
+    <node name="camera_calibration_node" pkg="pepper_ws" type="transform_realsense.py" output="screen"/>
+
+</launch>

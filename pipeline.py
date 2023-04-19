@@ -193,6 +193,7 @@ class Perception:
         print(colored(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}", 'yellow'))
 
         if not peppers_temp:
+            plot_frames(self.multi_frame, -1, -1)
             print(colored("No peppers here!", "red"))
             return
         else:

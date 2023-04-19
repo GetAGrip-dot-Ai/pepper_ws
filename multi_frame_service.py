@@ -8,7 +8,7 @@ from termcolor import colored
 global pipeline
 
 def handle_multi_frame(req):
-    print(colored(f"Request ID: {req.req_id}"))
+    print(colored(f"Request ID: {req.req_id}", ))
     if req.req_id == 0:
         print("In 0")
         pipeline.add_frame_to_multi_frame()
@@ -25,10 +25,12 @@ def multi_frame_server():
     rate = rospy.Rate(1)
     os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
     pipeline = Perception(None, 0)
+    # handle_multi_frame(0)
+    # handle_multi_frame(0)
+    # handle_multi_frame(0)
+    # handle_multi_frame(1)
     s = rospy.Service('/perception/multi_frame', multi_frame, handle_multi_frame)
     rospy.spin()
-    # while not rospy.is_shutdown():
-    #     rate.sleep()
 
 if __name__ == "__main__":
     print("In Service Main")

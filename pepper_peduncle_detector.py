@@ -89,7 +89,7 @@ class PepperPeduncleDetector:
             draw_bounding_polygon(peduncle.conf, mask, img.shape)
             poi_px = peduncle.poi_px
             plt.plot(poi_px[1], poi_px[0], 'ro', markersize=2)
-        plt.text(poi_px[1], poi_px[0], f'{real_xyz}')
+        plt.text(poi_px[1], poi_px[0], f'{round(real_xyz[0],3),round(real_xyz[1],3),round(real_xyz[2],3)}')
         plt.plot(poi_px[1], poi_px[0], 'm*', markersize=5)
         plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
         plt.clf()

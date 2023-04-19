@@ -243,56 +243,110 @@ def draw_bounding_polygon(ax, mask, img_shape, color="blue", fill=True):
 
 
 def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
-    frames = mf_obj.one_frames
-    num_frames = len(frames)
+    try:
+        frames = mf_obj._one_frames
+        num_frames = len(frames)
 
-    fig, axs = plt.subplots(1, 3)
-    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-    plt.margins(0, 0)
+        fig, axs = plt.subplots(1, num_frames)
+        plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+        plt.margins(0, 0)
 
-    images = []
-    for i in range(num_frames):
-        images.append(np.asarray(Image.open(f"{os.getcwd()}/test_multi_frame/log/frame_{i}.png")))
-        axs[i].imshow(images[i])
-        axs[i].axis('off')
+        images = []
+        for i in range(num_frames):
+            images.append(np.asarray(Image.open(f"{os.getcwd()}/test_multi_frame/log/frame_{i}.png")))
+            axs[i].imshow(images[i])
+            axs[i].axis('off')
 
-    fig.title(f"Chosen frame: {chosen_frame_num}, Chosen fruit: {chosen_fruit_num}", fontsize=16)
+        if chosen_frame_num == -1:
+            plt.title(f"No pepper chosen", fontsize=10)
+            plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
+            print(colored("All multi-frames plots have been saved", "blue"))
+            return
+        else:
+            plt.title(f"Chosen frame: {chosen_frame_num}, Chosen fruit: {chosen_fruit_num}", fontsize=10)
+            
 
-    for frame_number, pepper in mf_obj.matched_positive_peppers.items():
-        r = np.round(np.random.rand(), 1)
-        g = np.round(np.random.rand(), 1)
-        b = np.round(np.random.rand(), 1)
-        color = (r, g, b)
+        for frame_number, peppers in mf_obj._matched_positive_peppers.items():
 
-        pepper_fruit = pepper.pepper_fruit
-        xywh = pepper_fruit.xywh
-        x = int(xywh[0])
-        y = int(xywh[1])
-        w = int(xywh[2])
-        h = int(xywh[3])
-        draw_bounding_box(axs[frame_number], pepper_fruit.number, x, y, w, h, color=color)
+            for pepper in peppers:
+                r = np.round(np.random.rand(), 1)
+                g = np.round(np.random.rand(), 1)/5
+                b = np.round(np.random.rand(), 1)
+                color = (r, g, b)
 
-        pepper_peduncle = pepper.pepper_peduncle
-        mask = pepper_peduncle.mask
-        draw_bounding_polygon(axs[frame_number], mask, images[frame_number].shape, color=color)
-        poi_px = pepper.pepper_peduncle.poi_px
-        axs[i].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+                pepper_fruit = pepper.pepper_fruit
+                xywh = pepper_fruit.xywh
+                x = int(xywh[0])
+                y = int(xywh[1])
+                w = int(xywh[2])
+                h = int(xywh[3])
+                draw_bounding_box(axs[frame_number], pepper_fruit.number, x, y, w, h, color=color)
 
-        for associated_frame_number, associated_fruit_number in pepper_fruit.associated_fruits:
-            associated_fruit = frames[associated_frame_number].pepper_fruit_detections[associated_fruit_number]
-            xywh = associated_fruit.xywh
-            x = int(xywh[0])
-            y = int(xywh[1])
-            w = int(xywh[2])
-            h = int(xywh[3])
-            draw_bounding_box(axs[associated_frame_number], associated_fruit.number, x, y, w, h, color=color)
+                pepper_peduncle = pepper.pepper_peduncle
+                mask = pepper_peduncle.mask
+                draw_bounding_polygon(axs[frame_number], mask, images[frame_number].shape, color=color)
+                poi_px = pepper.pepper_peduncle.poi_px
+                axs[frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
 
-            if associated_fruit.parent_pepper is not None:
-                parent_pepper = frames[associated_frame_number].pepper_detections[associated_fruit.parent_pepper]
-                associated_peduncle = parent_pepper.pepper_peduncle
-                mask = associated_peduncle.mask
-                draw_bounding_polygon(axs[associated_frame_number], mask, images[associated_frame_number].shape, color=color)
-                poi_px = associated_peduncle.poi_px
-                axs[associated_frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+                for associated_frame_number, associated_fruit_number in pepper_fruit.associated_fruits:
+                    associated_fruit = frames[associated_frame_number].pepper_fruit_detections[associated_fruit_number]
+                    xywh = associated_fruit.xywh
+                    x = int(xywh[0])
+                    y = int(xywh[1])
+                    w = int(xywh[2])
+                    h = int(xywh[3])
+                    draw_bounding_box(axs[associated_frame_number], associated_fruit.number, x, y, w, h, color=color)
+
+                    if associated_fruit.parent_pepper is not None:
+                        parent_pepper = frames[associated_frame_number].pepper_detections[associated_fruit.parent_pepper]
+                        associated_peduncle = parent_pepper.pepper_peduncle
+                        mask = associated_peduncle.mask
+                        draw_bounding_polygon(axs[associated_frame_number], mask, images[associated_frame_number].shape, color=color)
+                        poi_px = associated_peduncle.poi_px
+                        axs[associated_frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
         
-    plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
+        for frame_number, fruits in mf_obj._unmatched_positive_fruits.items():
+
+            for pepper_fruit in fruits:
+                color = (0, 0, 0)
+
+                xywh = pepper_fruit.xywh
+                x = int(xywh[0])
+                y = int(xywh[1])
+                w = int(xywh[2])
+                h = int(xywh[3])
+                draw_bounding_box(axs[frame_number], pepper_fruit.number, x, y, w, h, color=color)
+
+                for associated_frame_number, associated_fruit_number in pepper_fruit.associated_fruits:
+                    associated_fruit = frames[associated_frame_number].pepper_fruit_detections[associated_fruit_number]
+                    xywh = associated_fruit.xywh
+                    # import ipdb; ipdb.set_trace();
+                    x = int(xywh[0])
+                    y = int(xywh[1])
+                    w = int(xywh[2])
+                    h = int(xywh[3])
+                    draw_bounding_box(axs[associated_frame_number], associated_fruit.number, x, y, w, h, color=color)
+
+                    if associated_fruit.parent_pepper is not None:
+                        parent_pepper = frames[associated_frame_number].pepper_detections[associated_fruit.parent_pepper]
+                        associated_peduncle = parent_pepper.pepper_peduncle
+                        mask = associated_peduncle.mask
+                        draw_bounding_polygon(axs[associated_frame_number], mask, images[associated_frame_number].shape, color=color)
+                        poi_px = associated_peduncle.poi_px
+                        axs[associated_frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+
+        # for frame_number, peduncles in mf_obj._unmatched_positive_peduncles.items():
+        #     color = (0, 0, 0)
+            
+        #     for pepper_peduncle in peduncles:
+        #         mask = pepper_peduncle.mask
+        #         draw_bounding_polygon(axs[frame_number], mask, images[frame_number].shape, color=color)
+        #         poi_px = pepper_peduncle.poi_px
+        #         axs[frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+
+        plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
+        print(colored("All multi-frames plots have been saved", "blue"))
+    except Exception as e:
+        print(colored("Error occured while trying to save all multi-frames together", "red"))
+        
+    

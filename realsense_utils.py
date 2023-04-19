@@ -229,17 +229,17 @@ def get_image():
             else:
                 images = np.hstack((color_image, depth_colormap))
 
-        #     # Show images
-        #     cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-        #     cv2.imshow('RealSense', images)
+            # # Show images
+            # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+            # cv2.imshow('RealSense', images)
             
-        #     k = cv2.waitKey(0)
-        #     if k==27:
-        #         print("hey")
-        #         cv2.destroyAllWindows()
-        #         print("images", images.shape)
-        #         return images[:, :640, :]
-        #         # break
+            # k = cv2.waitKey(0)
+            # if k==27:
+            #     print("hey")
+            #     cv2.destroyAllWindows()
+            #     print("images", images.shape)
+            #     return images[:, :640, :]
+            #     # break
 
         # cv2.destroyAllWindows()
         return images[:, :640, :]
@@ -250,5 +250,4 @@ def get_image():
         pipeline.stop()
 
     return images[:, :640, :]
-
 

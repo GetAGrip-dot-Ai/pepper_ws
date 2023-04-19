@@ -95,32 +95,34 @@ def visual_servoing():
     img_name=str(time.time()).split('.')[0]
     cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
     try:
-        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_3.pt")
+        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_4.pt")
         peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
 
         pepper_of_interest = None
-        poi_xyz = (0, 0, 0)
+        pepper_of_interest_poi_xyz = (0, 0, 0)
         
         for k, v in peduncle_list.items():
             v.set_point_of_interaction(img.shape)
             (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1]) #TODO
 
             if pepper_of_interest == None:
+                print(colored("first pepper", 'magenta'))
                 pepper_of_interest = v
-                poi_xyz = (dx ,dy, dz)
+                pepper_of_interest_poi_xyz = (dx ,dy, dz)
 
-            elif int(dx) != 0 and abs(dx)<=abs(poi_xyz[0]):
-                print(f"dx: {dx}, v.xyz: {poi_xyz}")
+            elif int(dx) != 0 and abs(dx)<=abs(pepper_of_interest_poi_xyz[0]):
+                print(colored(f"changing pepper because [{dx}] is smaller than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
                 pepper_of_interest = v
-                poi_xyz = (dx ,dy, dz)
+                pepper_of_interest_poi_xyz = (dx ,dy, dz)
             else:
-                continue
+                print(colored(f"not changing pepper because [{dx}] is bigger than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
 
         if pepper_of_interest != None:
-            pp.plot_results(peduncle_list, pepper_of_interest.poi_px, poi_xyz)
+            pp.plot_results(peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
             got_depth = True
-        print(colored(f"pepper of interest: \n{pepper_of_interest.poi_px}, {poi_xyz}"))
-        return poi_xyz
+
+        print(colored(f"pepper of interest: \n{pepper_of_interest.poi_px}, {pepper_of_interest_poi_xyz}", "light_green"))
+        return pepper_of_interest_poi_xyz
 
     except Exception as e:
         print("Error in detecting pepper", e)
@@ -152,7 +154,7 @@ def handle_visual_servoing(req):
     # if req == 0:
         (dx ,dy, dz) = visual_servoing()
         print("before: ",(dx ,dy, dz) )
-        (dx ,dy, dz) = (0.01-dx ,dy, dz)
+        (dx ,dy, dz) = (dx-0.02 ,-(dy+0.03), dz)
         print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
         if not got_depth:
             print(colored("sent 0 cuz failed", 'red'))

@@ -68,6 +68,6 @@ class PepperFruitDetector:
 
 if __name__ == '__main__':
     PepperDetection = PepperFruitDetector(file_path='/dataset/peduncle',
-                                          yolo_weight_path="../yolov8_scripts/weights/pepper_fruit_best_5.pt")
+                                          yolo_weight_path="../yolov8_scripts/weights/pepper_fruit_best_4.pt")
     PepperDetection.run_detection(img_path='/dataset/peduncle', show_result=False)
     print(PepperDetection)
