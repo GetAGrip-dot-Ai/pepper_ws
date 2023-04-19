@@ -50,5 +50,7 @@ if __name__ == '__main__':
 
     with open("/home/sridevi/kinova_ws/src/pepper_ws/realsense_wrt_bracelet.npy", "rb") as f:
         print(f"Loaded value {np.load(f)}")
+    print("rewrf")
+    # with open("/home/sridevi/kinova_ws/src/pepper_ws/realsense_wrt_bracelet2.npy", "rb") as f:
+    #     print(f"Loaded value {np.load(f)}")
        
-

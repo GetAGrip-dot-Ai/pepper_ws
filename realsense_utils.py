@@ -145,15 +145,15 @@ def get_depth(x=320, y=240):
             depth_colormap = np.asanyarray(
                         colorizer.colorize(depth_frame).get_data())
             img = np.hstack((color_image, depth_colormap))
-            plt.imshow(img)
-            plt.axis('on')
-            # print("--------", x, y)
-            plt.plot(x, y,  'r*', markersize=5)
-            plt.plot(x+640, y, 'b*', markersize=5)
-            plt.plot(0, 0, 'g*', markersize=50)
-            plt.savefig(path+file_name+str(count)+'.png')
-            plt.cla()
-            plt.clf()
+        # plt.imshow(img)
+        # plt.axis('on')
+        # # print("--------", x, y)
+        # plt.plot(x, y,  'r*', markersize=5)
+        # plt.plot(x+640, y, 'b*', markersize=5)
+        # plt.plot(0, 0, 'g*', markersize=50)
+        # plt.savefig(path+file_name+str(count)+'.png')
+        # plt.cla()
+        # plt.clf()
         # print("=========saved to : ", path+file_name+str(count)+'.png')
             
         # distance = math.sqrt(((dx)**2) + ((dy)**2) + ((dz)**2))
@@ -251,3 +251,8 @@ def get_image():
 
     return images[:, :640, :]
 
+
+# THINGS TO CHANGE
+'''
+- need to check how the rate is at for the kinova
+'''
