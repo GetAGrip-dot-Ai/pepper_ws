@@ -22,13 +22,10 @@ class Communication:
         
     def publish_poi(self, poi, orientation):
 
-        # point = self.transform_to_base_link(poi)
-        point = poi
-
         peduncle_pose = Pose()
-        peduncle_pose.position.x = float(point.x)
-        peduncle_pose.position.y = float(point.y)
-        peduncle_pose.position.z = float(point.z)
+        peduncle_pose.position.x = float(poi[0])
+        peduncle_pose.position.y = float(poi[1])
+        peduncle_pose.position.z = float(poi[2])
         peduncle_pose.orientation.x = 0
         peduncle_pose.orientation.y = 0
         peduncle_pose.orientation.z = 0

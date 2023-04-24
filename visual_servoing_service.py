@@ -10,12 +10,14 @@ from geometry_msgs.msg import Pose
 import rospy, rospkg
 from termcolor import colored
 from pepper_peduncle_utils import draw_one_poi
-from pepper_ws.srv import visual_servo
+# from pepper_ws.srv import visual_servo
+from realsense_utils import *
 
 dx, dy, dz = 0, 0, 0
 got_depth = False
 
 def get_xy_in_realworld(x=350, y=200):
+
     y, x = int(x), int(y)
     pipeline = rs.pipeline()
     config = rs.config()
@@ -90,24 +92,37 @@ def get_xy_in_realworld(x=350, y=200):
     return (dx ,dy, dz)
 
 def visual_servoing():
+
     global got_depth
+    start_time = time.time()
     img = get_image()
+    print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
+
     img_name=str(time.time()).split('.')[0]
-    cv2.imwrite(os.getcwd()+'/visual_servoing/'+img_name+'.png', img)
+    img_path = os.getcwd()+'/visual_servoing/'+img_name+'.png'
+
+    cv2.imwrite(img_path, img)
+
+    pepper_of_interest = None
+    pepper_of_interest_poi_xyz = (0, 0, 0)
+
     try:
-        pp = PepperPeduncleDetector(os.getcwd()+'/visual_servoing/'+img_name+'.png', yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_4.pt")
-        peduncle_list = pp.run_detection(os.getcwd()+'/visual_servoing/'+img_name+'.png')
+        pp = PepperPeduncleDetector(yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_4.pt")
 
-        pepper_of_interest = None
-        pepper_of_interest_poi_xyz = (0, 0, 0)
+        peduncle_list = pp.predict_peduncle(img_path)
+
         
-        for k, v in peduncle_list.items():
-            v.set_point_of_interaction(img.shape)
-            (dx ,dy, dz) = get_xy_in_realworld(v.poi_px[0], v.poi_px[1]) #TODO
+        for peduncle_num, peduncle in peduncle_list.items():
 
+            peduncle.set_point_of_interaction(img.shape)
+
+            # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
+            start_time = time.time()
+            (dx, dy, dz) = get_depth(peduncle.poi_px[0], peduncle.poi_px[1])
+            print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
-                pepper_of_interest = v
+                pepper_of_interest = peduncle
                 pepper_of_interest_poi_xyz = (dx ,dy, dz)
 
             elif int(dx) != 0 and abs(dx)<=abs(pepper_of_interest_poi_xyz[0]):
@@ -121,17 +136,18 @@ def visual_servoing():
             pp.plot_results(peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
             got_depth = True
 
-        print(colored(f"pepper of interest: \n{pepper_of_interest.poi_px}, {pepper_of_interest_poi_xyz}", "light_green"))
+        print(colored(f"pepper of interest: \n, {pepper_of_interest_poi_xyz}", "blue"))
         return pepper_of_interest_poi_xyz
 
     except Exception as e:
-        print("Error in detecting pepper", e)
-        return (0, 0, 0)
+        print(colored(f"Error in detecting pepper: {e}", "red"))
+        return pepper_of_interest_poi_xyz
     # get the x, y, z in the realsense axis frame
     # this should be 0, offset of the camera in th rs frame's -z axis 
     # and the z is just not going to work because it dies at 0.15 depth
 
 def publish_d(x, y, z):
+
     visual_servo_pub = rospy.Publisher('/perception/peduncle/dpoi', Pose, queue_size=10)
     change_pose = Pose()
     # change to the base_link frame 
@@ -142,25 +158,30 @@ def publish_d(x, y, z):
     change_pose.orientation.y = 0
     change_pose.orientation.z = 0
     change_pose.orientation.w = 1
-    # rospy.loginfo(peduncle_pose)
-    # print(colored("published to topic", "yellow"))
     if z > 0.1:
         visual_servo_pub.publish(change_pose)
 
 def handle_visual_servoing(req):
+
     global dx, dy, dz
-    print(colored("Returning visual servoing", 'magenta'))
-    if req.req_id == 0:
-    # if req == 0:
+
+    print(colored("Starting visual servoing", 'blue'))
+    # if req.req_id == 0:
+    if req == 0:
         (dx ,dy, dz) = visual_servoing()
-        print("before: ",(dx ,dy, dz) )
-        (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz)
+        # print("before: ",(dx ,dy, dz) )
+
+        (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz) # parameter tuning
+
         print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
+
+
         if dz<=0.2:
-            print(colored("sent 0 cuz failed", 'red'))
+            print(colored("Visual servoing failed :( Returning 0", 'red'))
             return 0
-        print(colored("sent 1 cuz success", 'blue'))
-        return 1
+        else:
+            print(colored("Visual servoing success :) Returning 1", 'green'))
+            return 1
     # else:
     #     continue
 
@@ -168,19 +189,20 @@ def handle_visual_servoing(req):
 def vs_server():
     global dx
     rospy.init_node('visual_servoing_server')
-    rate = rospy.Rate(10)
+
     rospack = rospkg.RosPack()
     os.chdir(rospack.get_path("pepper_ws"))
-    s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
-    # handle_visual_servoing(0)
+
+    # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
+    handle_visual_servoing(0)
+
     while not rospy.is_shutdown():
-        if dz > 0.1:
+        if get_depth:
             start_time = time.time()
-            # print("visual servo results: x, y, z", dx, dy, dz)
-            while time.time() - start_time<30:
+            print(colored(f"Visual servo results: x:{dx} y:{dy} z:{dz}", "green"))
+            while time.time() - start_time<1:
                 publish_d(dx ,dy, dz)
-        rospy.sleep(1)
-    rospy.spin()
+    # rospy.spin()
 
 if __name__=="__main__":
     print(vs_server())

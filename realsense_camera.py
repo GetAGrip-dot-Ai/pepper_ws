@@ -1,10 +1,5 @@
+import rospy
 import pyrealsense2 as rs
-import numpy as np
-import cv2
-import math
-import os
-import time
-import matplotlib.pyplot as plt
 from termcolor import colored
 
 class RealsenseCamera:
@@ -41,4 +36,25 @@ class RealsenseCamera:
 
         align_to = rs.stream.color
         self._align = rs.align(align_to)
+
+        rospy.sleep(3)
+
+        print(colored("Realsense initialization done!", "green"))
+
+
+    @property
+    def pipeline(self):
+        return self._pipeline
+
+    @property
+    def config(self):
+        return self._config
+
+    @property
+    def colorizer(self):
+        return self._colorizer
+    
+    @property
+    def align(self):
+        return self._align
 

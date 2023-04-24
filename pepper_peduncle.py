@@ -2,7 +2,8 @@ import os
 from typing import List
 from realsense_utils import *
 from pepper_peduncle_utils import *
-from communication import Communication
+from scipy.spatial.transform import Rotation as R
+from geometry_msgs.msg import Pose, Point
 
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
@@ -117,33 +118,46 @@ class PepperPeduncle:
     def __str__(self):
         return f"Peduncle(number={self.number},mask={self._mask}, conf={self._conf})"
 
-    def set_point_of_interaction(self, img_shape, pepper_fruit_xywh=None, trans=None, rot=None):
-        if pepper_fruit_xywh is None:
+    def set_point_of_interaction(self, img_shape, rs_camera, pepper_fruit_xywh=None, trans=None, rot=None):
+
+        if pepper_fruit_xywh is None:  
             pepper_fruit_xywh = self._xywh
             pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
+
         self._curve = fit_curve_to_mask(self._mask, img_shape, pepper_fruit_xywh, self._xywh)
         total_curve_length = self._curve.full_curve_length()
+
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
-        poi_x, poi_y, poi_z = get_depth(int(poi_x_px), int(poi_y_px))
-        self._poi = (poi_z, -poi_x, -poi_y)
+
+        poi_x, poi_y, poi_z = get_depth(rs_camera, int(poi_x_px), int(poi_y_px))
+
+        self._poi = (poi_z, -poi_x, -poi_y) # converting to kinova's axis frame
         self._poi_px = (poi_x_px, poi_y_px)
+
         self.get_poi_in_base_link(trans, rot)
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         # print("POI in pixel frame:", self._poi_px)
 
-    def get_poi_in_base_link(self, trans, rot):
-        if trans:
-            poi = self._poi
-            print(colored(f"poi relative to the realsense_frame:\n{poi}", "light_green"))
-            comm = Communication()
-            self.poi_in_base_link = comm.transform_to_base_link(poi, trans, rot)    # point in real world   
-        else:
-            print(colored("NO TRANSFORM FOUND FOR ONE FRAME", "red"))
-            return
+    def get_poi_in_base_link(self, point_in_relative_frame, trans, rot):
+        try:
 
-    def set_peduncle_orientation(self, pepper_fruit_xywh):
+            point_in_relative_frame = self._poi
+
+            r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
+            H = np.vstack((np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1))),np.array([0,0,0,1])))
+            point_in_relative_frame = list(point_in_relative_frame) + [1]
+            point = np.array(H) @ np.array(point_in_relative_frame).T
+
+            self.poi_in_base_link = point
+            print(colored(f"POI relative to the base_link:\n{point}", "yellow"))
+        except Exception as e: # TODO needed only for visual servo?
+            
+            print(colored(f"No tf found: {e}", "magenta"))
+
+
+    def set_peduncle_orientation(self, rs_camera, pepper_fruit_xywh):
         point_x, point_y = determine_next_point(self._curve, self._poi, pepper_fruit_xywh, self._xywh)
-        point_z = get_depth(point_x, point_y)
+        point_z = get_depth(rs_camera, point_x, point_y)
         self._orientation = [point_x - self._poi[0], point_y - self._poi[1], point_z - self._poi[2]]
 
 
