@@ -36,7 +36,7 @@ def update_fruit_occurences(fruits_frame1, fruits_frame2, frame1_number, frame2_
 
 def update_fruit_true_positives(fruits, max_frames):
     for fruit in fruits:
-        if fruit.occurences >= 2:
+        if fruit.occurences > 1:
             fruit.true_positive = True
     
 
@@ -52,11 +52,8 @@ def get_all_fruits(frames):
             if fruit.true_positive:
                 all_frames_positive_fruits.append(fruit)
 
-    # print(all_frames_positive_fruits)
-
     for i in reversed(range(len(frames))):
         frame = frames[i]
-        # print(i)
 
         for fruit in frame.pepper_fruit_detections.values():
             if fruit.true_positive:
@@ -66,10 +63,7 @@ def get_all_fruits(frames):
                     # print(all_frames_positive_fruits)
                     
                     if fruit.parent_pepper != None:
-                        if frame.frame_number not in unique_positive_fruits:
-                            unique_positive_fruits[frame.frame_number] = [fruit]
-                        else:  
-                            unique_positive_fruits[frame.frame_number].append(fruit)
+                        unique_positive_fruits[frame.frame_number] = unique_positive_fruits.get(frame.frame_number, []) + [fruit]
 
                         for frame_number, associated_fruit_number in fruit.associated_fruits:
                             associated_fruit = frames[frame_number].pepper_fruit_detections[associated_fruit_number]
@@ -84,21 +78,14 @@ def get_all_fruits(frames):
                                 associated_fruit = frames[frame_number].pepper_fruit_detections[associated_fruit_number]
 
                                 if associated_fruit.parent_pepper != None:
-                                    if frame_number not in unique_positive_fruits:
-                                        unique_positive_fruits[frame_number] = [associated_fruit]
-                                    else:  
-                                        unique_positive_fruits[frame_number].append(associated_fruit)
-
+                                    unique_positive_fruits[frame_number] = unique_positive_fruits.get(frame_number, []) + [associated_fruit]
+                                    
                                     found = True
                                     break
                             
                             if not found:
-                                if frame.frame_number not in unmatched_positive_fruits:
-                                    unmatched_positive_fruits[frame.frame_number] = [fruit]
-                                else:  
-                                    unmatched_positive_fruits[frame.frame_number].append(fruit)
-
-                                found = True
+                                unmatched_positive_fruits[frame.frame_number] = unmatched_positive_fruits.get(frame.frame_number, []) + [fruit]
+                                # found = True
                                 break
 
                         for frame_number, associated_fruit_number in fruit.associated_fruits:
@@ -153,8 +140,6 @@ def get_all_peduncles(frames):
             if peduncle.true_positive:
                 all_frames_positive_peduncles.append(peduncle)
 
-    # print(all_frames_positive_peduncles)
-
     for i in reversed(range(len(frames))):
         frame = frames[i]
 
@@ -163,13 +148,9 @@ def get_all_peduncles(frames):
                 if peduncle in all_frames_positive_peduncles:
 
                     all_frames_positive_peduncles.remove(peduncle)
-                    # print(all_frames_positive_peduncles)
                     
                     if peduncle.parent_pepper != None:
-                        if frame.frame_number not in unique_positive_peduncles:
-                            unique_positive_peduncles[frame.frame_number] = [peduncle]
-                        else:  
-                            unique_positive_peduncles[frame.frame_number].append(peduncle)
+                        unique_positive_peduncles[frame.frame_number] = unique_positive_peduncles.get(frame.frame_number, []) + [peduncle]
 
                         for frame_number, associated_peduncle_number in peduncle.associated_peduncles:
                             associated_peduncle = frames[frame_number].pepper_peduncle_detections[associated_peduncle_number]
@@ -184,21 +165,13 @@ def get_all_peduncles(frames):
                                 associated_peduncle = frames[frame_number].pepper_peduncle_detections[associated_peduncle_number]
 
                                 if associated_peduncle.parent_pepper != None:
-                                    if frame_number not in unique_positive_peduncles:
-                                        unique_positive_peduncles[frame_number] = [associated_peduncle]
-                                    else:  
-                                        unique_positive_peduncles[frame_number].append(associated_peduncle)
+                                    unique_positive_peduncles[frame_number] = unique_positive_peduncles.get(frame_number, []) + [associated_peduncle]
 
                                     found = True
                                     break
                             
                             if not found:
-                                if frame.frame_number not in unmatched_positive_peduncles:
-                                    unmatched_positive_peduncles[frame.frame_number] = [peduncle]
-                                else:  
-                                    unmatched_positive_peduncles[frame.frame_number].append(peduncle)
-
-                                found = True
+                                unmatched_positive_peduncles[frame.frame_number] = unmatched_positive_peduncles.get(frame.frame_number, []) + [peduncle]
                                 break
 
                         for frame_number, associated_peduncle_number in peduncle.associated_peduncles:
@@ -247,7 +220,12 @@ def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
         frames = mf_obj._one_frames
         num_frames = len(frames)
 
-        fig, axs = plt.subplots(1, num_frames)
+        if num_frames > 1:
+            fig, axs = plt.subplots(1, num_frames)  
+        else:
+            fig, axis = plt.subplots()
+            axs = [axis]
+
         plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
         plt.margins(0, 0)
 
@@ -347,6 +325,6 @@ def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
         plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
         print(colored("All multi-frames plots have been saved", "blue"))
     except Exception as e:
-        print(colored("Error occured while trying to save all multi-frames together", "red"))
+        print(colored(f"Error occured while trying to save all multi-frames together: {e}", "red"))
         
     

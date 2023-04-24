@@ -12,45 +12,25 @@ from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_p
 
 
 class PepperPeduncleDetector:
-    def __init__(self, file_path, yolo_weight_path, img=None):
+    def __init__(self, yolo_weight_path):
 
         ultralytics.checks()
-        print("yolo path is:", yolo_weight_path)
+
         self._model: YOLO = YOLO(yolo_weight_path)
-        self._path: str = file_path
-        self._classes: List[str] = ["pepper"]
+        self._classes: List[str] = ["pepper"] # TODO if we change YOLO
 
-        self._imgs_path: List[str] = list()
-        self._img = img
-        # self._detected_frames: List[OneFrame] = list()
-
-    @property
-    def detected_frames(self):
-        return self._detected_frames
-
-    @detected_frames.setter
-    def detected_frames(self, detected_frames):
-        self._detected_frames = detected_frames
-
-    @property
-    def path(self):
-        return self._path
 
     def __str__(self):
         return print_pepperdetection(self)
-
-    def run_detection(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
-        # self._imgs_path = get_all_image_path_in_folder(self._path)
-        self._imgs_path = img_path
-        # self.predict_peduncles(show_result, print_result)
-        self._predicted_peduncles = self.predict_peduncle(img_path, show_result, print_result, thresh=thresh)
-        return self._predicted_peduncles
     
-    def predict_peduncle(self, img_path, show_result: bool = False, print_result: bool = False, thresh=0.5):
+    def predict_peduncle(self, img_path, thresh=0.5):
+
         peduncle_dict = dict()
 
         img = read_image(img_path)
+
         results = self._model(img, conf=thresh)
+
         peduncle_count = 0
 
         result = results[0]
@@ -68,9 +48,6 @@ class PepperPeduncleDetector:
 
                 peduncle_dict[i] = peduncle
                 peduncle_count += 1
-
-        # if print_result:
-        #     print_result_masks(detected_frame)
 
         return peduncle_dict
 

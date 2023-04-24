@@ -19,7 +19,6 @@ def parabola(t, a, b, c):
 
 
 def get_segment_from_mask(mask, img_shape):
-    # print("mask.shape", mask.shape)
 
     points = []
     for i in range(len(mask)):
@@ -34,23 +33,20 @@ def get_segment_from_mask(mask, img_shape):
 
 
 def fit_curve_to_mask(mask, img_shape, pepper_fruit_xywh, pepper_peduncle_xywh):
+
     curve = Curve()
     segment = get_segment_from_mask(mask, img_shape)
-    # plt.imshow(segment)
-    # plt.savefig("hehe.png")
+
     medial_img, _ = medial_axis(segment, return_distance=True)
-    # plt.imshow(medial_img)
-    # plt.savefig("hehe.png")
-    # plt.show()
+
     x, y = np.where(medial_img == 1)
-    # print(f"x: {x}, y: {y}")
+    
     params1, _ = curve_fit(parabola, y, x)
-    # print("params1", params1)
     a, b, c = params1
     fit_curve_x = parabola(y, a, b, c)
+    
     params2, _ = curve_fit(parabola, x, y)
     a, b, c = params2
-    # print("params2", params2)
     fit_curve_y = parabola(x, a, b, c)
 
     if np.linalg.norm(x - fit_curve_x) < np.linalg.norm(y - fit_curve_y):

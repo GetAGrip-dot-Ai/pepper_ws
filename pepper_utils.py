@@ -287,14 +287,17 @@ def draw_all(one_frame):
     plt.cla()
 
 def draw_all_multi_frame(one_frame):
-    img = np.asarray(Image.open(one_frame.img_path))
+
+    img = read_image(one_frame.img_path)
+
     plt.imshow(img)
-    img_name = one_frame.img_path.split('/')[-1].split('.')[0]
+
     pepper_utils.put_title(one_frame)
 
     for peduncle in one_frame.pepper_peduncle_detections.values():
         mask = peduncle.mask
         pepper_fruit_utils.draw_bounding_polygon(peduncle.number, mask, one_frame.img_shape, color='red', fill=True)
+
     for pepper_fruit in one_frame.pepper_fruit_detections.values():
         xywh = pepper_fruit.xywh
         x = int(xywh[0])
@@ -330,6 +333,7 @@ def draw_all_multi_frame(one_frame):
         bbox_inches='tight', pad_inches=0)
     plt.clf()
     plt.cla()
+    plt.close()
 
 def draw_vs(one_frame):
     img = np.asarray(Image.open(one_frame.img_path))

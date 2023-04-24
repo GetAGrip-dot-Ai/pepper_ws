@@ -26,18 +26,6 @@ class MultiFrame:
             self._one_frames.popleft()
         self._one_frames.append(one_frame)
 
-    # def add_video_frame(self, video_frame):
-    #     if len(self._video_frames) == self._max_frames:
-    #         self._video_frames.popleft()
-    #     self._video_frames.append(video_frame)
-
-    # def video_frames_to_one_frames(self):
-    #     number = 0
-    #     for frame in self._video_frames:
-    #         cv2.imwrite(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png', frame)
-    #         self.add_one_frame(OneFrame(os.getcwd() + '/test_multi_frame/log/frame_' + str(number) + '.png'))
-    #         number += 1
-
     def clear_frames(self):
         return self._one_frames.clear()
     
@@ -51,9 +39,6 @@ class MultiFrame:
     def assign_frame_numbers(self):
         for i, frame in enumerate(self._one_frames):
             frame.frame_number = i
-
-    def assign_last_frame_number(self, number):
-        self._one_frames[-1].frame_number = number
 
     def write_results(self):
         filename = os.getcwd() + '/test_multi_frame/log/results.txt'
@@ -95,8 +80,9 @@ class MultiFrame:
             update_fruit_true_positives(frame.pepper_fruit_detections.values(), len(self._one_frames))
 
         self._matched_positive_fruits, self._unmatched_positive_fruits = get_all_fruits(self._one_frames)
-        print(colored(f"matched fruit: {self._matched_positive_fruits}", "blue"))
-        print(colored(f"unmatched fruit: {self._unmatched_positive_fruits}", "blue"))
+
+        print(colored(f"matched fruit: {self._matched_positive_fruits}", "yellow"))
+        print(colored(f"unmatched fruit: {self._unmatched_positive_fruits}", "yellow"))
         
 
     def find_peduncles(self):
@@ -111,18 +97,23 @@ class MultiFrame:
         self._matched_positive_peduncles, self._unmatched_positive_peduncles = get_all_peduncles(self._one_frames)
 
 
-    def find_peppers(self):
+    def find_peppers(self): # TODO: make this more efficient? if we have time 
+
         for frame_number, fruits in self._matched_positive_fruits.items():
             self._matched_positive_peppers[frame_number] = []
 
             for fruit in fruits:
+
                 parent_pepper = self._one_frames[frame_number].pepper_detections[fruit.parent_pepper]
                 self._matched_positive_peppers[frame_number].append(parent_pepper)
 
                 peduncle = parent_pepper.pepper_peduncle
+
                 if frame_number in self._matched_positive_peduncles and peduncle in self._matched_positive_peduncles[frame_number]:
+
                     peduncles = self._matched_positive_peduncles[frame_number]
                     peduncles.remove(peduncle)
+
                     if peduncles:
                         self._matched_positive_peduncles[frame_number] = peduncles
                     else:
