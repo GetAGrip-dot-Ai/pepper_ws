@@ -38,7 +38,7 @@ def get_depth(realsense_camera, x=320, y=240):
                 continue
 
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
-            depth = depth_frame.get_distance(x, y)
+            depth = depth_frame.get_distance(int(x), int(y))
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
             # dx -= - 0.0325 
             color_image = np.asanyarray(color_frame.get_data())
@@ -48,16 +48,16 @@ def get_depth(realsense_camera, x=320, y=240):
                         colorizer.colorize(depth_frame).get_data())
             img = np.hstack((color_image, depth_colormap))
 
-        plt.imshow(img)
-        plt.axis('on')
-        plt.plot(x, y,  'r*', markersize=5)
-        plt.plot(x+640, y, 'b*', markersize=5)
-        plt.plot(0, 0, 'g*', markersize=50)
-        plt.savefig(path+file_name+str(count)+'.png')
-        plt.cla()
-        plt.clf()
-        plt.close()
-        print(colored("Depth image saved to : ", path+file_name+str(count)+'.png', "blue"))
+        # plt.imshow(img)
+        # plt.axis('on')
+        # plt.plot(x, y,  'r*', markersize=5)
+        # plt.plot(x+640, y, 'b*', markersize=5)
+        # plt.plot(0, 0, 'g*', markersize=50)
+        # plt.savefig(path+file_name+str(count)+'.png')
+        # plt.cla()
+        # plt.clf()
+        # plt.close()
+        # print(colored("Depth image saved to : ", path+file_name+str(count)+'.png', "blue"))
             
         # pipeline.stop()
 

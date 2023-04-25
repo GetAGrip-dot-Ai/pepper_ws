@@ -138,7 +138,7 @@ class PepperPeduncle:
         # print("POI in world frame:", poi_x, poi_y, poi_z)
         # print("POI in pixel frame:", self._poi_px)
 
-    def get_poi_in_base_link(self, point_in_relative_frame, trans, rot):
+    def get_poi_in_base_link(self, trans, rot):
         try:
 
             point_in_relative_frame = self._poi
