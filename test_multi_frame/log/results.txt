@@ -1,7 +1,5 @@
 Frame: 1
-Matched Fruit: 0 Associated Fruits: 0 0, 
+Matched Fruit: 1 Associated Fruits: 0 1, 0 2, 0 3, 
 Frame: 1
-Unmatched Peduncle: 1
-Frame: 0
-Unmatched Peduncle: 0
+Unmatched Fruit: 0
 ----------------------------------------
