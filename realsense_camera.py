@@ -46,6 +46,7 @@ class RealsenseCamera:
     def pipeline(self):
         return self._pipeline
 
+
     @property
     def config(self):
         return self._config

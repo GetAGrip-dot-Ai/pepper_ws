@@ -13,9 +13,9 @@ from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_p
 
 
 class PepperPeduncleDetector:
-    def __init__(self, yolo_weight_path):
+    def __init__(self, yolo_weight_path='weights/pepper_peduncle_best_4.pt'):
 
-        ultralytics.checks()
+        # ultralytics.checks()
 
         self._model: YOLO = YOLO(yolo_weight_path)
         self._classes: List[str] = ["pepper"] # TODO if we change YOLO

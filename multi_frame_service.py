@@ -34,7 +34,7 @@ def handle_multi_frame(req):
         perception.add_frame_to_multi_frame()
         perception.process_multi_frame()
         pepper_found = perception.send_to_manipulator()
-        perception.rs_camera.pipeline.stop()
+        perception.rs_camera._pipeline.stop()
         return pepper_found
     
 def multi_frame_server():

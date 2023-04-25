@@ -10,7 +10,7 @@ from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_fold
 class PepperFruitDetector: # TODO: why is it initializing for every one frame?
     def __init__(self, yolo_weight_path: str):
 
-        ultralytics.checks()
+        # ultralytics.checks()
 
         self._model: YOLO = YOLO(yolo_weight_path)
         self._classes: List[str] = ["pepper"] # TODO if we change YOLO

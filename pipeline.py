@@ -15,7 +15,7 @@ from pepper_fruit_utils import *
 from pepper_utils import *
 from realsense_utils import *
 from multi_frame_utils import *     
-
+from pepper_peduncle_detector import PepperPeduncleDetector
 
 class Perception:
     def __init__(self, multi_frame_number = 10, threshold=0.5, percentage=0.5):
