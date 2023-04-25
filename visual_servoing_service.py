@@ -151,16 +151,17 @@ def handle_visual_servoing(req):
     global dx, dy, dz
     print(colored("Returning visual servoing", 'magenta'))
     if req.req_id == 0:
-    # if req == 0:
-        (dx ,dy, dz) = visual_servoing()
-        print("before: ",(dx ,dy, dz) )
-        (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz)
-        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
-        if dz<=0.2:
-            print(colored("sent 0 cuz failed", 'red'))
-            return 0
-        print(colored("sent 1 cuz success", 'blue'))
-        return 1
+        return 0
+    # # if req == 0:
+    #     (dx ,dy, dz) = visual_servoing()
+    #     print("before: ",(dx ,dy, dz) )
+    #     (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz)
+    #     print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
+    #     if dz<=0.2:
+    #         print(colored("sent 0 cuz failed", 'red'))
+    #         return 0
+    #     print(colored("sent 1 cuz success", 'blue'))
+    #     return 1
     # else:
     #     continue
 
