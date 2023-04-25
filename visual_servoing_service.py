@@ -117,6 +117,8 @@ def handle_visual_servoing(req):
 def vs_server():
     global dx, dy, dz, got_depth
     rospy.init_node('visual_servoing_server')
+    
+    print(colored("Inside VS server", "blue"))
 
     rospack = rospkg.RosPack()
     os.chdir(rospack.get_path("pepper_ws"))
