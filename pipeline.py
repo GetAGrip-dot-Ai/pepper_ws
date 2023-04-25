@@ -30,11 +30,13 @@ class Perception:
         self.pepper_fruits = dict()
         self.pepper_peduncles = dict()
         self.peppers = dict()
+        self.peduncles = dict()
         self.one_frame = None
         self.multi_frame = MultiFrame(multi_frame_number)
         self.communication = Communication()
         self.poi_in_rviz = None
         self.chosen_pepper = None
+        self.chosen_peduncle = None
 
     def get_image(self):
         #################################################################
@@ -185,41 +187,56 @@ class Perception:
         # Get the point of interaction from the multi frame
         #################################################################
         self.multi_frame.run()
-        peppers_temp = self.multi_frame._matched_positive_peppers
-        print(colored(f"Peppers: {peppers_temp}", 'red'))
 
-        print(colored(f"Matched positive peppers keys: {peppers_temp.keys()}", 'yellow'))
-        print(colored(f"Matched positive fruits keys: {self.multi_frame._matched_positive_fruits.keys()}", 'yellow'))
-        print(colored(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}", 'yellow'))
+        peduncles = self.multi_frame._unmatched_positive_peduncles
 
-        if not peppers_temp:
-            plot_frames(self.multi_frame, -1, -1)
-            print(colored("No peppers here!", "red"))
+        if not peduncles:
+            print(colored("No peduncles here!", "red"))
             return
         else:
-            for key, value in peppers_temp.items():
-                self.peppers = peppers_temp[key]
-                print(f"Peppers, {self.peppers}")
+            for key, value in peduncles.items():
+                self.peduncles = peduncles[key]
+                print(f"Peduncles, {self.peduncles}")
                 for v in value:
-                    self.chosen_pepper = v
-                    print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
-                    plot_frames(self.multi_frame, key, self.chosen_pepper.pepper_fruit.number)
-
-                    try: 
-                        if key in self.multi_frame._unmatched_positive_fruits.keys():
-                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
-                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                            print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
-                        else:
-                            self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
-                            self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
-                            print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
-                    except Exception as e:
-                        print(f"Key error while deleting pepper fruit from obstacles: {e}")
-                        pass
+                    self.chosen_peduncle = v
+                    print(f"Chosen frame: {key}, Chosen peduncle: {self.chosen_peduncle}")
                     return
 
-        # self.set_pepper_order(arm_xyz)
+        # peppers_temp = self.multi_frame._matched_positive_peppers
+        # print(colored(f"Peppers: {peppers_temp}", 'red'))
+
+        # print(colored(f"Matched positive peppers keys: {peppers_temp.keys()}", 'yellow'))
+        # print(colored(f"Matched positive fruits keys: {self.multi_frame._matched_positive_fruits.keys()}", 'yellow'))
+        # print(colored(f"Unmatched positive fruits keys: {self.multi_frame._unmatched_positive_fruits.keys()}", 'yellow'))
+
+        # if not peppers_temp:
+        #     plot_frames(self.multi_frame, -1, -1)
+        #     print(colored("No peppers here!", "red"))
+        #     return
+        # else:
+        #     for key, value in peppers_temp.items():
+        #         self.peppers = peppers_temp[key]
+        #         print(f"Peppers, {self.peppers}")
+        #         for v in value:
+        #             self.chosen_pepper = v
+        #             print(f"Chosen frame: {key}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}")
+        #             plot_frames(self.multi_frame, key, self.chosen_pepper.pepper_fruit.number)
+
+        #             try: 
+        #                 if key in self.multi_frame._unmatched_positive_fruits.keys():
+        #                     self.pepper_fruits = self.multi_frame._matched_positive_fruits[key] + self.multi_frame._unmatched_positive_fruits[key]
+        #                     self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+        #                     print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
+        #                 else:
+        #                     self.pepper_fruits = self.multi_frame._matched_positive_fruits[key]
+        #                     self.pepper_fruits.remove(self.chosen_pepper.pepper_fruit)
+        #                     print(f"Pepper fruits after deleting chosen pepper: {self.pepper_fruits}")
+        #             except Exception as e:
+        #                 print(f"Key error while deleting pepper fruit from obstacles: {e}")
+        #                 pass
+        #             return
+
+        # # self.set_pepper_order(arm_xyz)
 
     def send_to_manipulator(self):
         #################################################################
@@ -241,35 +258,55 @@ class Perception:
         #     pepper = None
         #     print("No peppers left!")
 
-        if self.chosen_pepper is None:
+        # if self.chosen_pepper is None:
+        #     self.multi_frame.clear_frames()
+        #     self.multi_frame = MultiFrame()
+        #     return 0
+        # else:
+        #     # print("00000000000000")
+        #     poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
+        #     print("poi:\n",poi_in_base_link)
+
+        #     rate = rospy.Rate(10)
+        #     start_time = time.time()
+        #     while not rospy.is_shutdown() and time.time()- start_time < 20:
+        #         # poi = self.chosen_pepper.pepper_peduncle.poi
+                
+        #         self.communication.publish_poi(poi_in_base_link, None)
+        #         # self.communication.obstacle_pub_fn(self.pepper_fruits)
+        #         # self.communication.rviz_marker_poi_base_link(self.peppers)
+        #         # self.communication.rviz_marker(poi_in_base_link)
+        #         # self.communication.rviz_marker_rs(poi_in_base_link)
+        #         # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
+
+        #         rate.sleep()
+
+        #     self.multi_frame.clear_frames()
+        #     self.multi_frame = MultiFrame()
+        #     self.chosen_pepper = None
+        #     return 1
+        #         # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
+        #         # print("publishing", list(self.peppers.values()))
+
+        if self.chosen_peduncle is None:
             self.multi_frame.clear_frames()
             self.multi_frame = MultiFrame()
             return 0
         else:
-            # print("00000000000000")
-            poi_in_base_link = self.chosen_pepper.pepper_peduncle.poi_in_base_link
+            poi_in_base_link = self.chosen_peduncle.poi_in_base_link
             print("poi:\n",poi_in_base_link)
 
             rate = rospy.Rate(10)
             start_time = time.time()
-            while not rospy.is_shutdown() and time.time()- start_time < 20:
-                # poi = self.chosen_pepper.pepper_peduncle.poi
-                
+            while not rospy.is_shutdown() and time.time()- start_time < 1.5:
                 self.communication.publish_poi(poi_in_base_link, None)
-                # self.communication.obstacle_pub_fn(self.pepper_fruits)
-                # self.communication.rviz_marker_poi_base_link(self.peppers)
-                # self.communication.rviz_marker(poi_in_base_link)
-                # self.communication.rviz_marker_rs(poi_in_base_link)
-                # self.communication.publish_poi([poi[0], poi[1], poi[2]], None)
-
                 rate.sleep()
 
             self.multi_frame.clear_frames()
             self.multi_frame = MultiFrame()
-            self.chosen_pepper = None
+            self.chosen_peduncle = None
             return 1
-                # print(f"Number of frames in Multi-frame {len(self.multi_frame._one_frames)}")
-                # print("publishing", list(self.peppers.values()))
+                
 
     #####################################################################
     # VISUALIZATION related

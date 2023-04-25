@@ -117,8 +117,10 @@ class OneFrame:
 
     def determine_peduncle_poi(self):
         self.set_transform()
-        for _, single_pepper in self._pepper_detections.items():
-            single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh, self._trans, self._rot)
+        # for _, single_pepper in self._pepper_detections.items():
+        #     single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, single_pepper.pepper_fruit.xywh, self._trans, self._rot)
+        for _, peduncle in self._pepper_peduncle_detections.items():
+            peduncle.set_point_of_interaction(self._img_shape, None, self._trans, self._rot)
 
 
     def determine_peduncle_orientation(self):

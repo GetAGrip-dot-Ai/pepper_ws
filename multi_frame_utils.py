@@ -137,7 +137,7 @@ def update_peduncle_occurences(peduncles_frame1, peduncles_frame2, frame1_number
 
 def update_peduncle_true_positives(peduncles, max_frames):
     for peduncle in peduncles:
-        if peduncle.occurences >= 0.5*max_frames:
+        if peduncle.occurences >= 1:   # 0.5*max_frames:
             peduncle.true_positive = True
 
 

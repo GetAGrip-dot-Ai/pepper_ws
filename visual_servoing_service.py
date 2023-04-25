@@ -168,7 +168,7 @@ def handle_visual_servoing(req):
 def vs_server():
     global dx
     rospy.init_node('visual_servoing_server')
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(15)
     rospack = rospkg.RosPack()
     os.chdir(rospack.get_path("pepper_ws"))
     s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
@@ -177,7 +177,7 @@ def vs_server():
         if dz > 0.1:
             start_time = time.time()
             # print("visual servo results: x, y, z", dx, dy, dz)
-            while time.time() - start_time<30:
+            while time.time() - start_time<1:
                 publish_d(dx ,dy, dz)
         rospy.sleep(1)
     rospy.spin()
