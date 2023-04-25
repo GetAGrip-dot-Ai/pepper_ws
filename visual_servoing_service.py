@@ -95,6 +95,9 @@ def handle_visual_servoing(req):
 
     print(colored("Starting visual servoing", 'blue'))
     if req.req_id == 0:
+        # print(colored("Visual servoing failed :( Returning 0", 'red'))
+        # return 0
+    
     # if req == 0:
         (dx ,dy, dz) = visual_servoing()
         # print("before: ",(dx ,dy, dz) )
