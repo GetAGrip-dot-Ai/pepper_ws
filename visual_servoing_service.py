@@ -12,90 +12,18 @@ from termcolor import colored
 from pepper_peduncle_utils import draw_one_poi
 # from pepper_ws.srv import visual_servo
 from realsense_utils import *
+from realsense_camera import RealsenseCamera
 
 dx, dy, dz = 0, 0, 0
 got_depth = False
 
-def get_xy_in_realworld(x=350, y=200):
-
-    y, x = int(x), int(y)
-    pipeline = rs.pipeline()
-    config = rs.config()
-
-    pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-    pipeline_profile = config.resolve(pipeline_wrapper)
-    device = pipeline_profile.get_device()
-    device_product_line = str(device.get_info(rs.camera_info.product_line))
-
-    found_rgb = False
-    for s in device.sensors:
-        if s.get_info(rs.camera_info.name) == 'RGB Camera':
-            found_rgb = True
-            break
-    if not found_rgb:
-        print("The demo requires Depth camera with Color sensor")
-        exit(0)
-
-    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-
-    if device_product_line == 'L500':
-        config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
-    else:
-        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-
-    # Start streaming
-    pipeline.start(config)
-    align_to = rs.stream.color
-    align = rs.align(align_to)
-    count = 0
-    try:
-        while count < 100:
-            count += 1
-            frames = pipeline.wait_for_frames()
-            aligned_frames =  align.process(frames)
-            color_frame_not_aligned = frames.get_color_frame()
-            depth_frame = aligned_frames.get_depth_frame()
-            color_frame = aligned_frames.get_color_frame()
-
-            # Convert images to numpy arrays
-            depth_image = np.asanyarray(depth_frame.get_data())
-            color_image = np.asanyarray(color_frame.get_data())
-            color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
-
-            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-            depth_colormap_dim = depth_colormap.shape
-            color_colormap_dim = color_image.shape
-
-            # If depth and color resolutions are different, resize color image to match depth image for display
-            if depth_colormap_dim != color_colormap_dim:
-                resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
-                images = np.hstack((resized_color_image, depth_colormap))
-            else:
-                images = np.hstack((color_image, depth_colormap))
-
-            color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
-            depth = depth_frame.get_distance(x, y)
-            dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
-            # dx -= - 0.0325
-            # k = cv2.waitKey(0)
-            # if k==27:
-            #     cv2.destroyAllWindows()
-            #     return (dx ,dy, dz)
-
-    finally:
-        # Stop streaming
-        pipeline.stop()
-        print(colored(f"x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'red'))
-
-    return (dx ,dy, dz)
+realsense_camera = RealsenseCamera()
 
 def visual_servoing():
 
     global got_depth
     start_time = time.time()
-    img = get_image()
+    img = get_image(realsense_camera)
     print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
 
     img_name=str(time.time()).split('.')[0]
@@ -118,7 +46,7 @@ def visual_servoing():
 
             # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
             start_time = time.time()
-            (dx, dy, dz) = get_depth(peduncle.poi_px[0], peduncle.poi_px[1])
+            (dx, dy, dz) = get_depth(realsense_camera, peduncle.poi_px[0], peduncle.poi_px[1])
             print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
