@@ -28,7 +28,7 @@ def get_all_image_path_in_folder(path):
 
 def read_image(img_path):
     img = cv2.imread(img_path)
-    img = np.asarray(img)
+    # img = np.asarray(img)
     return img
 
 
