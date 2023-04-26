@@ -133,21 +133,6 @@ def calculate_peduncle_iou(mask1, mask2):
     return iou
 
 
-def draw_poi(one_frame):
-    img = cv2.imread(one_frame.img_path, 0)
-    img_name = one_frame.img_path.split('/')[-1].split('.')[0]
-    plt.imshow(img)
-
-    for pepper in one_frame.pepper_detections.values():
-        poi = pepper.pepper_peduncle.poi
-        plt.plot(poi[1]*100, poi[0]*100, 'ro', markersize=2)
-
-    plt.axis('off')
-    plt.savefig(
-        f"{os.getcwd()}/result/{img_name}_poi_result.png",
-        bbox_inches='tight', pad_inches=1)
-    plt.clf()
-    plt.cla()
 
 def draw_poi(one_frame):
     img = cv2.imread(one_frame.img_path, 0)

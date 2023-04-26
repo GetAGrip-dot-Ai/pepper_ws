@@ -41,7 +41,6 @@ class ImageListener:
                     print(wi, hi)
                     plt.text(wi, hi, self.depth_img[hi, wi])
             # plt.plot(100, 200, 'ro')
-            plt.savefig('hi.png')
             plt.cla()
             plt.clf()
 
