@@ -20,7 +20,10 @@ def handle_multi_frame(req):
 
     if req.req_id == 0:
         if not first_request:
-            perception.rs_camera.pipeline.start(perception.rs_camera.config)
+            try:
+                perception.rs_camera.pipeline.start(perception.rs_camera.config)
+            except Exception as e:
+                print(colored(f"start error {e}", "magenta"))
             time.sleep(3)
             print(colored("Camera reinitialized", "light_green"))
         else:
@@ -34,7 +37,10 @@ def handle_multi_frame(req):
         perception.add_frame_to_multi_frame()
         perception.process_multi_frame()
         pepper_found = perception.send_to_manipulator()
-        perception.rs_camera._pipeline.stop()
+        try:
+            perception.rs_camera._pipeline.stop()
+        except Exception as e:
+                print(colored(f"stop error {e}", "magenta"))
         return pepper_found
     
 def multi_frame_server():
