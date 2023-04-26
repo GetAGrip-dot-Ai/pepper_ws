@@ -25,7 +25,7 @@ def handle_multi_frame(req):
 def multi_frame_server():
     global pipeline
     rospy.init_node('multi_frame_server')
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(15)
     os.chdir('/home/sridevi/kinova_ws/src/pepper_ws/')
     pipeline = Perception(None, 0)
     # handle_multi_frame(0)

@@ -275,7 +275,7 @@ class Perception:
 
             rate = rospy.Rate(10)
             start_time = time.time()
-            while not rospy.is_shutdown() and time.time()- start_time < 20:
+            while not rospy.is_shutdown() and time.time()- start_time < 1:
                 # poi = self.chosen_pepper.pepper_peduncle.poi
                 
                 self.communication.publish_poi(poi_in_base_link, None)
