@@ -6,7 +6,7 @@ from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import Pose, Point
 
 class PepperPeduncle:
-    def __init__(self, number: int, mask=None, conf=None, percentage=0.5):
+    def __init__(self, number: int, mask=None, conf=None, percentage=0.42):
         self.number: int = number
         self._mask = mask
         self._conf: float = conf

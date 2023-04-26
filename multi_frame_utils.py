@@ -239,6 +239,7 @@ def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
             plt.title(f"No pepper chosen", fontsize=10)
             plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
             print(colored("All multi-frames plots have been saved", "blue"))
+            plt.close()
             return
         else:
             plt.title(f"Chosen frame: {chosen_frame_num}, Chosen fruit: {chosen_fruit_num}", fontsize=10)
@@ -323,6 +324,7 @@ def plot_frames(mf_obj, chosen_frame_num, chosen_fruit_num):
         #         axs[frame_number].plot(poi_px[1], poi_px[0], 'ro', markersize=2)
 
         plt.savefig(os.getcwd() + '/test_multi_frame/log/all_frames.png', bbox_inches='tight')
+        plt.close()
         print(colored("All multi-frames plots have been saved", "blue"))
     except Exception as e:
         print(colored(f"Error occured while trying to save all multi-frames together: {e}", "red"))

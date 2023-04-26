@@ -364,3 +364,4 @@ def draw_vs(one_frame):
         bbox_inches='tight', pad_inches=0)
     plt.clf()
     plt.cla()
+    plt.close()

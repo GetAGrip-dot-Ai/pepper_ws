@@ -27,12 +27,12 @@ class PepperPeduncleDetector:
     def predict_peduncle(self, img_path, thresh=0.5):
 
         peduncle_dict = dict()
-        print("peduncle start reading")
+        # print("peduncle start reading")
         img = read_image(img_path)
-        print("peduncle img read")
+        # print("peduncle img read")
         start_time = time.time()
         results = self._model(img, conf=thresh)
-        print("done YOLO:", time.time() - start_time)
+        # print("done YOLO:", time.time() - start_time)
 
         peduncle_count = 0
 
@@ -55,21 +55,22 @@ class PepperPeduncleDetector:
         return peduncle_dict
 
 
-    # def plot_results(self, peduncle_list, poi_px, real_xyz):
-    #     img = np.asarray(Image.open(self._imgs_path))
-    #     img_name = self._imgs_path.split('/')[-1].split('.')[0]
-    #     plt.imshow(img)
-    #     for k, peduncle in peduncle_list.items():
-    #         mask = peduncle.mask
-    #         draw_bounding_polygon(peduncle.conf, mask, img.shape)
-    #         poi_px = peduncle.poi_px
-    #         plt.plot(poi_px[1], poi_px[0], 'ro', markersize=2)
-    #     plt.text(poi_px[1], poi_px[0], f'{round(real_xyz[0],3),round(real_xyz[1],3),round(real_xyz[2],3)}')
-    #     plt.plot(poi_px[1], poi_px[0], 'm*', markersize=5)
-    #     plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
-    #     plt.clf()
-    #     plt.cla()
-    #     print(f"saved to: {os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
+    def plot_results(self, img_path, peduncle_list, poi_px, real_xyz):
+        img = np.asarray(Image.open(img_path))
+        img_name = img_path.split('/')[-1].split('.')[0]
+        plt.imshow(img)
+        plt.switch_backend('agg')
+        for k, peduncle in peduncle_list.items():
+            mask = peduncle.mask
+            draw_bounding_polygon(peduncle.conf, mask, img.shape)
+            poi_px = peduncle.poi_px
+            plt.plot(poi_px[1], poi_px[0], 'ro', markersize=2)
+        plt.text(poi_px[1], poi_px[0], f'{round(real_xyz[0],3),round(real_xyz[1],3),round(real_xyz[2],3)}')
+        plt.plot(poi_px[1], poi_px[0], 'm*', markersize=5)
+        plt.savefig(f"{os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
+        plt.clf()
+        plt.cla()
+        print(f"saved to: {os.getcwd()}/vs_result/{img_name}_peduncle_result.png")
 
 if __name__ == '__main__':
     PepperPeduncleDetection = PepperPeduncleDetector(

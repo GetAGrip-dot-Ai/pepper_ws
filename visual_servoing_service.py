@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 import pyrealsense2 as rs
-import numpy as np
 import cv2
 import os
 import time
 from pepper_peduncle_detector import PepperPeduncleDetector
-# from realsense_utils import get_image
 from geometry_msgs.msg import Pose
 import rospy, rospkg
 from termcolor import colored
-# from pepper_peduncle_utils import draw_one_poi
 from pepper_ws.srv import visual_servo
 from realsense_utils import *
 
@@ -19,10 +16,9 @@ got_depth = False
 def visual_servoing():
 
     global got_depth
+    global dx, dy, dz
     
-    start_time = time.time()
     img = get_image_orig()
-    print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
 
     img_name=str(time.time()).split('.')[0]
     img_path = os.getcwd()+'/visual_servoing/'+img_name+'.png'
@@ -46,25 +42,28 @@ def visual_servoing():
             start_time = time.time()
             (dx, dy, dz) = get_depth_orig(peduncle.poi_px[0], peduncle.poi_px[1])
 
-            print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
+            # print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
+            print(colored(f"Depth result: {(round(dx, 3), round(dy, 3), round(dz,3))}", 'green'))
 
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
                 pepper_of_interest = peduncle
                 pepper_of_interest_poi_xyz = (dx ,dy, dz)
+                print(colored(f"NOW POI IS {(round(dx, 3), round(dy, 3), round(dz,3))}", "white", "on_blue"))
 
-            elif int(dx) != 0 and abs(dx)<=abs(pepper_of_interest_poi_xyz[0]):
+            elif int(dx) != -1 and abs(dx)<abs(pepper_of_interest_poi_xyz[0]):
                 print(colored(f"changing pepper because [{dx}] is smaller than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
                 pepper_of_interest = peduncle
                 pepper_of_interest_poi_xyz = (dx ,dy, dz)
+                print(colored(f"NOW POI IS {(round(pepper_of_interest_poi_xyz[0], 3), round(pepper_of_interest_poi_xyz[1], 3), round(pepper_of_interest_poi_xyz[2],3))}", "white", "on_light_blue"))
             else:
                 print(colored(f"not changing pepper because [{dx}] is bigger than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
 
         if pepper_of_interest != None:
-            # pp.plot_results(peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
+            # pp.plot_results(img_path, peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
             got_depth = True
 
-        print(colored(f"pepper of interest: \n, {pepper_of_interest_poi_xyz}", "blue"))
+        print(colored(f"FINAL POI IS {(round(dx, 3), round(dy, 3), round(dz,3))}", "white", "on_blue"))
         return pepper_of_interest_poi_xyz
 
     except Exception as e:
@@ -80,14 +79,17 @@ def publish_d(x, y, z):
     change_pose = Pose()
     # change to the base_link frame 
     change_pose.position.x = float(z) - 0.03 # the end effector is going in too deep
-    change_pose.position.y = -float(x)
-    change_pose.position.z = -float(y)
+    change_pose.position.y = -float(x-0.03)
+    change_pose.position.z = float(y+0.08)
     change_pose.orientation.x = 0
     change_pose.orientation.y = 0
     change_pose.orientation.z = 0
     change_pose.orientation.w = 1
+    # print(colored(f"FINAL POI IS {(round(dx, 3), round(dy, 3), round(dz,3))}", "white", "on_blue"))
+    # print(colored(f"Move in base_link: x:{change_pose.position.x} y:{change_pose.position.y} z:{change_pose.position.z}", "white", "on_grey"))
     if z > 0.1:
         visual_servo_pub.publish(change_pose)
+        # print("0", end="")
 
 def handle_visual_servoing(req):
 
@@ -101,9 +103,8 @@ def handle_visual_servoing(req):
         (dx ,dy, dz) = visual_servoing()
         # print("before: ",(dx ,dy, dz) )
 
-        (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz) # parameter tuning
-
-        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
+        # (dx ,dy, dz) = (dx-0.03 ,-(dy+0.05), dz) # parameter tuning
+        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'white', 'on_light_blue'))
 
 
         if dz<=0.2:
@@ -119,18 +120,20 @@ def handle_visual_servoing(req):
 def vs_server():
     global dx, dy, dz, got_depth
     rospy.init_node('visual_servoing_server')
+    rate = rospy.Rate(15)
     
     print(colored("Inside VS server", "blue"))
 
     rospack = rospkg.RosPack()
     os.chdir(rospack.get_path("pepper_ws"))
+    
 
     s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
     # handle_visual_servoing(0)
 
     while not rospy.is_shutdown():
         if got_depth:
-            print(colored(f"Visual servo results: x:{dx} y:{dy} z:{dz}", "green"))
+            
             start_time = time.time()
             while time.time() - start_time<1:
                 publish_d(dx ,dy, dz)
@@ -139,3 +142,45 @@ def vs_server():
 
 if __name__=="__main__":
     vs_server()
+
+
+
+
+
+
+
+
+
+
+
+    '''
+    xception ignored in: <function Image.__del__ at 0x7f705bee1ee0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/tkinter/__init__.py", line 4017, in __del__
+    self.tk.call('image', 'delete', self.name)
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+RuntimeError: main thread is not in main loop
+Tcl_AsyncDelete: async handler deleted by the wrong thread
+Aborted (core dumped)
+
+    
+    '''

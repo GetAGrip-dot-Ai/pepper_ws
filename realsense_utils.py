@@ -48,19 +48,6 @@ def get_depth(realsense_camera, x=320, y=240):
                         colorizer.colorize(depth_frame).get_data())
             img = np.hstack((color_image, depth_colormap))
 
-        # plt.imshow(img)
-        # plt.axis('on')
-        # plt.plot(x, y,  'r*', markersize=5)
-        # plt.plot(x+640, y, 'b*', markersize=5)
-        # plt.plot(0, 0, 'g*', markersize=50)
-        # plt.savefig(path+file_name+str(count)+'.png')
-        # plt.cla()
-        # plt.clf()
-        # plt.close()
-        # print(colored("Depth image saved to : ", path+file_name+str(count)+'.png', "blue"))
-            
-        # pipeline.stop()
-
         return dx ,dy, dz
     
     except Exception as e:
@@ -71,18 +58,16 @@ def get_depth(realsense_camera, x=320, y=240):
 def get_depth_orig(x=320, y=240):
     # print(f"x: {x}, y:{y}")
     x, y = y, x
-    dx ,dy, dz = -1, -1, -1
-
+    x, y = int(x), int(y)
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
-    colorizer = rs.colorizer()
-
 
     # Get device product line for setting a supporting resolution
     pipeline_wrapper = rs.pipeline_wrapper(pipeline)
     pipeline_profile = config.resolve(pipeline_wrapper)
     device = pipeline_profile.get_device()
+    device_product_line = str(device.get_info(rs.camera_info.product_line))
 
     found_rgb = False
     for s in device.sensors:
@@ -90,26 +75,27 @@ def get_depth_orig(x=320, y=240):
             found_rgb = True
             break
     if not found_rgb:
-        print(colored("The demo requires Depth camera with Color sensor\nNO IMAGE READ BY THE RGBD CAMERA", "red"))
+        print("The demo requires Depth camera with Color sensor")
+        print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
         return
 
-    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+
+    if device_product_line == 'L500':
+        config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+    else:
+        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
     # Start streaming
     pipeline.start(config)
+    # align_to = rs.stream.depth
     align_to = rs.stream.color
     align = rs.align(align_to)
 
     try:
-        distance = 0
         count = 0
-        file_name = str(time.time()).split('.')[0]
-        path = os.getcwd() + '/depthlog/'
-        isExist = os.path.exists(path)
-        if not isExist:
-            os.makedirs(path)
 
-        while count <30:
+        while count <100:
             count += 1
             frames = pipeline.wait_for_frames()
             aligned_frames =  align.process(frames)
@@ -122,31 +108,14 @@ def get_depth_orig(x=320, y=240):
             color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
             depth = depth_frame.get_distance(x, y)
             dx ,dy, dz = rs.rs2_deproject_pixel_to_point(color_intrin, [x,y], depth)
-            # dx -= - 0.0325 
-            color_image = np.asanyarray(color_frame.get_data())
             color_frame_not_aligned = np.asanyarray(color_frame_not_aligned.get_data())
-
-            depth_colormap = np.asanyarray(
-                        colorizer.colorize(depth_frame).get_data())
-            # img = np.hstack((color_image, depth_colormap))
-
-        # plt.imshow(img)
-        # plt.axis('on')
-        # plt.plot(x, y,  'r*', markersize=5)
-        # plt.plot(x+640, y, 'b*', markersize=5)
-        # plt.plot(0, 0, 'g*', markersize=50)
-        # plt.savefig(path+file_name+str(count)+'.png')
-        # plt.cla()
-        # plt.clf()
-        # plt.close()
-        # print(colored("Depth image saved to : ", path+file_name+str(count)+'.png', "blue"))
-            
         pipeline.stop()
-
+        print("in realsesne_utilass.py: ", dx, dy, dz)
         return dx ,dy, dz
+
     
     except Exception as e:
-        print(colored(f"Problem in realsense_utils.py->get_depth! {e}", "red"))
+        print(colored(f"Problem in realsense_utils.py->get_depth_orig! {e}", "red"))
         pipeline.stop()
         return dx ,dy, dz
     
@@ -167,22 +136,6 @@ def get_image(realsense_camera):
                 continue
 
             color_image = np.asanyarray(color_frame.get_data())
-
-            # If depth and color resolutions are different, resize color image to match depth image for display
-
-            # # Show images
-            # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-            # cv2.imshow('RealSense', images)
-            
-            # k = cv2.waitKey(0)
-            # if k==27:
-            #     print("hey")
-            #     cv2.destroyAllWindows()
-            #     print("images", images.shape)
-            #     return color_image
-            #     # break
-
-        # cv2.destroyAllWindows()
 
         return color_image
 
@@ -231,22 +184,6 @@ def get_image_orig():
                 continue
 
             color_image = np.asanyarray(color_frame.get_data())
-
-            # If depth and color resolutions are different, resize color image to match depth image for display
-
-            # # Show images
-            # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-            # cv2.imshow('RealSense', images)
-            
-            # k = cv2.waitKey(0)
-            # if k==27:
-            #     print("hey")
-            #     cv2.destroyAllWindows()
-            #     print("images", images.shape)
-            #     return color_image
-            #     # break
-
-        # cv2.destroyAllWindows()
 
         return color_image
 

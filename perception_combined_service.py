@@ -70,7 +70,7 @@ def visual_servoing():
     
     start_time = time.time()
     img = get_image(perception.rs_camera)
-    print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
+    # print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
 
     img_name=str(time.time()).split('.')[0]
     img_path = os.getcwd()+'/visual_servoing/'+img_name+'.png'
@@ -84,15 +84,15 @@ def visual_servoing():
         print("start initializing yolo")
         start_time = time.time()
         pp = perception.peduncle_detector
-        print("done initializing yolo: ", time.time() - start_time)
+        # print("done initializing yolo: ", time.time() - start_time)
         start_time = time.time()
         peduncle_list = pp.predict_peduncle(img_path)
-        print("done predicting yolo: ", time.time() - start_time)
+        # print("done predicting yolo: ", time.time() - start_time)
         
         for peduncle_num, peduncle in peduncle_list.items():
             start_time = time.time()
             peduncle.set_point_of_interaction(img.shape, perception.rs_camera)
-            print("done set_poi yolo: ", time.time() - start_time)
+            # print("done set_poi yolo: ", time.time() - start_time)
             # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
             start_time = time.time()
             (dx, dy, dz) = get_depth(perception.rs_camera, peduncle.poi_px[0], peduncle.poi_px[1])

@@ -41,7 +41,7 @@ def multi_frame_server():
     global perception
 
     rospy.init_node('multi_frame_server')
-    rate = rospy.Rate(1) # TODO: Change this to 
+    rate = rospy.Rate(15) # TODO: Change this to 
     os.chdir(rospack.get_path("pepper_ws"))
 
     perception = Perception()
