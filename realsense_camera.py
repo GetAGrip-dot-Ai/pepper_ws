@@ -2,6 +2,16 @@ import rospy
 import pyrealsense2 as rs
 from termcolor import colored
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class for a realsense camera and its properties
+"""
+
+
 class RealsenseCamera:
     def __init__(self):
         self._pipeline = rs.pipeline()

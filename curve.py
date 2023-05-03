@@ -3,6 +3,15 @@ from scipy.integrate import quad
 from scipy.optimize import curve_fit
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Contains different properties of the curve that is fit to a peduncle mask
+"""
+
+
 class Curve:
 
     def __init__(self, direction: str = None, curve_x: np.array = None, curve_y: np.array = None, params: np.array = None):

@@ -7,6 +7,16 @@ from termcolor import colored
 from pepper_ws.srv import visual_servo
 import rospkg
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Combined code for the harvest service and the visual servoing service
+"""
+
+
 rospack = rospkg.RosPack()
 
 

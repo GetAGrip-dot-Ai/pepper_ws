@@ -3,6 +3,15 @@ from pepper_fruit_utils import *
 from pepper_peduncle_utils import *
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 8, 2023
+Code description: Functions that perform different components of the multi-frame algorithm
+"""
+
+
 def get_best_fruit_match(fruit1, fruits2):
     x, y, w, h = fruit1.xywh
     box1 = [[x - w/2, y - h/2], [x + w/2, y - h/2], [x + w/2, y + h/2], [x - w/2, y + h/2]]

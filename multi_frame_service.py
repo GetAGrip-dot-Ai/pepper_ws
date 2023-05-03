@@ -4,11 +4,19 @@ from pepper_ws.srv import multi_frame
 from pipeline import Perception
 from realsense_utils import *
 from termcolor import colored
-
 import rospkg
 
-rospack = rospkg.RosPack()
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 12, 2023
+Code description: Server in the harvest service which performs the multi-frame process
+"""
+
+
+rospack = rospkg.RosPack()
 
 perception = None
 first_request = True

@@ -12,6 +12,15 @@ from pepper_peduncle import PepperPeduncle
 from pepper_fruit_utils import print_pepperdetection,  read_image, draw_pepper_peduncles, draw_bounding_polygon
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Wrapper class for a YOLOv8 model that outputs peduncle masks
+"""
+
+
 class PepperPeduncleDetector:
     def __init__(self, yolo_weight_path='weights/pepper_peduncle_best_4.pt'):
 

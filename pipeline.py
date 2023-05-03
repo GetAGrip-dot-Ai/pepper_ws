@@ -17,6 +17,16 @@ from realsense_utils import *
 from multi_frame_utils import *     
 from pepper_peduncle_detector import PepperPeduncleDetector
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: The main pipeline that is used by the multi-frame and visual servoing service
+"""
+
+
 class Perception:
     def __init__(self, multi_frame_number = 10, threshold=0.5, percentage=0.5):
         # self.source = source

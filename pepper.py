@@ -1,6 +1,16 @@
 from pepper_fruit import PepperFruit
 from pepper_peduncle import PepperPeduncle
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class for a matched pepper and its properties
+"""
+
+
 class Pepper:
     def __init__(self, number: int, pf_number: int, pp_number: int):
         self._number = number

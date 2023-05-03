@@ -9,6 +9,16 @@ from pepper_fruit_utils import *
 from multi_frame_utils import *
 from termcolor import colored
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class with algorithm for matching peppers across different frames to find true positive peppers
+"""
+
+
 class MultiFrame:
     def __init__(self, max_frames=10):
         self._max_frames = max_frames

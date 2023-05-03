@@ -10,6 +10,16 @@ from termcolor import colored
 from pepper_ws.srv import visual_servo
 from realsense_utils import *
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Server of the visual servoing service
+"""
+
+
 dx, dy, dz = 0, 0, 0
 got_depth = False
 
@@ -63,7 +73,7 @@ def visual_servoing():
             # pp.plot_results(img_path, peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
             got_depth = True
 
-        print(colored(f"FINAL POI IS {(round(dx, 3), round(dy, 3), round(dz,3))}", "white", "on_blue"))
+        print(colored(f"FINAL POI IS dx: {round(pepper_of_interest_poi_xyz[0], 3)}, dy:{round(pepper_of_interest_poi_xyz[1], 3)}, dz{round(pepper_of_interest_poi_xyz[2],3)}", "white", "on_blue"))
         return pepper_of_interest_poi_xyz
 
     except Exception as e:
@@ -80,7 +90,7 @@ def publish_d(x, y, z):
     # change to the base_link frame 
     change_pose.position.x = float(z) - 0.03 # the end effector is going in too deep
     change_pose.position.y = -float(x-0.03)
-    change_pose.position.z = float(y+0.08)
+    change_pose.position.z = float(y+0.07)
     change_pose.orientation.x = 0
     change_pose.orientation.y = 0
     change_pose.orientation.z = 0
@@ -142,45 +152,3 @@ def vs_server():
 
 if __name__=="__main__":
     vs_server()
-
-
-
-
-
-
-
-
-
-
-
-    '''
-    xception ignored in: <function Image.__del__ at 0x7f705bee1ee0>
-Traceback (most recent call last):
-  File "/usr/lib/python3.8/tkinter/__init__.py", line 4017, in __del__
-    self.tk.call('image', 'delete', self.name)
-RuntimeError: main thread is not in main loop
-Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
-Traceback (most recent call last):
-  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
-    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
-RuntimeError: main thread is not in main loop
-Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
-Traceback (most recent call last):
-  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
-    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
-RuntimeError: main thread is not in main loop
-Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
-Traceback (most recent call last):
-  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
-    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
-RuntimeError: main thread is not in main loop
-Exception ignored in: <function Variable.__del__ at 0x7f705bf565e0>
-Traceback (most recent call last):
-  File "/usr/lib/python3.8/tkinter/__init__.py", line 363, in __del__
-    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
-RuntimeError: main thread is not in main loop
-Tcl_AsyncDelete: async handler deleted by the wrong thread
-Aborted (core dumped)
-
-    
-    '''

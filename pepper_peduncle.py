@@ -5,6 +5,16 @@ from pepper_peduncle_utils import *
 from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import Pose, Point
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class for a pepper peduncle and its properties
+"""
+
+
 class PepperPeduncle:
     def __init__(self, number: int, mask=None, conf=None, percentage=0.42):
         self.number: int = number

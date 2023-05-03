@@ -5,6 +5,15 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Code that calculates the transform of the realsense camera w.r.t the bracelet link of the kinova arm
+"""
+
+
 if __name__ == '__main__':
     rospy.init_node('camera_calibration')
 

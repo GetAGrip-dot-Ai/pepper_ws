@@ -1,6 +1,15 @@
 from typing import List, Optional
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class for a pepper fruit and its properties
+"""
+
+
 class PepperFruit:
     def __init__(self, number:int, xywh=None, conf=0.0):
         self._number: int = number

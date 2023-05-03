@@ -7,6 +7,15 @@ from pepper_fruit import PepperFruit
 from pepper_fruit_utils import print_pepperdetection, get_all_image_path_in_folder, read_image, print_result_boxes, remove_overlapping_boxes
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Wrapper class that creates a YOLOv8 model and provides peppers detected
+"""
+
+
 class PepperFruitDetector: # TODO: why is it initializing for every one frame?
     def __init__(self, yolo_weight_path: str):
 

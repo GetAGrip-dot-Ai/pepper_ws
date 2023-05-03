@@ -11,6 +11,15 @@ import numpy as np
 from termcolor import colored
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Communicates with other subsystems. It publishes the POI and the obstacles. 
+"""
+
+
 class Communication:
     def __init__(self):
         # rospy.init_node('pp_p_communication_node', anonymous=True)
@@ -19,7 +28,8 @@ class Communication:
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
         self.listener = tf.TransformListener()
         self.transform_from_base = [[0, 0, 0], [0, 0, 0, 1]]
-        
+
+
     def publish_poi(self, poi, orientation):
 
         peduncle_pose = Pose()
@@ -32,7 +42,6 @@ class Communication:
         peduncle_pose.orientation.w = 1
         # rospy.loginfo(peduncle_pose)
         self.poi_pub.publish(peduncle_pose)
-
 
 
     def obstacle_pub_fn(self, obstacles):
@@ -54,6 +63,7 @@ class Communication:
         rospy.loginfo(obstacle_msg)
         self.obstacle_pub.publish(obstacle_msg)
 
+
     def rviz_marker_poi_realsense_frame(self, peppers):
         marker = self.make_marker("realsense_frame", r=1, g=0, b=1, scale=0.1)
 
@@ -66,11 +76,14 @@ class Communication:
             marker.points.append(point)
         
         self.poi_rviz_pub.publish(marker)
-    
+   
+
     def rviz_marker(self, point, r=1, g=0, b=0):
         marker = self.make_marker("base_link", r=r, g=g, b=b, scale=0.1)
         marker.points.append(point)
         self.poi_rviz_pub.publish(marker)
+
+
     def rviz_marker_rs(self, point, r=1, g=0, b=1):
         marker = self.make_marker("realsense_frame", r=r, g=g, b=b, scale=0.1)
         marker.points.append(point)
@@ -87,6 +100,7 @@ class Communication:
         marker.points.append(point)
         
         self.poi_rviz_pub.publish(marker)
+
 
     def rviz_marker_poi_base_link(self, peppers):
         marker = self.make_marker("base_link", r=1, g=0, b=0)
@@ -113,7 +127,8 @@ class Communication:
         p.z = point[2] # convert to meter
         print(colored(f"poi relative to the base_link:\n{p}", "light_cyan"))
         return p
-    
+
+
     def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
         marker = Marker()
         marker.type = 8

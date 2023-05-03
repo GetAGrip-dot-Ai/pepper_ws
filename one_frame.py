@@ -13,6 +13,16 @@ from scipy.spatial.transform import Rotation as R
 from termcolor import colored
 from communication import Communication
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Class that processes a single image frame to output pepper bounding boxes, peduncle masks and POIs
+"""
+
+
 class OneFrame:
     def __init__(self, img_path, number, yolo_weights_pf_path = 'weights/pepper_fruit_best_4.pt', yolo_weights_pp_path='weights/pepper_peduncle_best_4.pt'):
         self._frame_number: int = number
@@ -40,6 +50,7 @@ class OneFrame:
         self._pepper_fruit_detector: PepperFruitDetector = PepperFruitDetector(yolo_weight_path=yolo_weights_pf_path)
         self._pepper_peduncle_detector: PepperPeduncleDetector = PepperPeduncleDetector(yolo_weight_path=yolo_weights_pp_path)
         # TODO: check PepperFruitDetector
+    
     @property
     def frame_number(self):
         return self._frame_number
@@ -118,7 +129,6 @@ class OneFrame:
         self.set_transform()
         for _, single_pepper in self._pepper_detections.items():
             single_pepper.pepper_peduncle.set_point_of_interaction(self._img_shape, rs_camera, single_pepper.pepper_fruit.xywh, self._trans, self._rot)
-
 
     def determine_peduncle_orientation(self):
         for _, single_pepper in self._pepper_detections.items():

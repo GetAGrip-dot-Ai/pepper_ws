@@ -10,6 +10,16 @@ from scipy.spatial.transform import Rotation as R
 from tf.transformations import *
 import rospkg
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 4, 2023
+Code description: Reads the stored transform of the realsense frame w.r.t the bracelet link of the kinova arm, rotates it and publishes it
+"""
+
+
 rospack = rospkg.RosPack()
 
 def tf_callback(msg):

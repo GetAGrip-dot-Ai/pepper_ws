@@ -8,6 +8,16 @@ import pyrealsense2 as rs
 import pepper_fruit_utils, pepper_utils
 from PIL import Image
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Functions that support the processing of matched peppers in the OneFrame class
+"""
+
+
 def get_img_size(img_path):
     img = read_image(img_path)
     return img.shape

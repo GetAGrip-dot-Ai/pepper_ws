@@ -18,6 +18,15 @@ from pepper_utils import *
 from termcolor import colored
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Functions that support the processing performed in the OneFrame class
+"""
+
+
 def print_result_boxes(pepper_list):
     print(f"detected {len(pepper_list)} peppers!")
     for k, pepper in pepper_list.items():

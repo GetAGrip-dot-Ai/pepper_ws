@@ -13,6 +13,15 @@ from skimage.morphology import medial_axis
 from curve import Curve
 
 
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Functions that support the calculation of a POI from YOLOv8 outputs
+"""
+
+
 def parabola(t, a, b, c):
     # print("params", params)
     return a * t ** 2 + b * t + c
@@ -145,6 +154,7 @@ def draw_poi(one_frame):
     plt.clf()
     plt.cla()
 
+
 def draw_poi(one_frame):
     img = cv2.imread(one_frame.img_path, 0)
     img_name = one_frame.img_path.split('/')[-1].split('.')[0]
@@ -160,6 +170,7 @@ def draw_poi(one_frame):
         bbox_inches='tight', pad_inches=1)
     plt.clf()
     plt.cla()
+
 
 def draw_one_poi(pepper_peduncle):
     poi = pepper_peduncle.poi

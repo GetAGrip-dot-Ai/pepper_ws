@@ -7,6 +7,16 @@ import time
 import matplotlib.pyplot as plt
 from termcolor import colored
 
+
+"""
+CMU MRSD Program, course 16-681
+Team GetAGrip.AI
+Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon Fenton
+Rev0: April 3, 2023
+Code description: Functions that get an image and depth from the realsense camera
+"""
+
+
 def get_depth(realsense_camera, x=320, y=240):
     # print(f"x: {x}, y:{y}")
     x, y = y, x
