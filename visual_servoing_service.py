@@ -29,8 +29,8 @@ def visual_servoing():
 
     global got_depth
     global dx, dy, dz
-    print("========",Perception.num)
-    camera = Perception.rs_camera
+    perception = Perception()
+    camera = perception.rs_camera
     img = get_image(camera)
 
     img_name=str(time.time()).split('.')[0]
@@ -52,11 +52,9 @@ def visual_servoing():
             peduncle.set_point_of_interaction_orig(img.shape)
 
             # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
-            start_time = time.time()
-            (dx, dy, dz) = get_depth_orig(peduncle.poi_px[0], peduncle.poi_px[1])
-
-            # print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
-            print(colored(f"Depth result: {(round(dx, 3), round(dy, 3), round(dz,3))}", 'green'))
+            # (dx, dy, dz) = get_depth_orig(peduncle.poi_px[0], peduncle.poi_px[1])
+            (dx, dy, dz) = get_depth(camera, peduncle.poi_px[0], peduncle.poi_px[1])
+            # print(colored(f"Depth result: {(round(dx, 3), round(dy, 3), round(dz,3))}", 'green'))
 
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
@@ -110,15 +108,10 @@ def handle_visual_servoing(req):
 
     print(colored("Starting visual servoing", 'blue'))
     if req == 0:
-        # print(colored("Visual servoing failed :( Returning 0", 'red'))
-        # return 0
-    
         (dx ,dy, dz) = visual_servoing()
-        # print("before: ",(dx ,dy, dz) )
 
         # (dx ,dy, dz) = (dx-0.03 ,-(dy+0.05), dz) # parameter tuning
         print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'white', 'on_light_blue'))
-
 
         if dz<=0.2:
             print(colored("Visual servoing failed :( Returning 0", 'red'))
@@ -126,20 +119,14 @@ def handle_visual_servoing(req):
         else:
             print(colored("Visual servoing success :) Returning 1", 'green'))
             return 1
-    # else:
-    #     continue
 
 
 def vs_server():
     global dx, dy, dz, got_depth
     rospy.init_node('visual_servoing_server')
-    rate = rospy.Rate(15)
     
-    print(colored("Inside VS server", "blue"))
-
     rospack = rospkg.RosPack()
     os.chdir(rospack.get_path("pepper_ws"))
-    
 
     # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
     # time.sleep(15)

@@ -32,10 +32,6 @@ def get_depth(realsense_camera, x=320, y=240):
         distance = 0
         count = 0
         file_name = str(time.time()).split('.')[0]
-        path = os.getcwd() + '/depthlog/'
-        isExist = os.path.exists(path)
-        if not isExist:
-            os.makedirs(path)
 
         while count < 10:
             count += 1
@@ -66,7 +62,6 @@ def get_depth(realsense_camera, x=320, y=240):
         return dx ,dy, dz
     
 def get_depth_orig(x=320, y=240):
-    # print(f"x: {x}, y:{y}")
     x, y = y, x
     x, y = int(x), int(y)
     # Configure depth and color streams

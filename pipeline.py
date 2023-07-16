@@ -93,7 +93,7 @@ class Perception:
         print(colored(f"Matched Positive Peppers: {matched_positive_peppers}", 'yellow'))
 
         if not matched_positive_peppers:
-            plot_frames(self.multi_frame, -1, -1)
+            # plot_frames(self.multi_frame, -1, -1)
             print(colored("No peppers here!", "red"))
             return
         else:
@@ -105,7 +105,7 @@ class Perception:
 
                     print(colored(f"Chosen frame: {frame_number}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}", "blue"))
 
-                    plot_frames(self.multi_frame, frame_number, self.chosen_pepper.pepper_fruit.number)
+                    # plot_frames(self.multi_frame, frame_number, self.chosen_pepper.pepper_fruit.number)
 
                     try: 
                         if frame_number in self.multi_frame._unmatched_positive_fruits.keys():

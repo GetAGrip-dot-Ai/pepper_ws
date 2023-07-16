@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-import rospy
+import rospy, rospkg
+import os
+import cv2
+
 from pepper_ws.srv import multi_frame
 from pipeline import Perception
 from realsense_utils import *
 from termcolor import colored
 from pepper_ws.srv import visual_servo
 import rospkg
-
+from pepper_peduncle_detector import PepperPeduncleDetector
+from geometry_msgs.msg import Pose
+import time
 
 """
 CMU MRSD Program, course 16-681
@@ -15,7 +20,6 @@ Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon
 Rev0: April 3, 2023
 Code description: Combined code for the harvest service and the visual servoing service
 """
-
 
 rospack = rospkg.RosPack()
 
@@ -27,9 +31,7 @@ dx, dy, dz = 0, 0, 0
 got_depth = False
 
 def handle_multi_frame(req):
-    global first_request
     global perception
-    # print(colored(f"Request ID: {req.req_id}", "blue"))
 
     if req == 0:
         print(colored("Manipulation system requested to start multiframe", "blue"))
@@ -37,7 +39,7 @@ def handle_multi_frame(req):
         return 1
     else:
         print(colored("Manipulation system requested to process multiframe", "blue"))
-        perception.add_frame_to_multi_frame()
+        perception.add_frame_to_multi_frame() # fix sri's code
         perception.process_multi_frame()
         pepper_found = perception.send_to_manipulator()
         return pepper_found
@@ -49,7 +51,6 @@ def combined_server():
 
     rospy.init_node('combined_server')
 
-    rate = rospy.Rate(1) # TODO: Change this to 
     os.chdir(rospack.get_path("pepper_ws"))
 
     perception = Perception()
@@ -64,6 +65,11 @@ def combined_server():
 
     handle_visual_servoing(0)
 
+    handle_multi_frame(0)
+    handle_multi_frame(1)
+
+    handle_visual_servoing(0)
+
     while not rospy.is_shutdown():
         if got_depth:
             print(colored(f"Visual servo results: x:{dx} y:{dy} z:{dz}", "green"))
@@ -73,14 +79,12 @@ def combined_server():
             got_depth = False
     rospy.spin()
 
-
 def visual_servoing():
 
     global got_depth
-    
-    start_time = time.time()
-    img = get_image(perception.rs_camera)
-    # print(colored(f"Get img took {time.time()-start_time}", 'cyan'))
+    global dx, dy, dz
+    camera = perception.rs_camera
+    img = get_image(camera)
 
     img_name=str(time.time()).split('.')[0]
     img_path = os.getcwd()+'/visual_servoing/'+img_name+'.png'
@@ -91,39 +95,36 @@ def visual_servoing():
     pepper_of_interest_poi_xyz = (0, 0, 0)
 
     try:
-        print("start initializing yolo")
-        start_time = time.time()
-        pp = perception.peduncle_detector
-        # print("done initializing yolo: ", time.time() - start_time)
-        start_time = time.time()
+        pp = PepperPeduncleDetector(yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_4.pt")
+
         peduncle_list = pp.predict_peduncle(img_path)
-        # print("done predicting yolo: ", time.time() - start_time)
+
         
         for peduncle_num, peduncle in peduncle_list.items():
-            start_time = time.time()
-            peduncle.set_point_of_interaction(img.shape, perception.rs_camera)
-            # print("done set_poi yolo: ", time.time() - start_time)
-            # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
-            start_time = time.time()
-            (dx, dy, dz) = get_depth(perception.rs_camera, peduncle.poi_px[0], peduncle.poi_px[1])
-            print(colored(f"Get depth took {time.time()-start_time}", 'cyan'))
+
+            peduncle.set_point_of_interaction_orig(img.shape)
+
+            (dx, dy, dz) = get_depth(camera, peduncle.poi_px[0], peduncle.poi_px[1])
+
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
                 pepper_of_interest = peduncle
                 pepper_of_interest_poi_xyz = (dx ,dy, dz)
+                print(colored(f"NOW POI IS {(round(dx, 3), round(dy, 3), round(dz,3))}", "white", "on_blue"))
 
-            elif int(dx) != 0 and abs(dx)<=abs(pepper_of_interest_poi_xyz[0]):
+            elif int(dx) != -1 and abs(dx)<abs(pepper_of_interest_poi_xyz[0]):
                 print(colored(f"changing pepper because [{dx}] is smaller than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
                 pepper_of_interest = peduncle
                 pepper_of_interest_poi_xyz = (dx ,dy, dz)
+                print(colored(f"NOW POI IS {(round(pepper_of_interest_poi_xyz[0], 3), round(pepper_of_interest_poi_xyz[1], 3), round(pepper_of_interest_poi_xyz[2],3))}", "white", "on_light_blue"))
             else:
                 print(colored(f"not changing pepper because [{dx}] is bigger than {pepper_of_interest_poi_xyz[0]}", 'magenta'))
 
         if pepper_of_interest != None:
-            # pp.plot_results(peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
+            # pp.plot_results(img_path, peduncle_list, pepper_of_interest.poi_px, pepper_of_interest_poi_xyz)
             got_depth = True
 
-        print(colored(f"pepper of interest: \n, {pepper_of_interest_poi_xyz}", "blue"))
+        print(colored(f"FINAL POI IS dx: {round(pepper_of_interest_poi_xyz[0], 3)}, dy:{round(pepper_of_interest_poi_xyz[1], 3)}, dz{round(pepper_of_interest_poi_xyz[2],3)}", "white", "on_blue"))
         return pepper_of_interest_poi_xyz
 
     except Exception as e:
@@ -139,8 +140,8 @@ def publish_d(x, y, z):
     change_pose = Pose()
     # change to the base_link frame 
     change_pose.position.x = float(z) - 0.03 # the end effector is going in too deep
-    change_pose.position.y = -float(x)
-    change_pose.position.z = -float(y)
+    change_pose.position.y = -float(x-0.03)
+    change_pose.position.z = float(y+0.07)
     change_pose.orientation.x = 0
     change_pose.orientation.y = 0
     change_pose.orientation.z = 0
@@ -151,17 +152,13 @@ def publish_d(x, y, z):
 def handle_visual_servoing(req):
 
     global dx, dy, dz
-    global perception
 
     print(colored("Starting visual servoing", 'blue'))
-    
     if req == 0:
-    # if req == 0:
-        (dx ,dy, dz) = visual_servoing(perception.rs_camera)
+        (dx ,dy, dz) = visual_servoing()
 
-        (dx ,dy, dz) = (dx-0.03 ,-(dy+0.04), dz) # parameter tuning
-
-        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'blue'))
+        # (dx ,dy, dz) = (dx-0.03 ,-(dy+0.05), dz) # parameter tuning
+        print(colored(f"in realsense world: has to move x, y, z {round(dx, 3), round(dy,3), round(dz,3)}",'white', 'on_light_blue'))
 
         if dz<=0.2:
             print(colored("Visual servoing failed :( Returning 0", 'red'))
