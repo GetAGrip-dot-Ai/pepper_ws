@@ -17,11 +17,12 @@ Code description: Wrapper class that creates a YOLOv8 model and provides peppers
 
 
 class PepperFruitDetector: # TODO: why is it initializing for every one frame?
+    _model = None
     def __init__(self, yolo_weight_path: str):
 
         # ultralytics.checks()
-
-        self._model: YOLO = YOLO(yolo_weight_path)
+        if PepperFruitDetector._model == None:
+            PepperFruitDetector._model: YOLO = YOLO(yolo_weight_path)
         self._classes: List[str] = ["pepper"] # TODO if we change YOLO
 
     def __str__(self):
@@ -33,7 +34,7 @@ class PepperFruitDetector: # TODO: why is it initializing for every one frame?
 
         img = read_image(img_path)
 
-        results = self._model(img, conf=thresh)
+        results = PepperFruitDetector._model(img, conf=thresh)
         
         pepper_count = 0
 

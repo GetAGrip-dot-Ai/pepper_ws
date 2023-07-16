@@ -28,9 +28,18 @@ Code description: The main pipeline that is used by the multi-frame and visual s
 
 
 class Perception:
+    rs_camera = None
+    num = 0
     def __init__(self, multi_frame_number = 10, threshold=0.5, percentage=0.5):
         # self.source = source
-        self.rs_camera = RealsenseCamera()
+        if Perception.rs_camera == None:
+            print(colored("Realsense camera initializing", "red"))
+            Perception.rs_camera = RealsenseCamera()
+            print(colored("Realsense camera initialized", "red"))
+            print("=========",Perception.num)
+        else:
+            print(colored("Realsense camera already initialized", "blue"))
+            print("=========", Perception.num)
         self.threshold = threshold
         self.percentage = percentage
         self.pepper_fruits = dict()
@@ -57,7 +66,7 @@ class Perception:
         # Take an image and add it as a frame to the multi frame
         #################################################################
 
-        rgb_img = get_image(self.rs_camera)
+        rgb_img = get_image(Perception.rs_camera)
 
         if rgb_img is None:
             print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
@@ -71,7 +80,7 @@ class Perception:
         # TODO: change the way we save images 
 
         self.multi_frame.add_one_frame(OneFrame(img_path, number))
-        self.multi_frame.populate_last_frame(self.rs_camera)
+        self.multi_frame.populate_last_frame(Perception.rs_camera)
 
     def process_multi_frame(self):
         #################################################################

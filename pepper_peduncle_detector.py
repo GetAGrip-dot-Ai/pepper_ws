@@ -22,11 +22,12 @@ Code description: Wrapper class for a YOLOv8 model that outputs peduncle masks
 
 
 class PepperPeduncleDetector:
+    _model = None
     def __init__(self, yolo_weight_path='weights/pepper_peduncle_best_4.pt'):
 
         # ultralytics.checks()
-
-        self._model: YOLO = YOLO(yolo_weight_path)
+        if PepperPeduncleDetector._model == None:
+            PepperPeduncleDetector._model= YOLO(yolo_weight_path)
         self._classes: List[str] = ["pepper"] # TODO if we change YOLO
 
 
@@ -40,7 +41,7 @@ class PepperPeduncleDetector:
         img = read_image(img_path)
         # print("peduncle img read")
         start_time = time.time()
-        results = self._model(img, conf=thresh)
+        results = PepperPeduncleDetector._model(img, conf=thresh)
         # print("done YOLO:", time.time() - start_time)
 
         peduncle_count = 0

@@ -9,6 +9,8 @@ import rospy, rospkg
 from termcolor import colored
 from pepper_ws.srv import visual_servo
 from realsense_utils import *
+from realsense_camera import RealsenseCamera
+from pipeline import Perception
 
 
 """
@@ -27,8 +29,9 @@ def visual_servoing():
 
     global got_depth
     global dx, dy, dz
-    
-    img = get_image_orig()
+    print("========",Perception.num)
+    camera = Perception.rs_camera
+    img = get_image(camera)
 
     img_name=str(time.time()).split('.')[0]
     img_path = os.getcwd()+'/visual_servoing/'+img_name+'.png'
@@ -106,7 +109,7 @@ def handle_visual_servoing(req):
     global dx, dy, dz
 
     print(colored("Starting visual servoing", 'blue'))
-    if req.req_id == 0:
+    if req == 0:
         # print(colored("Visual servoing failed :( Returning 0", 'red'))
         # return 0
     
@@ -138,8 +141,9 @@ def vs_server():
     os.chdir(rospack.get_path("pepper_ws"))
     
 
-    s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
-    # handle_visual_servoing(0)
+    # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
+    # time.sleep(15)
+    handle_visual_servoing(0)
 
     while not rospy.is_shutdown():
         if got_depth:

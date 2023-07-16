@@ -13,13 +13,20 @@ Code description: Class for a realsense camera and its properties
 
 
 class RealsenseCamera:
-    def __init__(self):
-        self._pipeline = rs.pipeline()
-        self._config = rs.config()
-        self._colorizer = rs.colorizer()
+    _pipeline = None
+    _config = None
+    _colorizer = None
 
-        pipeline_wrapper = rs.pipeline_wrapper(self._pipeline)
-        pipeline_profile = self._config.resolve(pipeline_wrapper)
+    def __init__(self):
+        if RealsenseCamera._pipeline == None:
+            RealsenseCamera._pipeline = rs.pipeline()
+        if RealsenseCamera._config == None:
+            RealsenseCamera._config = rs.config()
+        if RealsenseCamera._colorizer == None:
+            RealsenseCamera._colorizer = rs.colorizer()
+
+        pipeline_wrapper = rs.pipeline_wrapper(RealsenseCamera._pipeline)
+        pipeline_profile = RealsenseCamera._config.resolve(pipeline_wrapper)
         device = pipeline_profile.get_device()
         device_product_line = str(device.get_info(rs.camera_info.product_line))
 
@@ -34,15 +41,15 @@ class RealsenseCamera:
             print(colored("NO IMAGE READ BY THE RGBD CAMERA", "red"))
             return
 
-        self._config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+        RealsenseCamera._config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
         if device_product_line == 'L500':
-            self._config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+            RealsenseCamera._config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
         else:
-            self._config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+            RealsenseCamera._config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
         # Start streaming
-        self._pipeline.start(self._config)
+        RealsenseCamera._pipeline.start(RealsenseCamera._config)
 
         align_to = rs.stream.color
         self._align = rs.align(align_to)
@@ -54,16 +61,16 @@ class RealsenseCamera:
 
     @property
     def pipeline(self):
-        return self._pipeline
+        return RealsenseCamera._pipeline
 
 
     @property
     def config(self):
-        return self._config
+        return RealsenseCamera._config
 
     @property
     def colorizer(self):
-        return self._colorizer
+        return RealsenseCamera._colorizer
     
     @property
     def align(self):
