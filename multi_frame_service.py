@@ -29,20 +29,16 @@ def handle_multi_frame(req):
         return 1
     else:
         print(colored("Manipulation system requested to process multiframe", "blue"))
-        perception.add_frame_to_multi_frame() # fix sri's code
+        perception.add_frame_to_multi_frame() # TODO fix sri's code
         perception.process_multi_frame()
         pepper_found = perception.send_to_manipulator()
-        # try:
-        #     perception.rs_camera._pipeline.stop()
-        # except Exception as e:
-        #         print(colored(f"stop error {e}", "magenta"))
         return pepper_found
     
 def multi_frame_server():
     global perception
 
     rospy.init_node('multi_frame_server')
-    rate = rospy.Rate(15) # TODO: Change this to 
+    rate = rospy.Rate(10) # TODO: Change this to 10
     os.chdir(rospack.get_path("pepper_ws"))
 
     perception = Perception()

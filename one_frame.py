@@ -35,13 +35,6 @@ class OneFrame:
 
         self._img_shape: Tuple[int] = pepper_fruit_utils.get_img_size(img_path)
 
-        # self._mask: Optional[torch.Tensor] = None
-
-        # self.detected_pepper_fruit: bool = False
-        # self.detected_pepper_peduncle: bool = False
-
-        # self._pepper_fruit_count: int = 0
-        # self._pepper_peduncle_count: int = 0
 
         self._pepper_fruit_detections: Dict[int, PepperFruit] = dict()
         self._pepper_peduncle_detections: Dict[int, PepperPeduncle] = dict()
@@ -55,10 +48,6 @@ class OneFrame:
     def frame_number(self):
         return self._frame_number
     
-    # @frame_number.setter
-    # def frame_number(self, frame_number):
-    #     self._frame_number = frame_number
-
     @property
     def trans(self):
         return self._trans
@@ -70,15 +59,7 @@ class OneFrame:
     @property
     def img_shape(self):
         return self._img_shape
-
-    # @property
-    # def mask(self):
-    #     return self._mask
-
-    # @mask.setter
-    # def mask(self, mask):
-    #     self._mask = mask
-
+    
     @property
     def pepper_fruit_detections(self):
         return self._pepper_fruit_detections
@@ -86,14 +67,6 @@ class OneFrame:
     @property
     def pepper_peduncle_detections(self):
         return self._pepper_peduncle_detections
-
-    # @property
-    # def pepper_fruit_count(self):
-    #     return self._pepper_fruit_count
-
-    # @property
-    # def pepper_peduncle_count(self):
-    #     return self._pepper_peduncle_count
 
     @property
     def pepper_detections(self):

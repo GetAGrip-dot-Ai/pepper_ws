@@ -29,26 +29,23 @@ Code description: The main pipeline that is used by the multi-frame and visual s
 
 class Perception:
     rs_camera = None
-    num = 0
+    
     def __init__(self, multi_frame_number = 10, threshold=0.5, percentage=0.5):
-        # self.source = source
+        
         if Perception.rs_camera == None:
             print(colored("Realsense camera initializing", "red"))
             Perception.rs_camera = RealsenseCamera()
             print(colored("Realsense camera initialized", "red"))
-            print("=========",Perception.num)
         else:
             print(colored("Realsense camera already initialized", "blue"))
-            print("=========", Perception.num)
-        self.threshold = threshold
-        self.percentage = percentage
+
+        self.threshold = threshold # TODO: add comment
+        self.percentage = percentage # TODO: add comment
         self.pepper_fruits = dict()
         self.pepper_peduncles = dict()
         self.peppers = dict()
-        # self.one_frame = None # TODO
         self.multi_frame = MultiFrame(multi_frame_number)
         self.communication = Communication()
-        self.poi_in_rviz = None # TODO
         self.chosen_pepper = None
 
 
@@ -101,7 +98,7 @@ class Perception:
 
                 for pepper in peppers:
 
-                    self.chosen_pepper = pepper
+                    self.chosen_pepper = pepper # TODO: prioritize the pepper that is closest to the arm
 
                     print(colored(f"Chosen frame: {frame_number}, Chosen pepper: {self.chosen_pepper.pepper_fruit.number}", "blue"))
 

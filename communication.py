@@ -22,12 +22,10 @@ Code description: Communicates with other subsystems. It publishes the POI and t
 
 class Communication:
     def __init__(self):
-        # rospy.init_node('pp_p_communication_node', anonymous=True)
         self.poi_pub = rospy.Publisher('/perception/peduncle/poi', Pose, queue_size=10)
         self.obstacle_pub = rospy.Publisher('/perception/pepper/bbox', Obstacle, queue_size=10)
         self.poi_rviz_pub = rospy.Publisher('/perception/peduncle/poi_rviz', Marker, queue_size=10)
         self.listener = tf.TransformListener()
-        self.transform_from_base = [[0, 0, 0], [0, 0, 0, 1]]
 
 
     def publish_poi(self, poi, orientation):
