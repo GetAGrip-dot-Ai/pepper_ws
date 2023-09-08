@@ -23,7 +23,6 @@ class MultiFrame:
     def __init__(self, max_frames=10):
         self._max_frames = max_frames
         self._one_frames = deque()
-        self._video_frames = deque()
 
         self._matched_positive_fruits: Dict[int, List[PepperFruit]] = dict()
         self._unmatched_positive_fruits: Dict[int, List[PepperFruit]] = dict()
@@ -38,17 +37,9 @@ class MultiFrame:
 
     def clear_frames(self):
         return self._one_frames.clear()
-    
-    def populate_frames(self):
-        for frame in self._one_frames:
-            frame.run()
 
     def populate_last_frame(self, rs_camera):
         self._one_frames[-1].run(rs_camera)
-
-    def assign_frame_numbers(self):
-        for i, frame in enumerate(self._one_frames):
-            frame.frame_number = i
 
     def write_results(self):
         filename = os.getcwd() + '/test_multi_frame/log/results.txt'

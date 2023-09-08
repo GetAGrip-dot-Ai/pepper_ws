@@ -129,7 +129,6 @@ def vs_server():
     os.chdir(rospack.get_path("pepper_ws"))
 
     # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
-    # time.sleep(15)
     handle_visual_servoing(0)
 
     while not rospy.is_shutdown():

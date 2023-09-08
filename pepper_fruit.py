@@ -14,7 +14,7 @@ class PepperFruit:
     def __init__(self, number:int, xywh=None, conf=0.0):
         self._number: int = number
 
-        self._xywh: Optional[List[float]] = xywh
+        self._xywh: Optional[List[float]] = xywh # TODO: change to xyxy
         self._conf: float = conf
         self._xyz = None
         self._true_positive: bool = False

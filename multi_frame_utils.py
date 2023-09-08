@@ -49,7 +49,7 @@ def update_fruit_true_positives(fruits, max_frames):
             fruit.true_positive = True
     
 
-def get_all_fruits(frames):
+def get_all_fruits(frames): # TODO: go over it
     all_frames_positive_fruits = []
     unique_positive_fruits = {}
     unmatched_positive_fruits = {}
@@ -137,7 +137,7 @@ def update_peduncle_true_positives(peduncles, max_frames):
             peduncle.true_positive = True
 
 
-def get_all_peduncles(frames):
+def get_all_peduncles(frames): # TODO: go over it
     all_frames_positive_peduncles = []
     unique_positive_peduncles = {}
     unmatched_positive_peduncles = {}
