@@ -28,13 +28,13 @@ Code description: The main pipeline that is used by the multi-frame and visual s
 
 
 class Perception:
-    rs_camera = None
+    rs_camera =  RealsenseCamera()
     
     def __init__(self, multi_frame_number = 10, threshold=0.5, percentage=0.5):
         
         if Perception.rs_camera == None:
             print(colored("Realsense camera initializing", "red"))
-            Perception.rs_camera = RealsenseCamera()
+            Perception.rs_camera =  RealsenseCamera()
             print(colored("Realsense camera initialized", "red"))
         else:
             print(colored("Realsense camera already initialized", "blue"))

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import pyrealsense2 as rs
 import cv2
 import os
 import time
@@ -20,7 +19,9 @@ Team members: Sridevi Kaza, Jiyoon Park, Shri Ishwaryaa S V, Alec Trela, Solomon
 Rev0: April 3, 2023
 Code description: Server of the visual servoing service
 """
-
+class TestMessage:
+    def __init__(self, req_id) -> None:
+        self.req_id = req_id
 
 dx, dy, dz = 0, 0, 0
 got_depth = False
@@ -29,6 +30,7 @@ def visual_servoing():
 
     global got_depth
     global dx, dy, dz
+
     perception = Perception()
     camera = perception.rs_camera
     img = get_image(camera)
@@ -45,6 +47,7 @@ def visual_servoing():
         pp = PepperPeduncleDetector(yolo_weight_path=os.getcwd()+"/weights/pepper_peduncle_best_4.pt")
 
         peduncle_list = pp.predict_peduncle(img_path)
+        print("peduncle list:" , peduncle_list)
 
         
         for peduncle_num, peduncle in peduncle_list.items():
@@ -54,7 +57,8 @@ def visual_servoing():
             # (dx ,dy, dz) = get_xy_in_realworld(peduncle.poi_px[0], peduncle.poi_px[1]) #TODO
             # (dx, dy, dz) = get_depth_orig(peduncle.poi_px[0], peduncle.poi_px[1])
             (dx, dy, dz) = get_depth(camera, peduncle.poi_px[0], peduncle.poi_px[1])
-            # print(colored(f"Depth result: {(round(dx, 3), round(dy, 3), round(dz,3))}", 'green'))
+            pp.plot_results(img_path, peduncle_list, peduncle.poi_px, (dx, dy, dz))
+            print(colored(f"Depth result: {(round(dx, 3), round(dy, 3), round(dz,3))}", 'green'))
 
             if pepper_of_interest == None:
                 print(colored("first pepper", 'magenta'))
@@ -89,9 +93,9 @@ def publish_d(x, y, z):
     visual_servo_pub = rospy.Publisher('/perception/peduncle/dpoi', Pose, queue_size=10)
     change_pose = Pose()
     # change to the base_link frame 
-    change_pose.position.x = float(z) - 0.03 # the end effector is going in too deep
-    change_pose.position.y = -float(x-0.03)
-    change_pose.position.z = float(y+0.07)
+    change_pose.position.x = float(z) # the end effector is going in too deep
+    change_pose.position.y = -float(x)
+    change_pose.position.z = float(y)
     change_pose.orientation.x = 0
     change_pose.orientation.y = 0
     change_pose.orientation.z = 0
@@ -107,7 +111,7 @@ def handle_visual_servoing(req):
     global dx, dy, dz
 
     print(colored("Starting visual servoing", 'blue'))
-    if req == 0:
+    if req.req_id == 0:
         (dx ,dy, dz) = visual_servoing()
 
         # (dx ,dy, dz) = (dx-0.03 ,-(dy+0.05), dz) # parameter tuning
@@ -129,7 +133,8 @@ def vs_server():
     os.chdir(rospack.get_path("pepper_ws"))
 
     # s = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
-    handle_visual_servoing(0)
+    test_message = TestMessage(0)
+    handle_visual_servoing(test_message)
 
     while not rospy.is_shutdown():
         if got_depth:
@@ -142,3 +147,4 @@ def vs_server():
 
 if __name__=="__main__":
     vs_server()
+

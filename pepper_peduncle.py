@@ -130,6 +130,8 @@ class PepperPeduncle:
 
     def set_point_of_interaction(self, img_shape, rs_camera, pepper_fruit_xywh=None, trans=None, rot=None):
 
+
+        # TODO: Ask jiyoon what this is for?
         if pepper_fruit_xywh is None:  
             pepper_fruit_xywh = self._xywh
             pepper_fruit_xywh[1] = pepper_fruit_xywh[1] - 2
@@ -139,9 +141,13 @@ class PepperPeduncle:
 
         poi_x_px, poi_y_px = determine_poi(self._curve, self._percentage, total_curve_length)
 
-        poi_x, poi_y, poi_z = get_depth(rs_camera, int(poi_x_px), int(poi_y_px))
+        poi_x, poi_y, poi_z = get_depth_poi(rs_camera, int(poi_x_px), int(poi_y_px))
 
-        self._poi = (poi_z, -poi_x, -poi_y) # converting to kinova's axis frame
+        print(f"poi in the realsense frame: {poi_x}, {poi_y}, {poi_z}")
+
+        # self._poi = (-poi_x, -poi_z, -poi_y) # converting to xarm's axis frame
+        # self._poi = (poi_z, -poi_x, -poi_y) # converting to kinova's axis frame
+        self._poi = (poi_x, poi_y, poi_z)
         self._poi_px = (poi_x_px, poi_y_px)
 
         self.get_poi_in_base_link(trans, rot)
@@ -169,11 +175,15 @@ class PepperPeduncle:
 
             r = R.from_quat([rot[0], rot[1], rot[2], rot[3]]) # rotation part of R
             H = np.vstack((np.hstack((r.as_matrix(),np.array(trans).reshape(3, 1))),np.array([0,0,0,1])))
+            # Make homogeneous coordinate
             point_in_relative_frame = list(point_in_relative_frame) + [1]
             point = np.array(H) @ np.array(point_in_relative_frame).T
 
             self.poi_in_base_link = point
+            self.poi_in_realsense_frame = point_in_relative_frame
             print(colored(f"POI relative to the base_link:\n{point}", "yellow"))
+
+            # print(f"Peduncle: Before getting final poi: \n H: {H},\nr: {r}\npoint_in_relative_frame: {point_in_relative_frame}\npoint: {point}")
         except Exception as e: # TODO needed only for visual servo?
             
             print(colored(f"No tf found: {e}", "magenta"))

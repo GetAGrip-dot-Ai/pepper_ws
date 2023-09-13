@@ -7,7 +7,9 @@ from pepper_fruit_utils import *
 from realsense_utils import *
 from pepper_utils import *
 import os
-import tf
+# import tf
+import numpy as np
+import tf2_ros
 import rospy
 from scipy.spatial.transform import Rotation as R
 from termcolor import colored
@@ -29,7 +31,10 @@ class OneFrame:
 
         self._trans = None
         self._R = None
-        self.listener = tf.TransformListener()
+
+        self.tfBuffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        # self.listener = tf.TransformListener()
     
         self.img_path = img_path  # should be a path to one image file
 
@@ -111,16 +116,27 @@ class OneFrame:
 
         if not self._trans:
 
-            now = rospy.Time.now()
+            # now = rospy.Time.now()
 
-            self.listener.waitForTransform("/realsense_frame", "/base_link", now, rospy.Duration(10.0)) # TODO do we have to wait? CHECK IN REAL LIFE
-            (trans, rot) = self.listener.lookupTransform("/base_link", "/realsense_frame", now)
+            # self.listener.waitForTransform("/realsense_frame", "/link_base", now, rospy.Duration(15.0)) # TODO do we have to wait? CHECK IN REAL LIFE
+            # (trans, rot) = self.listener.lookupTransform("/link_base", "/realsense_frame", now)
 
-            self._trans = np.array(trans).reshape(3, 1)
-            self._R = R.from_quat([rot[0], rot[1], rot[2], rot[3]]).as_matrix() 
-            self._trans = trans
-            self._rot= rot
-            print(colored("TRANSFORM SUCCESS", 'blue'))
+            try:
+                transform = self.tfBuffer.lookup_transform("link_base", "realsense_frame", rospy.Time(), rospy.Duration(25.0))
+            
+                trans = transform.transform.translation
+                # print(trans)
+                rot = transform.transform.rotation
+                rot = [rot.x, rot.y, rot.z, rot.w]
+                
+                self._trans = np.array([trans.x, trans.y, trans.z]).reshape(3, 1)
+                self._R = R.from_quat(rot).as_matrix() 
+                self._rot= rot
+                # print(colored("TRANSFORM SUCCESS", 'blue'))
+
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                print("Could not get transform from realsense to base")
+        
         else:
             return
 

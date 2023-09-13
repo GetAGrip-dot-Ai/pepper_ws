@@ -77,7 +77,7 @@ class Communication:
    
 
     def rviz_marker(self, point, r=1, g=0, b=0):
-        marker = self.make_marker("base_link", r=r, g=g, b=b, scale=0.1)
+        marker = self.make_marker("link_base", r=r, g=g, b=b, scale=0.1)
         marker.points.append(point)
         self.poi_rviz_pub.publish(marker)
 
@@ -89,7 +89,7 @@ class Communication:
 
 
     def single_rviz_marker_poi_realsense_frame(self, poi):
-        marker = self.make_marker("base_link", r=0, g=1, b=0, scale=0.04)
+        marker = self.make_marker("link_base", r=0, g=1, b=0, scale=0.04)
 
         point = Point()
         point.x = poi[0]
@@ -101,7 +101,7 @@ class Communication:
 
 
     def rviz_marker_poi_base_link(self, peppers):
-        marker = self.make_marker("base_link", r=1, g=0, b=0)
+        marker = self.make_marker("link_base", r=1, g=0, b=0)
 
         for pepper in peppers:
             poi = pepper.pepper_peduncle.poi
@@ -127,7 +127,7 @@ class Communication:
         return p
 
 
-    def make_marker(self, frame_id = "base_link", r=1, g=0, b=0, scale=0.03):
+    def make_marker(self, frame_id = "link_base", r=1, g=0, b=0, scale=0.03):
         marker = Marker()
         marker.type = 8
         marker.header.frame_id = frame_id

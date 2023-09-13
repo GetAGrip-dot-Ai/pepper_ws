@@ -61,7 +61,6 @@ class PepperPeduncleDetector:
 
                 peduncle_dict[i] = peduncle
                 peduncle_count += 1
-
         return peduncle_dict
 
 

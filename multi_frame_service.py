@@ -15,6 +15,9 @@ Rev0: April 12, 2023
 Code description: Server in the harvest service which performs the multi-frame process
 """
 
+class TestMessage:
+    def __init__(self, req_id) -> None:
+        self.req_id = req_id
 
 rospack = rospkg.RosPack()
 
@@ -23,7 +26,7 @@ perception = None
 def handle_multi_frame(req):
     global perception
 
-    if req == 0:
+    if req.req_id == 0:
         print(colored("Manipulation system requested to start multiframe", "blue"))
         perception.add_frame_to_multi_frame()
         return 1
@@ -43,10 +46,12 @@ def multi_frame_server():
 
     perception = Perception()
 
-    handle_multi_frame(0)
-    handle_multi_frame(0)
-    handle_multi_frame(0)
-    handle_multi_frame(1)
+    # test_0 = TestMessage(0)
+    # test_1 = TestMessage(0)
+    # handle_multi_frame(test_0)
+    # handle_multi_frame(test_0)
+    # handle_multi_frame(test_0)
+    # handle_multi_frame(test_1)
     s = rospy.Service('/perception/harvest', multi_frame, handle_multi_frame)
     rospy.spin()
 

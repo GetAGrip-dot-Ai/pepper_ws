@@ -341,6 +341,7 @@ def draw_all_multi_frame(one_frame):
     plt.savefig(
         f"{os.getcwd()}/test_multi_frame/log/frame_{one_frame.frame_number}_pepper_poi_result.png",
         bbox_inches='tight', pad_inches=0)
+    print("saved to: ")
     plt.clf()
     plt.cla()
     plt.close()

@@ -33,7 +33,7 @@ got_depth = False
 def handle_multi_frame(req):
     global perception
 
-    if req == 0:
+    if req.req_id == 0:
         print(colored("Manipulation system requested to start multiframe", "blue"))
         perception.add_frame_to_multi_frame()
         return 1
@@ -55,20 +55,20 @@ def combined_server():
 
     perception = Perception()
 
-    handle_multi_frame(0)
-    handle_multi_frame(0)
-    handle_multi_frame(0)
-    handle_multi_frame(1)
+    # handle_multi_frame(0)
+    # handle_multi_frame(0)
+    # handle_multi_frame(0)
+    # handle_multi_frame(1)
 
-    # s_mf = rospy.Service('/perception/harvest', multi_frame, handle_multi_frame)
-    # s_vs = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
+    s_mf = rospy.Service('/perception/harvest', multi_frame, handle_multi_frame)
+    s_vs = rospy.Service('/perception/visual_servo', visual_servo, handle_visual_servoing)
 
-    handle_visual_servoing(0)
+    # handle_visual_servoing(0)
 
-    handle_multi_frame(0)
-    handle_multi_frame(1)
+    # handle_multi_frame(0)
+    # handle_multi_frame(1)
 
-    handle_visual_servoing(0)
+    # handle_visual_servoing(0)
 
     while not rospy.is_shutdown():
         if got_depth:
@@ -154,7 +154,7 @@ def handle_visual_servoing(req):
     global dx, dy, dz
 
     print(colored("Starting visual servoing", 'blue'))
-    if req == 0:
+    if req.req_id == 0:
         (dx ,dy, dz) = visual_servoing()
 
         # (dx ,dy, dz) = (dx-0.03 ,-(dy+0.05), dz) # parameter tuning
