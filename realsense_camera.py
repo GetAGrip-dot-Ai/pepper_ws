@@ -12,18 +12,28 @@ Code description: Class for a realsense camera and its properties
 """
 
 
+
 class RealsenseCamera:
     _pipeline = None
     _config = None
     _colorizer = None
+    _align = None
+    _is_running = False  # Flag to track pipeline status
 
     def __init__(self):
-        if RealsenseCamera._pipeline == None:
+        # Check if the pipeline is already running
+        if RealsenseCamera._is_running:
+            print(colored("Realsense pipeline is already running.", "yellow"))
+            return
+
+        if RealsenseCamera._pipeline is None:
             RealsenseCamera._pipeline = rs.pipeline()
-        if RealsenseCamera._config == None:
+        if RealsenseCamera._config is None:
             RealsenseCamera._config = rs.config()
-        if RealsenseCamera._colorizer == None:
+        if RealsenseCamera._colorizer is None:
             RealsenseCamera._colorizer = rs.colorizer()
+        if RealsenseCamera._align is None:
+            RealsenseCamera._align = rs.align(rs.stream.color)
 
         pipeline_wrapper = rs.pipeline_wrapper(RealsenseCamera._pipeline)
         pipeline_profile = RealsenseCamera._config.resolve(pipeline_wrapper)
@@ -55,6 +65,9 @@ class RealsenseCamera:
         self._align = rs.align(align_to)
 
         rospy.sleep(3)
+
+        # Update the flag to indicate that the pipeline is running
+        RealsenseCamera._is_running = True
 
         print(colored("Realsense initialization done!", "green"))
 
